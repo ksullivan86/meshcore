@@ -1,0 +1,36 @@
+Item,Section,Store,Link,Price (USD),Qty swap 16340,Qty swap 18350,Qty sealed,Needed,Notes,Alternative
+Seeed XIAO nRF52840 & Wio-SX1262 Kit (SKU 102010710),Electronics,Seeed Studio,https://www.seeedstudio.com/XIAO-nRF52840-Wio-SX1262-Kit-for-Meshtastic-p-6400.html,13.49,1,1,1,yes,"862 to 930 MHz, so it works in the US and the EU. Comes with an FPC LoRa antenna on a U.FL lead.",
+Seeed L76K GNSS Module for XIAO (SKU 109100021),Electronics,Seeed Studio,https://www.seeedstudio.com/L76K-GNSS-Module-for-Seeed-Studio-XIAO-p-5864.html,11.99,1,1,1,yes,"Comes with an active patch antenna. Wired, not stacked.",
+2-pin magnetic charging connector and USB cable (one set),Electronics,eBay,https://www.ebay.com/itm/305540009139,10.50,1 set,1 set,1 set,yes,"Fit test. Choose 2Pin. One set is both halves and the cable. Its face must fit 11.5 x 5 mm, and it must only snap on one way round.","Adafruit 5412 cable + 5358 connector (4-pin, needs a bigger opening)"
+"30 AWG silicone wire, black (Adafruit 2001)",Electronics,Adafruit,https://www.adafruit.com/product/2001,0.75,1,1,1,yes,,
+"30 AWG silicone wire, red (Adafruit 2003)",Electronics,Adafruit,https://www.adafruit.com/product/2003,0.75,1,1,1,yes,,
+USB power adapter,Electronics,Anywhere,,,1,1,1,yes,"Any phone charger, for the magnetic cable.",
+"Nitecore NL169R 16340, 950 mAh, USB-C, protected button top",Swap: cell,Nitecore Store,https://nitecorestore.com/products/nitecore-nl169r-950mah-usb-c-rechargeable-16340-battery,10.95,1 or 2,0,0,one cell option,Recommended for the 16340 files. Charges from its own USB-C port. 16.5 x 36.3 mm.,18650battery.com $9.95; Fenix ARB-L16-800UP
+"Nitecore NL169 16340, 950 mAh, protected button top",Swap: cell,Battery Junction,https://www.batteryjunction.com/products/nitecore-nl169,6.95,1 or 2,0,0,one cell option,Needs a charger. Measured 924 to 940 mAh. 16.6 x 34.1 mm.,"Keeppower RCR123A 800 mAh at illumn, $6.50"
+"Keeppower P1835C2 18350, 1200 mAh, protected button top",Swap: cell,illumn,https://illumn.com/batteries/18350/18350-keeppower-p1835c2-1200mah-protected-button-top.html,7.49,0,1 or 2,0,one cell option,For the 18350 files only. Needs a charger. Measured 1140 mAh. 18.5 x 39.1 mm.,Fenix ARB-L18-1600
+XTAR ANT MC1 Plus USB-C charger,Swap: cell,illumn,https://illumn.com/xtar-ant-mc1-plus-li-ion-usb-charger.html,6.90,1,1,0,for cells without USB,"0.5 A, about 2 hours for one cell.","Nitecore UI1, $6.99 at 18650battery.com"
+"Pure nickel strip, 0.15 x 5 mm, 9.8 m roll (SHONAN)",Swap: barrel,Amazon,https://www.amazon.com/dp/B08RJ97W8P,9.99,1 roll,1 roll,0,yes,"About 65 mm per tracker. Must be pure nickel, not plated steel.",
+"Conical spring kit, 304 stainless (Mardatt, 123 pcs)",Swap: barrel,Amazon,https://www.amazon.com/dp/B0DRVJ87VW,10.99,1 kit,1 kit,0,yes,"Use the 0.7 x 5.6-10 x 12 mm springs (10 in the kit), not the 0.5 mm ones. One per cap.",
+"Washer, stainless, 5 x 20 x 1.2 mm, 20-pack (MECCANIXITY)",Swap: barrel,Amazon,https://www.amazon.com/dp/B0F4DLM7QJ,6.49,1 pack,0,0,yes (16340),One per cap. It floats on the small O-ring; the cap's post goes through its hole.,
+"Washer, stainless, 22.2 mm (7/8 in) across, hole 4.7 to 5.3 mm",Swap: barrel,Anywhere,,,0,1,0,yes (18350),"For example a #8 x 7/8 in fender washer (a #10 one only if its hole is 5.3 mm or less). I couldn't confirm a listing. For other sizes, set WASHER_D.",
+"Resettable PTC fuse, 0.75 A hold, radial (Bourns MF-R075 or Littelfuse RXEF075)",Swap: barrel,Mouser,https://www.mouser.com/c/?q=MF-R075,0.40,1,1,0,yes,"In the red battery wire, between the barrel and BAT+.",DigiKey
+"Capacitor, 220 uF, 6.3 V or more, electrolytic, about 6 mm across (Panasonic EEU-FR1A221)",Swap: barrel,Mouser,https://www.mouser.com/c/?q=EEU-FR1A221,0.30,1,1,0,yes,"Across BAT+ and BAT-, close to the XIAO.",DigiKey
+"O-ring, nitrile, 41 x 1.5 mm (lid)",O-rings,eBay,https://www.ebay.com/itm/404934396757,6.00,1,1,0,yes,Pack of 10. Choose 41 mm ID. Price is approximate for this size.,Global O-Ring N1.50X041
+"O-ring, nitrile, 20 x 1.5 mm (cap seal, 16340)",O-rings,eBay,https://www.ebay.com/itm/404934396757,4.48,1 (and a spare),0,0,yes,Pack of 10. Choose 20 mm ID.,Global O-Ring N1.50X020
+"O-ring, nitrile, 22 x 1.5 mm (cap seal, 18350)",O-rings,eBay,https://www.ebay.com/itm/404934396757,4.48,0,1 (and a spare),0,yes,Pack of 10. Choose 22 mm ID.,Global O-Ring N1.50X022
+"O-ring, nitrile, 12 x 1.5 mm (under the cap's washer)",O-rings,eBay,https://www.ebay.com/itm/404934396757,4.48,1,1,0,yes,Pack of 10. Choose 12 mm ID. The washer floats on it.,Global O-Ring N1.50X012
+"O-ring, nitrile, 48 x 1.5 mm (lid)",O-rings,eBay,https://www.ebay.com/itm/404934396757,6.38,0,0,1,yes,Pack of 10. Choose 48 mm ID.,Global O-Ring N1.50X048
+603040 LiPo with protection board,Sealed: cell,eBay,https://www.ebay.com/itm/121868609784,7.03,0,0,1,yes,Plus $2.99 shipping. Sold as 800 mAh; expect a little less in use.,"Liter 603040 on Amazon, B09WVDPGXL"
+803040 LiPo with protection board,Sealed: cell,eBay,https://www.ebay.com/itm/121868650322,7.03,0,0,instead of the 603040,for the 803040 file,Plus $2.99 shipping. About 900 mAh. The pod is 2 mm taller.,
+"503040 LiPo, 500 mAh (Adafruit 1578)",Sealed: cell,Adafruit,https://www.adafruit.com/product/1578,7.95,0,0,instead of the 603040,optional,Export your own file with BATTERY = 503040.,
+"MG Chemicals 832HD potting epoxy, 25 mL",Supplies,Mouser,https://www.mouser.com/ProductDetail/590-832HD-25ML,25.29,1,1,1,yes (or the Devcon),"Insulating, water resistant, 45 min working time.","Devcon 14250 5-minute at SkyGeek, $13.65"
+"Gel superglue (CA), small tube",Supplies,Anywhere,,,1,1,0,yes,Holds the nickel strips in the barrel and seals the slots they go through.,
+Rosin flux pen,Supplies,Anywhere,,,1,1,1,yes,For soldering to nickel strip. Clean it off with isopropyl alcohol.,
+Permatex 81150 dielectric grease,Supplies,Amazon,https://www.amazon.com/dp/B000AL2RI2,6.29,1,1,1,yes,Thin film on the O-rings. Never petroleum jelly.,
+"Heat shrink, 1.5 to 3 mm",Supplies,Anywhere,,,a few,a few,a few,yes,,
+"Thin double-sided tape, about 0.2 mm",Supplies,Anywhere,,,1,1,1,yes,Not foam tape.,
+Kapton (polyimide) tape,Supplies,Anywhere,,,1,1,1,yes,Holds the magnetic connector flush while its epoxy sets. Sealed: covers the backs of the boards under the pouch cell.,
+"Thin nylon fishing line, about 0.3 mm, 15 cm",Supplies,Anywhere,,,1,1,1,yes,Lets the air out as the lid goes in.,
+Isopropyl alcohol,Supplies,Anywhere,,,1,1,1,yes,Cleans flux and grease.,
+1N5817 Schottky diode,Supplies,Anywhere,,,0,0,0,only if needed,Only if your magnetic connector snaps on either way round: in series with its + lead.,
+"PETG, 1 kg (Bambu Lab PETG Basic)",Filament,Bambu Lab,https://us.store.bambulab.com/products/petg-basic,22.99,36 g,40 g,22 g,yes,One spool builds many.,"Polymaker PETG, $18.99"
