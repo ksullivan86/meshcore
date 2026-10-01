@@ -74,7 +74,7 @@ NUT_AF      = 5.8;    // pocket for an M3 nut, 5.5 across flats
 NUT_H       = 2.8;    // lock tab: plain M3 hex nut, 2.4 thick
 LOCKNUT_H   = 4.4;    // bracket: M3 nylon-insert lock nut (DIN 985), 4.0 thick
 BOLT_HEAD_AF = 5.7;   // pocket for an M3 hex bolt head (wing mount)
-TREE_SCREW_D = 4.8;   // hole for the long #6 or #8 wood screw (tree-screw mount)
+TREE_SCREW_D = 5.2;   // tree-screw mount: clearance for the #10 wood screw through the top hole (opens up a #6 or #8 too)
 
 /* [Hidden] */
 $fa = 2; $fs = 0.4;
@@ -167,10 +167,10 @@ VENT_P  = [-21, -20]; // M12 vent stands upside down inside; its nut sits in a h
 VENT_HOLE = 12.4;
 VENT_NUT_AF = 16.4;
 VENT_POCKET = FL_T - 3.0;
-GLAND_P = [20, -21];  // 1/4" NPT cable gland, lock nut inside
+GLAND_P = [20, -21];  // 1/4" NPT cable gland from underneath, its lock nut inside in a round pocket
 GLAND_D = 14.3;
 GLAND_POCKET_D = 24;
-GLAND_POCKET = 2.0;
+GLAND_POCKET = 5.6;    // deep enough that a gland with an 8 mm thread (AIRTAK 1/4" NPT) gets its lock nut on: 2.4 mm web
 SMA_P   = [0, -30];   // SMA bulkhead
 SMA_HOLE = 6.7;
 SMA_POCKET_D = 16;

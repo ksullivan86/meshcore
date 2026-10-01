@@ -52,7 +52,8 @@ The fit-test bar tells you which of these to change.
 | `LOCKNUT_H` | 4.4 | Depth of the bracket's pockets, for 4 mm M3 nylon-insert lock nuts. A plain nut fits too; it just sits deeper. |
 | `BOLT_HEAD_AF` | 5.7 | Hex pockets for the wing-nut mount's bolt heads. |
 | `M3_CLEAR` | 3.4 | M3 clearance holes. |
-| `TREE_SCREW_D` | 4.8 | The tree-screw mount's hole for the long wood screw. |
+| `TREE_SCREW_D` | 5.2 | The tree-screw mount's top hole, a clearance hole for the #10 wood screw into the tree. |
+| `GLAND_POCKET` | 5.6 | Depth of the round pocket inside the floor for the cable gland's lock nut. It leaves room for a gland with an 8 mm thread; a longer thread fits too. |
 
 If you change `BOLT_HEAD_AF`, the B and C wing-nut spacers change with it. Export them with **PART** set to `wing_spacers` and **VERSION** set to `B`.
 

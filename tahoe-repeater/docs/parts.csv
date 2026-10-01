@@ -3,7 +3,7 @@ Item,Section,Store,Link,Price (USD),Qty tree-screw,Qty bolt-on,Qty wing-nut,Extr
 "LiFePO4 cell, Gotion 33140, 3.2 V 15 Ah",Radio and power,eBay,https://www.ebay.com/itm/398342236906,5.00,1,1,1,,yes,Weigh it (about 268 g) and check it rests at 3.2 to 3.35 V.,Other eBay sellers of the Gotion 33140
 Adafruit bq25185 solar charger (#6091),Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/6091?qs=a2MtRaTmNOTWXd0vZOQVyw%3D%3D,6.95,1,1,1,,yes,Jumpered for LiFePO4 (3.65 V).,"Adafruit direct, Digi-Key"
 Adafruit MiniBoost 5 V (#4654),Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/4654?qs=W%2FMpXkg%2BdQ5I%2FGLylc3f4Q%3D%3D,3.95,1,1,1,,yes,,"Adafruit direct, Digi-Key"
-"10 kOhm NTC thermistor, B 3435 (Vishay NTCLE413E2103F102L)",Radio and power,Mouser,https://www.mouser.com/ProductDetail/Vishay-BC-Components/NTCLE413E2103F102L?qs=RECgZY%2BK1xLdr8BN5MEzIw%3D%3D,1.47,1,1,1,,yes,,
+"10 kOhm NTC thermistor, B 3435 (Vishay NTCLE413E2103F102L)",Radio and power,Mouser,https://www.mouser.com/ProductDetail/Vishay-BC-Components/NTCLE413E2103F102L?qs=RECgZY%2BK1xLdr8BN5MEzIw%3D%3D,1.47,1,1,1,,yes,Comes with 1 m leads.,
 "2 A fast fuse, Littelfuse PICO II 0251002.MXL",Radio and power,Mouser,https://www.mouser.com/ProductDetail/Littelfuse/0251002MXL?qs=bpnLQM2ZShzafpYR%2Fng7qQ%3D%3D,1.24,2,2,2,,yes,One is a spare.,
 "1S LiFePO4 protection board, 10-pack",Radio and power,Amazon,https://www.amazon.com/dp/B0GCWCHGFX,6.99,1,1,1,,yes,One pack; one board per node.,
 "JST-PH 2-pin cable, female, 100 mm (Adafruit 261)",Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/261?qs=GURawfaeGuDeA9XsXeF0ug%3D%3D,0.75,3,3,3,,yes,,"Adafruit direct, Digi-Key"
@@ -11,13 +11,14 @@ Adafruit MiniBoost 5 V (#4654),Radio and power,Mouser,https://www.mouser.com/Pro
 "Solar panel, Rebower 5 V 4 W, with round mount",Radio and power,Amazon,https://www.amazon.com/dp/B0GZQ6PYRX,14.19,1,1,1,,yes,2-pack is B0GZQ4R3N9 at $22.49. Check the mount with the test disc.,Other 5 V camera panels with a round three-hole mount
 "U.FL to SMA-female bulkhead pigtail, about 20 cm (8 in), RG178",Radio and power,eBay,https://www.ebay.com/itm/387516099576,2.48,1,1,1,,yes,"Choose 8 in and SMA female, not RP-SMA. At 20 cm the sled comes out without unplugging it.",Amazon B07TXH2N83; the RAK kit lead if it is a bulkhead type (then unplug the U.FL to take the sled out)
 RAK1901 temperature and humidity sensor,Radio and power,Rokland,https://store.rokland.com/products/rak-wireless-rak1901-temperature-and-humidity-sensor-sensirion-shtc3-pid-100001,7.97,1,1,1,,optional,,
-Adafruit INA219 current sensor (#904),Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D,9.95,1,1,1,,optional,,"Adafruit direct, Digi-Key"
+Adafruit INA219 current sensor (#904),Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D,9.95,1,1,1,,optional,Reports the cell voltage and current; step 10 of the build guide.,"Adafruit direct, Digi-Key"
+Double-sided foam mounting tape,Radio and power,Anywhere,,,1,1,1,,optional,A 2 cm square holds the INA219 on the back of the sled.,
 "1000 uF low-ESR capacitor, 10 V+, on a JST-PH plug",Radio and power,Anywhere,,,1,1,1,,optional,Only if the node reboots when it transmits.,
 "ALFA AOA-915-5ACM antenna, 5 dBi, N-male",Radio and power,Rokland,https://store.rokland.com/products/alfa-aoa-915-5acm-5-dbi-omni-outdoor-915mhz-802-11ah-mini-antenna-for-lora-halow-application,14.97,1,1,1,,optional,,
 SMA-male to N-female adapter,Radio and power,Rokland,https://store.rokland.com/products/sma-male-to-n-female-connector-adapter-pigtail,5.97,1,1,1,,optional,For the ALFA antenna.,
 "O-ring, EPDM 70A, AS568-153 (88.57 x 2.62 mm)",Enclosure,Mykin,https://mykin.com/as568-153-epdm-70.html,1.29,2,2,2,+1,yes,Must be size 153. One is a spare. C has two joints.,"The O-Ring Store E70153; Gallagher Seals ($2.26, 7 to 8 weeks)"
 "M12 breather vent, Amphenol LTW VENT-PS1YBK-N8001",Enclosure,Mouser,https://www.mouser.com/ProductDetail/Amphenol-LTW/VENT-PS1YBK-N8001?qs=5aG0NVq1C4wAxWre7fChJA%3D%3D,2.92,1,1,1,,yes,,Other M12 x 1.5 breather vents (nut up to 16 mm across flats)
-"1/4"" NPT cable gland, IP68, for a 3.5 to 4 mm cable",Enclosure,Anywhere,,,1,1,1,,yes,,
+"1/4"" NPT cable gland, IP68, for a 3 to 6.5 mm cable (AIRTAK, 5-pack)",Enclosure,Amazon,https://www.amazon.com/dp/B0DYNNX9X7,5.88,1,1,1,,yes,Comes with its lock nut and EPDM washer. The floor is drawn for its 8 mm thread.,"Any 1/4"" NPT gland for a 3.5 to 4 mm cable with a thread of 8 mm or more"
 Silicone grease (DANCO),Enclosure,Amazon,https://www.amazon.com/dp/B000DZFUPC,5.48,1,1,1,,yes,Never petroleum jelly.,
 "Sensor-safe silicone, Permatex 82180 Ultra Black",Enclosure,Amazon,https://www.amazon.com/dp/B0002UEN1U,7.56,1,1,1,,yes,,
 "Adhesive-lined heat shrink, TE ATUM-6/2",Enclosure,Mouser,https://www.mouser.com/ProductDetail/TE-Connectivity-Raychem/ATUM-6-2-0-STK?qs=pKEKwWK3ewNoklO%2FUHxqaA%3D%3D,9.96,1,1,1,,yes,If you do not have some.,
@@ -34,8 +35,7 @@ M3 x 8 or M3 x 10 socket-head screw (sled),Enclosure screws,Bolt Depot,https://b
 "M3 heat-set insert, 5 mm wide",Enclosure screws,Anywhere,,,2,2,2,,optional,Only to screw the sled down.,
 M2 x 5 screw with washer,Enclosure screws,Bolt Depot,,,8,8,8,,optional,Only if you use screws instead of the printed turn buttons.,
 "M2 heat-set insert, 3.5 mm wide",Enclosure screws,Anywhere,,,8,8,8,,optional,Only if you use screws instead of the printed turn buttons.,
-"#10 x 3 in stainless pan-head screw, 25-pack (Bolt Dropper)",Mounting hardware,Amazon,https://www.amazon.com/dp/B07D1LK3QB,,2,3,3,,yes,"Qty is screws; one pack covers it. With straps only, you need none.","Everbilt #10 x 2 in 20-pack, Home Depot 802932 ($6.87), for thin bark"
-"#6 or #8 stainless wood screw, 3 in (A) or 3-1/2 in (B and C)",Mounting hardware,Anywhere,,,1,0,0,,yes,Through the panel mount's top hole into the tree.,
+"#10 x 3-1/2 in stainless pan-head wood screw, 25-pack (QISHENG)",Mounting hardware,Amazon,https://www.amazon.com/dp/B0CDHLHHXY,13.99,3,3,3,,yes,"Qty is screws; one pack covers it. The keyhole, the rail and the top hole. With straps only, you need none.","Everbilt #10 x 2 in 20-pack, Home Depot 802932 ($6.87), for thin bark"
 "M3 socket-head screw, x 16 or x 20 (panel mount)",Mounting hardware,Bolt Depot,https://boltdepot.com/Browse?Category=Socket_screws&F_Diameter=3mm&Units=Metric,,2,3,0,,yes,"x 16 for a mount base up to 5 mm thick, x 20 for 5.5 to 9 mm.",
 "M3 nylon-insert lock nut, DIN 985 (4 mm thick)",Mounting hardware,Bolt Depot,https://boltdepot.com/Product-Details?product=4792,0.07,2,3,0,,yes,"Sealed in the bracket, nylon side down.","McMaster-Carr, Amazon assortments"
 "M3 x 25 hex bolt, fully threaded, DIN 933",Mounting hardware,Bolt Depot,https://boltdepot.com/Browse?Category=Hex_bolts&F_Diameter=3mm&Units=Metric,,0,0,3,,yes,Bolt Depot calls these tap bolts.,McMaster-Carr

@@ -2,6 +2,8 @@
 
 This is the whole build, start to finish, in the order I'd do it. Read it through once before you start. Several steps depend on things you did earlier, and the battery steps need care.
 
+Every step has pictures drawn from the CAD, and the [wiring diagram](#wiring-diagram) shows every connection in one place.
+
 Everything here applies to all three versions. Where they differ, it says so. **A** has a fixed top and a base that screws up into it. **B** has a fixed can and a lid that screws on top. **C** has a fixed sleeve, with A's base screwed into its bottom and B's lid on its top.
 
 - [1. Before you start](#1-before-you-start)
@@ -21,6 +23,7 @@ Everything here applies to all three versions. Where they differ, it says so. **
 - [15. Mount it](#15-mount-it)
 - [16. Opening it later](#16-opening-it-later)
 - [17. Troubleshooting](#17-troubleshooting)
+- [Wiring diagram](#wiring-diagram)
 - [Why it's hard to set on fire](#why-its-hard-to-set-on-fire)
 - [Power budget](#power-budget)
 
@@ -30,6 +33,9 @@ Everything here applies to all three versions. Where they differ, it says so. **
 
 1. **Pick your file.** The [README](../README.md#pick-a-file) explains the nine. If you're at altitude or in snow country, build A.
 2. **Measure your panel mount.** Take the round mount off the panel and measure between the centers of two of its three screw holes, with calipers if you have them ([no calipers?](customizing.md#the-panel-mounts-holes)). The brackets are drawn for 36 mm. If yours is different, follow [Changing the design](customizing.md) to export a bracket that matches. Either way, print the mount test disc and check it (section 3) before you print the bracket. While you have the mount out, measure how thick its base is at the holes. With a washer under each head, M3 × 16 screws suit a base up to 5 mm thick, and M3 × 20 from 5.5 to 9 mm.
+
+   <img src="../images/step-measure.png" alt="The panel mount's round base from underneath, with 36 mm between two hole centres, and a cut through the base showing the thickness that sets the screw length">
+
 3. **Get the parts together.** The [parts list](parts-list.md) is a checklist, and it's also [sorted by store](parts-list.md#shopping-list-by-store) for ordering.
 4. **Respect the cell.** A 15 Ah cell can push well over 100 A into a short. Keep its tabs covered whenever you're not working on them, don't let tools bridge them, and fit the fuse before anything else touches it.
 
@@ -50,6 +56,8 @@ Load your file in Bambu Studio, right-click it and choose **Split > To objects**
 | 3 | Base, sled and buttons: **pause at 4.8 mm** | Lid, with supports | Base, sled and buttons: **pause at 4.8 mm** |
 | 4 | Bracket: **pause at 9.2 mm** | Bracket: **pause at 29.2 mm** | Lid, with supports |
 | 5 | | | Bracket: **pause at 29.2 mm** |
+
+<img src="../images/step-plates.png" alt="What goes on each plate for A, B and C, drawn on a 256 mm bed">
 
 The wing-nut brackets don't need a pause. The test pieces are the two thread test rings, the fit-test bar and the mount test disc. The bracket is already turned 45° in the file so it fits the bed diagonally. Keep it that way, and if you use Arrange, don't let it rotate parts.
 
@@ -92,6 +100,8 @@ The printer stops before the covering layer, with the pockets open.
 
 Each nut should fall in flat and sit a little below the top of its pocket. Push it down with a small screwdriver so it's level and nothing sticks up, then resume. The nozzle passes about half a millimetre over the nut, so one sitting proud will get hit.
 
+<img src="../images/step-pause-nut.png" alt="A bracket nut pocket cut in half: open at the pause, the lock nut dropped in nylon side down, pushed flat with a screwdriver, then printed over">
+
 <img src="../images/pause-bracket.png" width="49%" alt="Bracket at its pause: the lock nuts sit in hex pockets in the round foot under the panel mount"> <img src="../images/pause-base.png" width="49%" alt="A base at its pause: the nut sits in the lock tab">
 
 *What the bracket (left) and the A base (right) look like at the pause, with the nuts in. The bracket prints tree-side down, so at the pause it's just the feet. The can and the sleeve look like the base, but near the top of the print.*
@@ -110,7 +120,11 @@ Each nut should fall in flat and sit a little below the top of its pocket. Push 
 
 **Fit-test bar.** Press an M3 heat-set insert into each of the three larger holes (4.1, 4.3 and 4.5 mm) and an M2 insert into each of the smaller ones (3.0, 3.1 and 3.2 mm). The file uses 4.3 for the M3 inserts in the floor and 3.1 for the M2 inserts in the sled. Both are only needed if you screw the sled or the boards down instead of using the prongs and buttons. If another size holds better, change `INSERT_D` or `M2_INSERT_D` in the source ([how](customizing.md)). An M3 nylon-insert lock nut should drop easily into the pocket marked *nut* and sit below the surface, and so should a plain M3 nut. The pocket marked *bolt* opens on the underside. A wing-nut bolt's head should push into it snugly.
 
+<img src="../images/step-fit-test.png" alt="The fit-test bar with inserts pressed into the 4.1, 4.3 and 4.5 mm holes and the 3.0, 3.1 and 3.2 mm holes, and a lock nut in the nut pocket">
+
 **Thread test rings.** These are the joint, cut off short, with the same lock tabs as the enclosure. Their nut pocket doesn't need a nut, so skip the pause. Grease the O-ring lightly and roll it into the groove at the foot of the male ring's spigot. Line up the female ring's tab with the nub on the male ring, set it on and push down. It only drops in at that one angle. Turn it clockwise (seen from above), about a quarter turn. Near the end the latch arm rides up over its post, then clicks in behind it, and the ring stops with the two tabs lined up and the O-ring out of sight in the bore.
+
+<img src="../images/step-thread-test.png" alt="The thread test rings in five steps: O-ring into the groove, the female ring's tab over the male ring's nub, pushed down, turned clockwise, and clicked shut with the tabs lined up">
 
 - It should turn by hand, getting firmer over the last part as the O-ring goes into the bore.
 - If it's very stiff, check it's the right O-ring (AS568-153) and that it's greased. Then look at the female ring's rim: if the first layers bulged inward, scrape the inside edge back with a knife.
@@ -118,13 +132,18 @@ Each nut should fall in flat and sit a little below the top of its pocket. Push 
 - **Try the latch.** Turn the female ring back the other way. The latch should stop it. Pull the latch tab straight out, away from the ring, about 2 mm, and start turning. Once it's moved a few degrees you can let go of the tab.
 - **Try the pin.** Close the rings again, push the lock pin down through the slot in the female ring's tab until it clicks into the male ring, then pull it back out by its ring. It should take a firm tug.
 
+<img src="../images/lock-A.png" alt="The lock tabs: the latch arm and its pull tab, the latch post, the lock pin and the lock screw, with cut-away views of the latch closing">
+
 ## 4. Set up the charger
 
-On the back of the Adafruit bq25185:
+The Adafruit bq25185 has jumpers on both sides. The three you cut are on the front, next to the TH, VS and IS holes on the left; each is two small pads joined by a thin trace. The ones you bridge are on the back.
 
-1. **Cut the VS jumper and bridge the 3.65 V pad.** That sets the charge voltage for LiFePO4. Left as it comes, it charges to 4.2 V, which is for lithium-ion and will damage this cell.
-2. **Cut the TH jumper and solder the thermistor's two leads to TH and GND.** With the thermistor on the cell, the charger won't charge when it's too cold or too hot.
-3. **Leave IS alone.** The default 500 mA suits this cell and panel.
+1. **Front: cut the VS jumper.** Run a sharp craft knife through the thin trace between its two pads.
+2. **Back: bridge the 3.65V jumper** with a blob of solder across its two halves. With the VS jumper cut, that sets the charge voltage for LiFePO4. Left as it comes, the charger charges to 4.2 V, which is for lithium-ion and will damage this cell.
+3. **Front: cut the TH jumper** the same way, and solder the thermistor between the TH hole and any − hole in the right-hand row. All the − holes are ground; BATT − is handy. Either lead can go to either. With the thermistor on the cell, the charger won't charge when it's too cold or too hot. Its leads are 1 m long, so shorten them to reach the cell with a little slack.
+4. **Leave IS alone,** and leave the 250mA and 1 Amp jumpers on the back open. The default 500 mA suits this cell and panel.
+
+<img src="../images/step-charger.png" alt="The bq25185 drawn from its board file: front with the TH and VS jumpers cut and IS left closed, back with the 3.65V jumper bridged, and the thermistor between TH and BATT minus">
 
 ## 5. Build the cell harness
 
@@ -135,6 +154,10 @@ The cell has flat copper tabs on its ends, not screw terminals.
 3. Wire it in this order: cell **+** → 2 A fuse, within 2 cm of the tab → protection board **B+**. Cell **−** → protection board **B−**. Protection board **P+** and **P−** → a JST-PH female lead. The cell will stand positive end up, and the protection board sits near the top of the sled, so leave the leads long enough to reach.
 4. Check the polarity with a meter against the **BATT** marking on the charger before you plug anything in.
 5. Seal the fuse and every splice in adhesive-lined heat shrink.
+
+If you're fitting the INA219 (step 10), it goes in the red wire between P+ and the JST-PH lead. Build the harness as above anyway; you'll cut into that wire then.
+
+<img src="../images/step-harness.png" alt="The cell harness: nickel strip or quick solder joints on the tabs, then the cell plus through a 2 A fuse to B plus, minus to B minus, and P plus and P minus to a JST-PH lead, checked against the plus mark under BATT">
 
 ## 6. Test the cold cutoff
 
@@ -147,6 +170,8 @@ Do this on the bench, before the cell goes anywhere near the radio.
 
 Then unplug the cell from **BATT**. Tape the thermistor flat against the side of the cell and keep its two leads apart. Sleeve the protection board in heat shrink.
 
+<img src="../images/step-cold-test.png" alt="The cold-cutoff test: the charger with the cell on BATT and 5 V on USB-C showing CHRG, then the thermistor chilled in a bag showing FAULT, then the thermistor taped to the cell">
+
 ## 7. Fit out the floor
 
 Everything here goes in the floor of the base (A and C, the same part) or the can (B). Do it in this order, while the part still sits flat on the bench.
@@ -155,8 +180,10 @@ Everything here goes in the floor of the base (A and C, the same part) or the ca
 
 1. **Inserts (optional).** The sled clicks into the floor, so these are only for screwing it down as well. Press the two M3 inserts into the two round bosses on the floor. Use a soldering iron at around 240 °C and let each one sink in under its own weight, flush with the top. Don't push hard.
 2. **Vent.** From inside, push the vent's threaded stem down through the 12.4 mm hole, with its O-ring against the floor. From underneath, drop its nut into the hex pocket. Then turn the vent body from inside to screw it into the nut until snug. Amphenol specifies only 0.6 to 0.8 N·m, which is not much more than firm finger-tight.
-3. **Cable gland.** Push the ¼" gland up through its hole from underneath, with its sealing ring on the outside. Tighten the lock nut inside, in its shallow round pocket.
+3. **Cable gland.** Push the ¼" gland up through its hole from underneath, with its EPDM sealing washer on the outside. Tighten the lock nut inside, down in its round pocket.
 4. **Antenna socket.** Put a thin bead of the sensor-safe silicone round the SMA bulkhead's flange. Push it down through the floor of its pocket from inside. Hold it with long-nose pliers while you tighten the lock washer and nut from below with a hollow 8 mm (5/16") nut driver. Wipe off any silicone that squeezes out inside, and let it cure.
+
+<img src="../images/step-floor.png" alt="Cut-away views of the floor: an insert going in with the iron, the vent with its nut in the hex pocket, the gland with its lock nut inside, the SMA bulkhead with silicone and its nut from below, and B's floor 13 cm down the can">
 
 ## 8. Bring in the panel cable
 
@@ -166,6 +193,8 @@ Everything here goes in the floor of the base (A and C, the same part) or the ca
 4. Solder the JST-PH female lead on inside, and seal the joints with heat shrink.
 
 From here on, the panel and the base (or can) stay joined by this cable.
+
+<img src="../images/step-panel-cable.png" alt="Finding plus and minus on the cut panel cable with a meter, pushing it up through the gland and tightening the dome nut, then the JST-PH lead soldered on inside">
 
 ## 9. Hose-test the empty enclosure
 
@@ -177,6 +206,8 @@ Do this now, with no electronics inside, so a leak only wets a paper towel.
 4. Spray it from every side with a garden hose for 10 minutes. Aim up at the joint, the gland, the vent and the antenna socket.
 5. Open it and check the towel. If it's dry, move on. If not, find the wet spot and fix that seal.
 
+<img src="../images/step-hose-test.png" alt="The empty enclosure with a paper towel inside and the antenna on, sprayed at the joint, gland, vent and antenna socket, then opened to check the towel">
+
 ## 10. Build up the sled
 
 The boards can be held by the printed turn buttons or by M2 screws. The buttons need no tools and no inserts. The steps below use the buttons, with the screw way in brackets.
@@ -186,12 +217,21 @@ The boards can be held by the printed turn buttons or by M2 screws. The buttons 
 3. **Buttons.** Snap the nine turn buttons off their spine. Press one onto each post beside the board positions. The C-shaped end clicks over the post's head and then turns stiffly on it.
 4. **Boards.** Swing the buttons out of the way. Set the RAK19003 (with the RAK4631 plugged in on top) on its three standoffs, the charger on its four and the MiniBoost on its one, and swing each button back over its board, so its foot sits on the pad round the mounting hole. That's four buttons for the charger, three for the RAK19003 and two for the MiniBoost. (With screws instead: press the eight M2 inserts into the standoffs, the same way as the M3s, and screw the boards down with M2 × 5 screws and washers.)
 5. **Protection board.** Zip-tie it to the sled in the empty space at the top left, through the two slots there.
-6. **Power path.**
+6. **INA219 (optional).** It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost.
+   - Stick it flat on the back of the sled, behind the MiniBoost, with a square of double-sided foam tape. That spot is clear of the cell and its strap.
+   - It goes in the red wire of the cell's lead: P+ to its **VIN+** screw terminal, and **VIN−** on to the red wire of the JST-PH lead. Cut the red wire between them if you joined it in step 5. The black wire stays as it is.
+   - Solder four wires from its **VIN, GND, SCL** and **SDA** pins to **J6** on the RAK19003: **VDD, GND, SCL** and **SDA**. J6 is a row of four solder pads, labelled on the board. Easiest before the RAK19003 goes on the sled.
+   - Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
+7. **Power path.**
    - Solder the JST-PH male lead to the charger's **DC in** pads. The panel plugs into it.
    - Run **LOAD** to the MiniBoost's **VIN** and GND on a JST-PH pigtail.
    - Cut the USB-A end off the kit's USB-C cable. Solder red to the MiniBoost's **5 V** and black to **GND**, and insulate the data wires. Plug the USB-C end into the RAK19003.
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
-7. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots.
+8. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
+
+<img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots, the RAK1901 under the RAK19003, the turn buttons onto their posts, the boards onto their standoffs, and the buttons swung shut">
+
+<img src="../images/step-sled-2.png" alt="Building the sled, part 2: the protection board zip-tied at the top left, the INA219 on the back behind the MiniBoost, the DC in lead and thermistor, LOAD to the MiniBoost and the MiniBoost to the RAK by USB-C, and the leads tied down">
 
 ## 11. Put it all in
 
@@ -203,6 +243,8 @@ The boards can be held by the printed turn buttons or by M2 screws. The buttons 
    Keep the fuse and leads clear of board edges. If you fitted the M3 inserts, you can also screw the sled's feet down with two M3 × 8 (or × 10) screws.
 3. **Antenna.** Smear a little silicone grease on the bulkhead's outer thread (not inside the connector) and screw the antenna on underneath, by hand. It hangs straight down, which works as well as pointing up. **Never power the radio without an antenna on.**
 4. Now plug the cell's lead into **BATT**, and the panel lead into the charger's DC in lead.
+
+<img src="../images/step-put-in.png" alt="Putting it in: the U.FL onto the LoRa socket, the cell into its cup, the sled down in front of it, the strap round the cell, B strapped together and lowered into the can, the antenna on, and the leads plugged in last">
 
 ## 12. Flash MeshCore
 
@@ -218,10 +260,12 @@ If you fitted a RAK1901, check the node's telemetry in the MeshCore app. Recent 
 
 Leave it open on the bench with the panel in the sun, and send plenty of traffic through the node for 24 hours.
 
-- Check the charge current once with a meter in the battery lead. It should be up to about 0.5 A in full sun.
+- Check the charge current once in full sun. With the INA219, read it in the node's telemetry. Without it, put a meter on its 10 A range in the red wire of a short JST-PH extension lead between the cell and **BATT**. It should be up to about 0.5 A.
 - The cell should settle at 3.65 V or less. **If it climbs past 3.65 V, unplug the cell at once** and check the VS jumper is fully cut and the 3.65 V pad bridged. Only the protection board's 3.75 V cutoff stands between an unset charger and the cell.
 - The repeater's uptime should never reset when it transmits. If it does, see [Troubleshooting](#17-troubleshooting).
 - After six hours of charging without a break, the charger's safety timer stops it and lights FAULT. Unplugging the input clears it. Outdoors, the dark resets it every night.
+
+<img src="../images/step-bench-test.png" alt="The charge current read on a meter in the cell lead, about 0.5 A in full sun, and the cell voltage settling at 3.65 V or less">
 
 ## 14. Close it up
 
@@ -234,6 +278,8 @@ Do this indoors, where the air is dry, and carry it out closed. All three versio
 5. **C:** close the bottom joint first, the same way as A, with the sleeve as the top. Then put the lid on the sleeve the same way as B.
 6. **Lock pin (optional).** Push the pin down through the slot in the upper tab until it clicks into the lower tab. Thread a small zip tie through its ring and the hole next to the latch arm, and close it loosely, so the pin can't get lost when it's out.
 7. **Lock screw (optional).** Put the split lock washer and then the flat washer on the M3 × 20 lock screw, and screw it down through the slot in the upper tab into the lock-tab nut sealed in the lower tab. Stop when the split washer has pressed flat. That's plenty.
+
+<img src="../images/step-close.png" alt="Closing up: silica gel in and the O-ring greased, A's top lined up nub over tab, turned clockwise and clicked shut, B's lid the same way, C's two joints, and the lock pin tied on beside the lock screw">
 
 ## 15. Mount it
 
@@ -254,7 +300,7 @@ Do this indoors, where the air is dry, and carry it out closed. All three versio
 
 **Hanging it on straps only?** Skip to [Straps](#straps). Otherwise:
 
-1. **Keyhole screw.** Hold the bracket where you want it, plumb, and mark the top of the keyhole's slot. Drill a pilot hole and drive a #10 pan-head screw there. Leave the underside of its head 9.5 mm (just under ⅜") off the bark.
+1. **Keyhole screw.** Hold the bracket where you want it, plumb, and mark the top of the keyhole's slot. Drill a pilot hole and drive a #10 × 3½ in pan-head screw there. Leave the underside of its head 9.5 mm (just under ⅜") off the bark.
 2. Put the head through the round part of the keyhole and let the bracket drop 12 mm onto it. It now hangs on its own.
 3. **Rail screw.** Drill a pilot through the hole in the rail and drive a #10 screw through the counterbore until the head sits below the face of the rail.
 4. **Top screw.**
@@ -262,6 +308,8 @@ Do this indoors, where the air is dry, and carry it out closed. All three versio
    - **Bolt-on and wing-nut:** drive a #10 through the counterbored hole above the pad.
 5. Tighten the keyhole screw through the front. Its head sits in a recess you can reach with a screwdriver.
 6. **Cable ties.** Thread a zip tie loosely through each pair of small slots down the right-hand side of the bracket (as you face the tree), and leave them open. Once the enclosure is on, the slots are behind it, and you'll close these round the panel cable at the end.
+
+<img src="../images/step-hang.png" alt="Hanging the bracket: the keyhole screw with its head 9.5 mm off the bark, the bracket dropped 12 mm onto it, the rail screw through the counterbore, the keyhole screw tightened through the front, and zip ties left open in the slot pairs">
 
 ### Straps
 
@@ -289,7 +337,7 @@ Rest the panel on the ground at the end of its cable. Lift the closed enclosure 
 
 Set the mount's round base in the pocket with its holes lined up. On A, this is also what stops the top from being lifted off the rail.
 
-- **Tree-screw:** put a flat washer on each of two M3 screws (× 16 or × 20, see [Before you start](#1-before-you-start)) and screw them through the two lower holes into the sealed lock nuts. They get stiff when they reach the nylon. That's the lock working, so keep turning until the mount is firm. Then drill a 3 mm pilot through the top hole and the bracket into the tree, and drive the long wood screw.
+- **Tree-screw:** put a flat washer on each of two M3 screws (× 16 or × 20, see [Before you start](#1-before-you-start)) and screw them through the two lower holes into the sealed lock nuts. They get stiff when they reach the nylon. That's the lock working, so keep turning until the mount is firm. Then the top hole: if a #10 won't pass through the mount's hole, open it up with a 13/64 in (5 mm) bit. Drill a ⅛ in (3 mm) pilot through it and the bracket into the tree, and drive a #10 × 3½ in pan-head screw until the mount is firm.
 - **Bolt-on:** three M3 screws with washers into the sealed lock nuts, the same way.
 - **Wing-nut:** the mount goes over the three bolts. On each one, put a flat washer, then a split lock washer, then the wing nut. Tighten by hand until the split washer is flat.
 
@@ -303,6 +351,8 @@ Fit the panel to the mount and aim it south. Around 55° from horizontal favors 
 2. Let it hang in a loop that dips below the gland before it goes up into it, so water drips off the bottom of the loop instead of running into the gland.
 3. **A and C:** leave about 30 cm of slack in that loop, so the base can come down for service with the cable still attached.
 
+<img src="../images/step-panel-mount.png" alt="The panel mount's base in the pocket, two M3 screws with washers into the sealed lock nuts, the #10 screw through the top hole, the panel at about 55 degrees, and the cable down the right side with a drip loop below the gland">
+
 ## 16. Opening it later
 
 First take out the lock pin and the lock screw, if you used them. The pin stays tied on.
@@ -314,6 +364,8 @@ First take out the lock pin and the lock screw, if you used them. The pin stays 
 **B.** Turn the lid about a quarter turn, so its tab swings from the front round to the right. Lift it about a centimetre to clear the thread and slide it off sideways. To take the whole can down, take the lid off first, then lift the can about 6 cm up off its rail. It clears the panel arm.
 
 **C.** The base comes out the bottom like A's, and the lid comes off the top like B's. Each joint has its own latch. To take the sleeve down, take the lid off, then lift the sleeve, with the base still in it, about 6 cm up off its rail.
+
+<img src="../images/step-open.png" alt="Opening A on the tree: the base turned a quarter turn, lowered straight down with the antenna and cable, and the sled pulled up out of it by its handle">
 
 **Taking the sled out.** With the base in your hands (A and C), or the lid off (B), unplug the panel lead at the charger and pull the sled straight up by its handle. It takes a firm pull to unclip the prongs. The cell comes with it, strapped on, because its leads run to the protection board on the sled. With the 20 cm antenna lead you can set the sled beside the base without unplugging the antenna. With a shorter one, unplug the U.FL connector by lifting it straight off with a fingernail or a U.FL tool.
 
@@ -354,13 +406,19 @@ While you're up there, check that the wing nuts (if you have them) are still tig
 
 **The node reboots when it transmits.** Running a RAK from USB with nothing on the BAT port is how desk nodes run, but its charger chip cycles on and off with no battery there. Plug a 1000 µF low-ESR capacitor on a JST-PH plug into the empty BAT port (it's in the parts list).
 
-**MeshCore says the battery is always full.** That's expected. It measures the RAK's own supply, which the boost holds steady, not the cell. The optional INA219 can report the real cell voltage and current if you're comfortable wiring it into the RAK19003's I²C.
+**MeshCore says the battery is always full.** That's expected. It measures the RAK's own supply, which the boost holds steady, not the cell. The optional INA219 (step 10) reports the real cell voltage and current.
 
 **It stops charging in winter.** The thermistor pauses charging below about 0 °C and lets it resume above about 6 °C. That's on purpose: LiFePO4 mustn't be charged below freezing. A month of runtime covers long cold spells.
 
 **The charger's FAULT light is on.** After six hours of charging without a break, its safety timer stops it. Nightfall resets it. If it's on in the cold, that's the thermistor doing its job.
 
 **Water or fog inside.** Check the O-ring is seated and greased, the gland's dome nut is tight on the cable, and the vent and antenna socket are snug. Then replace the silica gel.
+
+## Wiring diagram
+
+<img src="../images/step-wiring.png" alt="Wiring diagram: the panel through the gland and JST-PH pair to DCIN, the cell through a 2 A fuse and the protection board, optionally the INA219, to BATT, the thermistor to TH and ground, LOAD to the MiniBoost, the MiniBoost by USB-C to the RAK19003, the INA219 to J6, and the antenna pigtail from the LoRa socket to the SMA bulkhead">
+
+Nothing ever goes on the RAK's BAT or SOLAR sockets except the optional 1000 µF capacitor on BAT. The cell only ever connects to the charger's BATT.
 
 ## Why it's hard to set on fire
 
@@ -381,10 +439,11 @@ Nothing here depends on one part working. If one fails, another one stops things
 | | |
 |---|---|
 | Radio, MeshCore repeater with powersaving on | 6 to 7.5 mA |
+| INA219, if fitted | under 1 mA more, so up to about 2 mA more from the cell |
 | Drawn from the cell, after the boost and the RAK's input stage | about 15 to 18 mA |
 | Per day | 0.36 to 0.43 Ah |
 | Cell: nominal / above the 3.0 V cutoff / at −10 °C | 15 / 14 / 11 Ah |
-| Runtime with no sun (powersaving off: 17 to 22 days) | about 25 to 39 days |
+| Runtime with no sun (powersaving off: 17 to 22 days) | about 25 to 39 days (23 to 34 with the INA219) |
 | Charging from the 4 W panel at the charger's 500 mA limit, 3 to 5 hours of good sun | 1.5 to 2.5 Ah a day |
 
 The charger's six-hour timer caps a day's charge at 3 Ah. One sunny day puts back four to six days of use, and a full cell runs it for about a month with no sun at all.

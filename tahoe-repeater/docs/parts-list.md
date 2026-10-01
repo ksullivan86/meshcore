@@ -14,7 +14,7 @@ The boxes can't be ticked on GitHub itself. Print the page, or paste the list in
 - [ ] **LiFePO4 cell, Gotion 33140, 3.2 V 15 Ah.** [eBay item 398342236906](https://www.ebay.com/itm/398342236906), $5.00. 33.6 × 140 mm and 268 g. It has flat copper tabs on both ends, not screw terminals. When it arrives, weigh it and check it rests at 3.2 to 3.35 V. Send back one that's much lighter or reads under 2.5 V.
 - [ ] **Adafruit bq25185 solar charger** (#6091). [Mouser 485-6091](https://www.mouser.com/ProductDetail/Adafruit/6091?qs=a2MtRaTmNOTWXd0vZOQVyw%3D%3D), $6.95. This is the only thing that ever charges the cell. You'll set it for LiFePO4 with two solder jumpers.
 - [ ] **Adafruit MiniBoost 5 V** (#4654, TPS61023). [Mouser 485-4654](https://www.mouser.com/ProductDetail/Adafruit/4654?qs=W%2FMpXkg%2BdQ5I%2FGLylc3f4Q%3D%3D), $3.95. It turns the charger's output into 5.2 V for the RAK's USB-C port.
-- [ ] **10 kΩ NTC thermistor, B 3435** (Vishay NTCLE413E2103F102L). [Mouser](https://www.mouser.com/ProductDetail/Vishay-BC-Components/NTCLE413E2103F102L?qs=RECgZY%2BK1xLdr8BN5MEzIw%3D%3D), $1.47. It's taped to the cell, and the charger stops charging when the cell is too cold or too hot.
+- [ ] **10 kΩ NTC thermistor, B 3435** (Vishay NTCLE413E2103F102L). [Mouser](https://www.mouser.com/ProductDetail/Vishay-BC-Components/NTCLE413E2103F102L?qs=RECgZY%2BK1xLdr8BN5MEzIw%3D%3D), $1.47. It's taped to the cell, and the charger stops charging when the cell is too cold or too hot. It comes with 1 m leads, plenty to reach the cell.
 - [ ] **2 A fast fuse, Littelfuse PICO II** (0251002.MXL), 2 of them. [Mouser 576-0251002.MXL](https://www.mouser.com/ProductDetail/Littelfuse/0251002MXL?qs=bpnLQM2ZShzafpYR%2Fng7qQ%3D%3D), $1.24 each. One goes on the cell's positive lead, the other is a spare.
 - [ ] **1S LiFePO4 protection board.** [Teyleten 10-pack, Amazon B0GCWCHGFX](https://www.amazon.com/dp/B0GCWCHGFX), $6.99. It's the backup: it cuts charging at 3.75 V, cuts the load at 2.1 V and trips on a short. One per node, so the pack covers future builds.
 - [ ] **JST-PH 2-pin cable, female plug, 100 mm**, 3 of them. [Mouser 485-261](https://www.mouser.com/ProductDetail/Adafruit/261?qs=GURawfaeGuDeA9XsXeF0ug%3D%3D), $0.75 each. For the cell, the charger's LOAD output and the panel lead.
@@ -25,7 +25,7 @@ The boxes can't be ticked on GitHub itself. Print the page, or paste the list in
 ### Optional
 
 - [ ] **RAK1901 temperature and humidity sensor** (Sensirion SHTC3). [Rokland](https://store.rokland.com/products/rak-wireless-rak1901-temperature-and-humidity-sensor-sensirion-shtc3-pid-100001), $7.97. It plugs into slot C or D on the underside of the RAK19003, and the sled leaves room for it. It measures the air inside the box, so it tells you about heat and condensation in there, not the weather outside.
-- [ ] **Adafruit INA219 current sensor** (#904). [Mouser 485-904](https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D), $9.95. MeshCore can't see the real cell voltage because the RAK runs from the 5 V boost. The INA219 can report the cell's voltage and current in telemetry. Wiring it means tapping the RAK19003's I²C, which the build guide doesn't cover.
+- [ ] **Adafruit INA219 current sensor** (#904). [Mouser 485-904](https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D), $9.95. MeshCore can't see the real cell voltage because the RAK runs from the 5 V boost. The INA219 reports the cell's voltage and current in telemetry. Wiring it is step 10 of the build guide: it goes in the cell lead's red wire and on the RAK19003's I²C pads (J6). You'll also need a small square of double-sided foam tape to stick it to the back of the sled, and a few inches of thin hookup wire.
 - [ ] **1000 µF low-ESR capacitor, 10 V or more, on a JST-PH 2-pin plug.** Only if the node reboots when it transmits. It plugs into the RAK's empty BAT port (see Troubleshooting in the build guide).
 - [ ] **Bigger antenna: ALFA AOA-915-5ACM** (5 dBi, N-male), [Rokland](https://store.rokland.com/products/alfa-aoa-915-5acm-5-dbi-omni-outdoor-915mhz-802-11ah-mini-antenna-for-lora-halow-application), $14.97, plus an [SMA-male to N-female adapter](https://store.rokland.com/products/sma-male-to-n-female-connector-adapter-pigtail), $5.97. On a tree, it does best mounted higher up on a short run of coax.
 
@@ -38,7 +38,7 @@ The boxes can't be ticked on GitHub itself. Print the page, or paste the list in
 
   It has to be size 153. The groove is sized for it, and a 152 or 154 won't seal properly. EPDM handles cold, ozone and sun better than nitrile (Buna-N).
 - [ ] **M12 breather vent, Amphenol LTW VENT-PS1YBK-N8001.** [Mouser 523-VENT-PS1YBKN8001](https://www.mouser.com/ProductDetail/Amphenol-LTW/VENT-PS1YBK-N8001?qs=5aG0NVq1C4wAxWre7fChJA%3D%3D), $2.92. It lets the box breathe through big day-night temperature swings without pulling in water.
-- [ ] **¼" NPT cable gland, IP68.** It has to grip your panel's cable, which is usually 3.5 to 4 mm.
+- [ ] **¼" NPT cable gland, IP68, for a 3 to 6.5 mm cable.** [AIRTAK 5-pack, Amazon B0DYNNX9X7](https://www.amazon.com/dp/B0DYNNX9X7), $5.88. It grips the panel's cable (usually 3.5 to 4 mm) and comes with its lock nut and EPDM washer. The floor is drawn for its 8 mm thread, with the lock nut in a deep pocket inside; a gland with a longer thread fits too.
 - [ ] **Silicone grease.** [DANCO, Amazon B000DZFUPC](https://www.amazon.com/dp/B000DZFUPC), $5.48. A thin film on the O-ring lets the joint turn smoothly. Use silicone grease, never petroleum jelly, which makes EPDM swell.
 - [ ] **Sensor-safe silicone, Permatex 82180 Ultra Black.** [Amazon B0002UEN1U](https://www.amazon.com/dp/B0002UEN1U), $7.56. It seals the antenna bulkhead where it goes through the floor. Ordinary 100% silicone gives off acetic acid while it cures, and that corrodes wiring.
 - [ ] **Adhesive-lined heat shrink.** [TE ATUM-6/2, Mouser 650-ATUM62](https://www.mouser.com/ProductDetail/TE-Connectivity-Raychem/ATUM-6-2-0-STK?qs=pKEKwWK3ewNoklO%2FUHxqaA%3D%3D), $9.96, if you don't have some. It goes on the fuse and every splice.
@@ -57,7 +57,7 @@ Stainless where you can. Most of these come in a basic M2/M3 assortment. Only th
 
 ## Mounting hardware
 
-Pick the section for your mount style. The #10 screws go into the tree, and all of them need pan heads, not flat heads, because the heads sit in flat-bottomed recesses. On thick-barked trees like Jeffrey pine, the screws need to get well through the bark into solid wood, so go for 3 in.
+Pick the section for your mount style. The #10 screws go into the tree, and all of them need pan heads, not flat heads, because the heads sit in flat-bottomed recesses. On thick-barked trees like Jeffrey pine, the screws need to get well through the bark into solid wood, so go for 3 to 3½ in. One 25-pack of #10 × 3½ in covers every screw into the tree for several nodes.
 
 **The M3 screws into the panel mount** depend on how thick the mount's base is where the screws go through. With a flat washer under each head, use **M3 × 16 for a base up to 5 mm thick** and **M3 × 20 for 5.5 to 9 mm**. In between, use M3 × 18. On version A, don't go longer: the screw would reach the tree before its head seats.
 
@@ -65,21 +65,20 @@ Pick the section for your mount style. The #10 screws go into the tree, and all 
 
 **Tree-screw mount**
 
-- [ ] 2 × #10 stainless pan-head screws, 3 in. For the keyhole and the rail. [Bolt Dropper #10 × 3 in, 25-pack, Amazon B07D1LK3QB](https://www.amazon.com/dp/B07D1LK3QB). For thinner bark, 2 in is enough: [Everbilt #10 × 2 in, Home Depot 802932](https://www.homedepot.com/p/Everbilt-10-x-2-in-Stainless-Steel-Phillips-Pan-Head-Sheet-Metal-Screw-20-Pack-802932/204275054), $6.87 for 20.
-- [ ] 1 × stainless wood screw for the panel mount's top hole. Use a #6 if it fits the mount's hole, or drill that one hole out to 4.5 mm (3/16 in is fine too) and use a #8. It should be 3 in long for A and 3½ in for B and C, whose pad stands further out. Match the head to the mount's hole: flat head if the hole is countersunk.
+- [ ] 3 × #10 × 3½ in stainless pan-head wood screws: the keyhole, the rail and the panel mount's top hole. [QISHENG 25-pack, Amazon B0CDHLHHXY](https://www.amazon.com/dp/B0CDHLHHXY), $13.99. The bracket's top hole takes a #10; if the mount's own top hole is smaller, open it up with a 13/64 in (5 mm) bit. For thinner bark, 2 in is enough for the keyhole and rail: [Everbilt #10 × 2 in, Home Depot 802932](https://www.homedepot.com/p/Everbilt-10-x-2-in-Stainless-Steel-Phillips-Pan-Head-Sheet-Metal-Screw-20-Pack-802932/204275054), $6.87 for 20.
 - [ ] 2 × M3 socket-head screws (× 16 or × 20, see above) and 2 × M3 flat washers.
 - [ ] 2 × M3 nylon-insert lock nuts (DIN 985, 5.5 mm across flats, 4 mm thick), sealed in the bracket.
 
 **Bolt-on mount**
 
-- [ ] 3 × #10 stainless pan-head screws, 3 in (or 2 in on thin bark). For the keyhole, the rail and the top.
+- [ ] 3 × #10 stainless pan-head screws, 3 to 3½ in (or 2 in on thin bark). For the keyhole, the rail and the top.
 - [ ] 3 × M3 socket-head screws (× 16 or × 20, see above) and 3 × M3 flat washers.
 - [ ] 3 × M3 nylon-insert lock nuts (DIN 985), sealed in the bracket.
 - [ ] Or, instead of the tree screws: 2 or 3 straps (see below).
 
 **Wing-nut mount**
 
-- [ ] 3 × #10 stainless pan-head screws, 3 in (or 2 in on thin bark). For the keyhole, the rail and the top.
+- [ ] 3 × #10 stainless pan-head screws, 3 to 3½ in (or 2 in on thin bark). For the keyhole, the rail and the top.
 - [ ] 3 × M3 × 25 hex-head bolts (DIN 933, fully threaded, stainless). The heads sit in hex pockets on the back of the bracket. On B and C, the three printed spacers in the file go in behind them. M3 × 25 suits a mount base up to 8 mm thick.
 - [ ] 3 × M3 wing nuts (DIN 315, stainless). Hardware stores often only have M4 and up, so you may need to order these online.
 - [ ] 3 × M3 split lock washers (DIN 127) and 3 × M3 flat washers (DIN 125), one of each under every wing nut: flat washer on the mount, split washer on that, then the wing nut.
@@ -107,7 +106,7 @@ How many: one strap in the middle channel as extra hold with tree screws. With n
 - Heat gun or lighter for the heat shrink.
 - A 2.5 mm hex key for the M3 socket heads (and 1.5 mm if you use M2 screws for the boards), a Phillips screwdriver and small pliers. For B, long-nose pliers and a long 2.5 mm hex driver, because the can's floor is a long reach down.
 - An 8 mm (5/16 in) nut driver for the SMA bulkhead nut.
-- A craft knife, and 2.5 mm and 5 mm drill bits turned by hand, to clear a string of plastic from the lock screw or pin holes if needed. A 4.5 mm (3/16 in) bit if you need to open up the panel mount's top hole for a #8 screw.
+- A craft knife, and 2.5 mm and 5 mm drill bits turned by hand, to clear a string of plastic from the lock screw or pin holes if needed. A 13/64 in (5 mm) bit, if the panel mount's top hole needs opening up for the #10 screw.
 - Drill with a 3 mm (1/8 in) bit for pilot holes in the tree.
 - A computer with a USB-C cable and Chrome or Edge, to flash MeshCore.
 - A freezer, for the cold cutoff test.
@@ -145,7 +144,8 @@ The same parts, grouped by where to order them. Quantities are for one repeater.
 - [ ] [Teyleten 1S LiFePO4 protection boards, 10-pack, B0GCWCHGFX](https://www.amazon.com/dp/B0GCWCHGFX), × 1 pack, $6.99
 - [ ] [DANCO silicone grease, B000DZFUPC](https://www.amazon.com/dp/B000DZFUPC), × 1, $5.48
 - [ ] [Permatex 82180 Ultra Black silicone, B0002UEN1U](https://www.amazon.com/dp/B0002UEN1U), × 1, $7.56
-- [ ] [Bolt Dropper #10 × 3 in stainless pan-head screws, 25-pack, B07D1LK3QB](https://www.amazon.com/dp/B07D1LK3QB), × 1 pack (you need 2 / 3 / 3)
+- [ ] [QISHENG #10 × 3½ in stainless pan-head wood screws, 25-pack, B0CDHLHHXY](https://www.amazon.com/dp/B0CDHLHHXY), × 1 pack (you need 3), $13.99
+- [ ] [AIRTAK ¼" NPT cable glands for 3 to 6.5 mm cable, 5-pack, B0DYNNX9X7](https://www.amazon.com/dp/B0DYNNX9X7), × 1 pack (you need 1), $5.88
 
 ### Home Depot
 
@@ -182,8 +182,7 @@ Bolt Depot sells metric stainless hardware by the piece. Everything here is 18-8
 These are common enough that any electronics or hardware supplier, or an Amazon assortment, will have them.
 
 - [ ] Optional: M3 heat-set inserts, 5 mm wide, × 2 (to screw the sled down), and M2 heat-set inserts, 3.5 mm wide, × 8 (to screw the boards down)
-- [ ] ¼" NPT IP68 cable gland for a 3.5 to 4 mm cable, × 1
-- [ ] Tree-screw mount only: a #6 or #8 stainless wood screw, 3 in (A) or 3½ in (B and C), × 1
+- [ ] Optional, with the INA219: double-sided foam mounting tape (a 2 cm square) and a few inches of thin hookup wire
 - [ ] Small black UV-rated zip ties and a small silica gel packet
 - [ ] Optional: a 1000 µF low-ESR capacitor, 10 V or more, on a JST-PH 2-pin plug
 
