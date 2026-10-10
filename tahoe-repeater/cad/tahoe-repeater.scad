@@ -253,6 +253,13 @@ BUTTONS = [
   concat(rak_xz([2.3, 33.2]), rak_xz([2.3, 27.2])),
   concat(rak_xz([40.0, 15]), rak_xz([34.0, 15]))];
 RAK_CORE = [12, 32];  // the RAK4631 core covers the base from here to here (u), full height
+// markings on the sled's front face, so it's clear which standoffs go with which board:
+// a low raised outline just inside each board's footprint and its name, and on the charger
+// (whose four holes are symmetric) "USB-C" at the end its USB-C socket goes
+MK_H = 0.6;           // raised 0.6 mm: three 0.2 mm layers
+MK_W = 1.0;           // outline width, inside the board's edge
+MK_FONT = "Liberation Sans:style=Bold";
+MK_BAND = [CS_Z[0] - 0.5, CS_Z[0] + CS_LEN + 0.5];   // no outline where the battery strap crosses
 
 // ------------------------------ bracket ------------------------------
 Y_PF  = 78;           // plate front face
@@ -737,12 +744,37 @@ module plate2d() difference() {
     translate([s*PR_X - PR_GAP/2, PR_TIP - 1]) square([PR_GAP, PR_ROOT - PR_TIP + 1]);
   }
 }
-// post for a turn button: collar, shank, and a head the button snaps under
+// post for a turn button: collar, shank, and a head the button snaps under. The collar is
+// hexagonal (inside the old round one), so the posts don't look like the round standoffs
 module btn_post(x, z) {
-  fwd(x, z, POST_D, H_BTN, 32);
+  fwd(x, z, POST_D, H_BTN, 6);
   translate([x, -H_BTN + 0.01, z]) rotate([90, 0, 0]) cylinder(d = SHANK_D, h = BTN_T + 0.12, $fn = 32);
   translate([x, -H_BTN - BTN_T - 0.1, z]) rotate([90, 0, 0]) cylinder(d1 = HEAD_D, d2 = SHANK_D - 0.6, h = 1.4, $fn = 32);
 }
+// the markings, in the plate's (x, z) plane
+module mk_text(t, x, z, size, rot = 0, sp = 1)
+  translate([x, z]) rotate(rot) text(t, size = size, font = MK_FONT, halign = "center", valign = "center", spacing = sp);
+module mk_ring(o) difference() {
+  translate(o) children();
+  translate(o) offset(delta = -MK_W) children();
+}
+module sled_marks2d() {
+  // charger: outline broken where the strap crosses, CHARGER below the strap, USB-C above it
+  difference() {
+    mk_ring(BQ0) square(BQ_SIZE);
+    translate([BQ0[0] - 1, MK_BAND[0]]) square([BQ_SIZE[0] + 2, MK_BAND[1] - MK_BAND[0]]);
+  }
+  mk_text("CHARGER", BQ0[0] + BQ_SIZE[0]/2, BQ0[1] + 3.1, 3, sp = 0.92);
+  mk_text("USB-C", BQ0[0] + BQ_SIZE[0]/2, BQ0[1] + BQ_SIZE[1] - 3.35, 3);
+  // RAK19003, with the notch in its lower edge; USB-C up its left edge
+  mk_ring(RAK0) difference() { square(RAK_SIZE); translate([15.5, -1]) square([13, 9]); }
+  mk_text("RAK19003", RAK0[0] + 18.5, RAK0[1] + 11.5, 3);
+  mk_text("USB-C", RAK0[0] + 2.95, RAK0[1] + 16.5, 2.5, rot = 90);
+  // MiniBoost
+  mk_ring(MB0) square(MB_SIZE);
+  mk_text("BOOST", MB0[0] + 3.4, MB0[1] + 6.6, 2.2, rot = 90, sp = 0.9);
+}
+module sled_marks() translate([0, 0.01, 0]) rotate([90, 0, 0]) linear_extrude(height = MK_H + 0.01) sled_marks2d();
 module sled_assembled() {
   difference() {
     union() {
@@ -754,6 +786,7 @@ module sled_assembled() {
         else fwd(p[0], p[1], p[2], SO_H, 36);
       fwd(mb_xz(MB_REST)[0], mb_xz(MB_REST)[1], 4, SO_H, 24);
       for (b = BUTTONS) btn_post(b[0], b[1]);
+      sled_marks();
     }
     for (p = standoffs()) translate([p[0], -SO_H - 0.01, p[1]]) rotate([-90, 0, 0]) cylinder(d = M2_INSERT_D, h = M2_HOLE_DEPTH + 0.01);
     for (s = [-1, 1]) translate([s*SL_FOOT[0], SL_FOOT[1], SL_Z0 - 1]) cylinder(d = M3_CLEAR, h = 6);
