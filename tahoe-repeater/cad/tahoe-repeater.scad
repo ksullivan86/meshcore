@@ -818,6 +818,115 @@ module buttons_print() {   // all nine on a snap-off spine, arms up, feet up
   for (i = [0 : n - 1]) translate([-5.5, i*10 + 1.6, 0]) cube([2.3, 0.8, 0.8]);   // off the C split
 }
 
+// ============================ BOARD BAYS ============================
+// Tool-less board holders, built from plain features standing on a plate. A board sits on
+// standoffs (supports only; they needn't line up with its holes). Along one edge, two fixed
+// hooks: a shelf under the board's edge and a lip 0.8 mm over it. On the opposite edge, one
+// latch: a pillar on a tongue cut into the plate. The tongue flexes sideways in the plate's
+// own plane, along the print layers. Two stops on the other two edges locate the board.
+// To fit: slide the board's edge under the hooks, press the other edge down; the latch's ramp
+// pushes it out and it snaps over the edge. To remove: push the latch's top outward, lift.
+// Bay frame: u, v in the board's own frame (corner at 0), h up from the plate's face; the
+// plate occupies h -SL_T..0. A bay: [size, standoff height, standoffs, hooks, latch, stops]
+//   standoffs [[u, v, d], ...]; hooks [[edge, t0, t1], ...]; latch [edge, t0, t1, dir];
+//   stops [[edge, t0, t1], ...]. Edges "L", "R", "B", "T"; t runs along the edge in +v (L, R)
+//   or +u (B, T); the tongue runs from the pillar in direction dir (+1 or -1) along t.
+BAY_SLOT_H = 1.75;    // board thickness + 0.15: the slot under each lip
+BAY_GAP    = 0.2;     // the board's edge to a hook's or stop's wall
+BAY_LIP    = 0.8;     // how far lips reach over the board
+BAY_LIP_T  = 1.4;     // lip and ramp height above the slot
+BAY_TILT   = 18;      // hook lips rise inward so the board can be tilted in under them
+BAY_SHELF  = 1.2;     // shelves reach this far under the board
+BAY_WALL   = 2.0;     // hook wall thickness
+BAY_STOP_W = 1.4;     // stop thickness
+BAY_STOP_UP = 1.0;    // stops rise this far above the board's underside
+BAY_PRE    = 0.15;    // latch preload: it sits this far into the board once the board is home
+BAY_PW     = 2.6;     // latch pillar and tongue width (in its bending direction)
+BAY_TL     = 17;      // tongue length, free end to root
+BAY_TSLOT  = 1.4;     // slot outside the tongue: room for it to flex 1.1 mm
+BAY_ISLOT  = 0.8;     // slot inside the tongue
+BAY_ESLOT  = 1.0;     // slot across the tongue's free end
+BAY_RAMP_N = 0.6;     // the latch's ramp tops out this far past the board's edge
+// edge frame (t along the edge, n outward from the board's edge, h up) to the bay frame
+function bay_ef(e, sz) = e == "L" ? [[0, -1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+  : e == "R" ? [[0, 1, 0, sz[0]], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+  : e == "B" ? [[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+  :            [[1, 0, 0, 0], [0, 1, 0, sz[1]], [0, 0, 1, 0], [0, 0, 0, 1]];
+module bay_prof(t0, t1, pts) translate([t0, 0, 0]) rotate([90, 0, 90]) linear_extrude(height = t1 - t0) polygon(pts);  // (n, h) profile along t
+module bay_hook(t0, t1, so) {
+  sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T;
+  translate([t0, -BAY_SHELF, 0]) cube([t1 - t0, BAY_SHELF + BAY_GAP + 0.01, so]);           // shelf
+  translate([t0, BAY_GAP, 0]) cube([t1 - t0, BAY_WALL, top]);                                // wall
+  bay_prof(t0, t1, [[BAY_GAP + 0.01, sh], [0, sh], [-BAY_LIP, sh + BAY_LIP*tan(BAY_TILT)],    // lip
+                    [-BAY_LIP, top], [BAY_GAP + 0.01, top]]);
+}
+module bay_stop(t0, t1, so) {
+  top = so + BAY_STOP_UP;
+  translate([t0, -BAY_SHELF, 0]) cube([t1 - t0, BAY_SHELF + BAY_GAP + 0.01, so]);
+  bay_prof(t0, t1, [[BAY_GAP, 0], [BAY_GAP + BAY_STOP_W, 0], [BAY_GAP + BAY_STOP_W, top], [BAY_GAP + 0.5, top], [BAY_GAP, top - 0.5]]);
+}
+function bay_tongue(t0, t1, dir) = dir > 0 ? [t0, t0 + BAY_TL] : [t1 - BAY_TL, t1];   // t range of the tongue
+module bay_pillar(t0, t1, so) {
+  sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T; p = BAY_GAP + BAY_PRE;
+  bay_prof(t0, t1, [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, top], [BAY_RAMP_N, top],
+                    [-p - BAY_LIP, sh + 0.4], [-p - BAY_LIP, sh], [-p, sh]]);
+}
+module bay_tongue_cut(t0, t1, dir) {
+  p = BAY_GAP + BAY_PRE; tr = bay_tongue(t0, t1, dir);
+  fe = dir > 0 ? [tr[0] - BAY_ESLOT, tr[0]] : [tr[1], tr[1] + BAY_ESLOT];       // free end slot
+  ta = min(tr[0], fe[0]); tb = max(tr[1], fe[1]);
+  translate([ta, -p - BAY_ISLOT, -SL_T - 1]) cube([tb - ta, BAY_ISLOT, SL_T + 1.01]);           // inside
+  translate([ta, -p + BAY_PW, -SL_T - 1]) cube([tb - ta, BAY_TSLOT, SL_T + 1.01]);             // outside
+  translate([fe[0], -p - BAY_ISLOT, -SL_T - 1]) cube([fe[1] - fe[0], BAY_ISLOT + BAY_PW + BAY_TSLOT, SL_T + 1.01]);
+}
+module bay_add(b) {
+  sz = b[0]; so = b[1];
+  for (s = b[2]) translate([s[0], s[1], 0]) cylinder(d = s[2], h = so, $fn = 36);
+  for (k = b[3]) multmatrix(bay_ef(k[0], sz)) bay_hook(k[1], k[2], so);
+  for (k = b[5]) multmatrix(bay_ef(k[0], sz)) bay_stop(k[1], k[2], so);
+  let(l = b[4]) multmatrix(bay_ef(l[0], sz)) bay_pillar(l[1], l[2], so);
+}
+module bay_cut(b) let(l = b[4]) multmatrix(bay_ef(l[0], b[0])) bay_tongue_cut(l[1], l[2], l[3]);
+// footprint of everything a bay needs on its plate, for the test pieces
+module bay_foot2d(b) {
+  l = b[4]; tr = bay_tongue(l[1], l[2], l[3]);
+  offset(delta = 5) square(b[0]);
+  multmatrix(bay_ef(l[0], b[0])) translate([min(tr[0], l[1]) - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
+    square([BAY_TL + BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_TSLOT + 6]);
+}
+module bay_test(b) difference() {
+  union() { translate([0, 0, -SL_T]) linear_extrude(height = SL_T) bay_foot2d(b); bay_add(b); }
+  bay_cut(b);
+}
+// the four boards. Edges with connectors or soldered wires carry no hooks or latches.
+BAY_BQ = [BQ_SIZE, SO_H,                                     // charger: JST sockets on the bottom edge, USB-C on top
+  [[2.54, 2.54, 6], [29.21, 2.54, 6], [2.54, 22.86, 6]],
+  [["B", 3.0, 6.5], ["B", 25.2, 28.7]],                      // either side of the two JST sockets
+  ["T", 22.0, 25.0, 1],                                      // right of the USB-C; the tongue runs right, clear of the cell
+  [["L", 20.2, 22.5], ["R", 20.2, 22.5]]];                   // above the battery strap
+BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C on the left edge
+  [[4, 4, 5.5], [4, 26, 5.5]],
+  [["R", 3, 7], ["R", 21, 25]],
+  ["L", 7.5, 10.5, 1],                                       // below the USB-C; the tongue runs up, under the cable's plug
+  [["B", 6, 9], ["T", 2.5, 5.5]]];
+BAY_MB = [MB_SIZE, SO_H,                                     // MiniBoost: four pins along the bottom edge
+  [[MB_HOLE[0], MB_HOLE[1], 6], [MB_REST[0], MB_REST[1], 4]],
+  [["L", 2.8, 5.8], ["L", 11.8, 14.8]],                      // either side of the inductor
+  ["R", 7.0, 10.0, 1],
+  [["B", 8.5, 10.4], ["T", 6.0, 8.5]]];
+INA_SIZE = [20.4, 25.6];                                     // Adafruit INA219 #904: terminal block on the right edge
+BAY_INA = [INA_SIZE, 4,
+  [[2.54, 2.54, 5], [17.86, 2.54, 5], [1.8, 20.5, 5], [17.4, 20.5, 5]],
+  [["B", 2.6, 6.0], ["B", 14.4, 17.8]],                      // either side of a STEMMA QT socket
+  ["T", 3.0, 6.0, 1],
+  [["L", 11, 14], ["R", 11, 14]]];
+module bay_tests() {   // one small test plate per board, side by side, in print pose
+  translate([8, 8, SL_T]) bay_test(BAY_BQ);
+  translate([66, 8, SL_T]) bay_test(BAY_RAK);
+  translate([8, 52, SL_T]) bay_test(BAY_MB);
+  translate([48, 58, SL_T]) bay_test(BAY_INA);
+}
+
 // =============================== BRACKETS ===============================
 module mount_holes(v, m) {
   pf = pad_face(v); fl = pocket_floor(v);
@@ -1078,6 +1187,11 @@ else if (PART == "sled") { if (POSE == "print") sled_flat(); else sled_assembled
 else if (PART == "thread_test_male") { if (POSE == "print") translate([0, 0, TT_FL]) thread_test_male(); else thread_test_male(); }
 else if (PART == "thread_test_female") thread_test_female();
 else if (PART == "fit_test") fit_test();
+else if (PART == "bay_tests") bay_tests();
+else if (PART == "bay_test_bq") translate([0, 0, SL_T]) bay_test(BAY_BQ);
+else if (PART == "bay_test_rak") translate([0, 0, SL_T]) bay_test(BAY_RAK);
+else if (PART == "bay_test_mb") translate([0, 0, SL_T]) bay_test(BAY_MB);
+else if (PART == "bay_test_ina") translate([0, 0, SL_T]) bay_test(BAY_INA);
 else if (PART == "mount_test") mount_test();
 else if (PART == "buttons") { if (POSE == "print") buttons_print(); else buttons_assembled(); }
 else if (PART == "lock_pin") { if (POSE == "print") lock_pin(); else lock_pin_dummy(); }
