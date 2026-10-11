@@ -9,7 +9,7 @@ Everything here applies to all three versions. Where they differ, it says so. **
 - [1. Before you start](#1-before-you-start)
 - [2. Print the parts](#2-print-the-parts)
 - [3. Check the fit](#3-check-the-fit)
-- [4. Set up the charger](#4-set-up-the-charger)
+- [4. Prep the boards](#4-prep-the-boards)
 - [5. Build the cell harness](#5-build-the-cell-harness)
 - [6. Test the cold cutoff](#6-test-the-cold-cutoff)
 - [7. Fit out the floor](#7-fit-out-the-floor)
@@ -134,7 +134,44 @@ Each nut should fall in flat and sit a little below the top of its pocket. Push 
 
 <img src="../images/lock-A.png" alt="The lock tabs: the latch arm and its pull tab, the latch post, the lock pin and the lock screw, with cut-away views of the latch closing">
 
-## 4. Set up the charger
+## 4. Prep the boards
+
+Do all the simple soldering in one sitting, while the station is set up: the charger's jumpers and thermistor, then every lead on every board. Fine work first, with a small tip at 330 to 350 °C. The battery harness in step 5 uses the same station with the big tip, hotter. Nothing in this step touches the battery.
+
+### Set up the station
+
+Lay it out once and leave it: the board in a holder in the middle, the iron and its stand on your strong-hand side, brass wool and flux next to it, the leads cut and labelled in the order you'll use them, and the heat gun parked at the back, pointing away.
+
+| Item | Recommended | On a budget |
+|---|---|---|
+| Iron | Temperature-controlled, 60 W or more, interchangeable tips (e.g. Pinecil V2 on a 65 W USB-C PD supply, or a Hakko FX-888D) | An adjustable 60 W kit iron. Avoid unregulated irons: they can't hold the heat the battery tabs need |
+| Tips | A small cone or 1 to 1.6 mm chisel for the boards; a 3 to 5 mm chisel for the battery tabs | One medium chisel for both, if it gets the tabs hot in 2 to 3 seconds |
+| Solder | 63/37 leaded rosin core, 0.6 to 0.8 mm | 60/40 works; lead-free works but needs about 30 °C more |
+| Flux | No-clean flux pen | The rosin in the solder, plus a little paste for the tabs |
+| Holding | PCB holder or helping hands with a heavy base; Kapton tape to hold wires | Blu-Tack or tape on a scrap of wood |
+| Tip cleaning | Brass wool | A damp (not wet) sponge |
+| Heat shrink | Heat gun on low | A hair dryer won't shrink adhesive-lined tube; never use a lighter near the battery |
+| Cutting and stripping | Flush cutters and an adjustable wire stripper for 22 to 28 AWG | Flush cutters and careful thumbnail stripping |
+| Checking | Multimeter with continuity beep | Any cheap meter with continuity |
+| Safety | Fume extractor, safety glasses, a silicone mat | A fan blowing the fumes away across an open window, glasses |
+| Cleanup | Isopropyl alcohol and an old toothbrush | Same |
+
+<img src="../images/step-prep-station.png" alt="A soldering station laid out on a bench: board holder in the middle, iron on the right, brass wool and flux beside it, leads in order, heat gun at the back, and the two tips: a small one at 330 to 350 °C for the boards and a big chisel at about 400 °C for the battery tabs">
+
+### Cut the leads
+
+Cut and strip every lead first, and label each one with masking tape. Hold each against your printed sled and add a little slack before you cut.
+
+| Lead | Length | Wire |
+|---|---|---|
+| Thermistor | about 20 cm | its own leads |
+| DC in, JST-PH male | about 15 cm | 22 to 26 AWG |
+| LOAD pigtail to the MiniBoost | about 10 cm | 22 to 26 AWG |
+| USB-C cable | about 12 cm, from the USB-C end | the kit's cable |
+| INA219 to J6 (optional) | 4 × 15 cm | 26 to 28 AWG, ideally red, black, yellow, blue |
+| INA219 VIN+ and VIN− (optional) | 2 × 10 cm | 22 to 26 AWG |
+
+### The charger
 
 The Adafruit bq25185 has jumpers on both sides. The three you cut are on the front, next to the TH, VS and IS holes on the left; each is two small pads joined by a thin trace. The ones you bridge are on the back.
 
@@ -145,9 +182,21 @@ The Adafruit bq25185 has jumpers on both sides. The three you cut are on the fro
 
 <img src="../images/step-charger.png" alt="The bq25185 drawn from its board file: front with the TH and VS jumpers cut and IS left closed, back with the 3.65V jumper bridged, and the thermistor between TH and BATT minus">
 
+5. **DC in.** Solder the JST-PH **male** lead to the charger's **DCIN** pads: red to **+**, black to **−**. The panel plugs into it later.
+6. **LOAD.** Solder a JST-PH pigtail's red and black to the MiniBoost's **VIN** and **GND**. Its plug goes into the charger's **LOAD** socket.
+
+### The MiniBoost and the RAK19003
+
+7. **USB-C cable.** Cut the USB-A end off the kit's USB-C cable, about 12 cm from the USB-C end. Solder red to the MiniBoost's **5V** and black to its **GND**, next to the LOAD pigtail's black. Tape off the data wires. Leave **EN** empty. Check the names printed by the pins before you solder.
+8. **INA219 (optional).** While the RAK19003 is loose on the bench, solder four wires from **J6** on the RAK19003 (a row of four pads, labelled VDD, GND, SCL, SDA) to the INA219's **VCC, GND, SCL** and **SDA** pins, matching names. Then put a lead in each of its **VIN+** and **VIN−** screw terminals and label them: VIN+ goes to the protection board's P+, VIN− to the battery lead's red wire (step 5).
+9. **Optional capacitor.** Only needed if the node reboots when it transmits (see [Troubleshooting](#17-troubleshooting)). If you're fitting it, solder the 1000 µF capacitor to a JST-PH 2-pin plug now: its + leg (the longer one) to the red wire.
+10. Put adhesive heat shrink on every joint.
+
+<img src="../images/step-prep-boards.png" alt="Each board with its leads on: the charger with its DC in lead, LOAD pigtail and thermistor; the MiniBoost with the LOAD pigtail on VIN and GND and the USB-C cable on 5V and GND; the RAK19003's J6 wired to the INA219 with its two terminal leads; and the cut list">
+
 ## 5. Build the cell harness
 
-The cell has flat copper tabs on its ends, not screw terminals.
+Same station: swap to the big chisel tip and turn the iron up to about 400 °C. The cell has flat copper tabs on its ends, not screw terminals.
 
 1. **Best:** have a short nickel strip spot-welded to each tab (a battery or e-bike shop will do it, or use a handheld welder), then solder your leads to the strips, away from the cell.
 2. **Otherwise,** solder the leads straight to the tabs, quick and hot. Use a 60 W or stronger iron with a wide chisel tip at about 400 °C. Tin the tab with one touch of two or three seconds, tin the lead, then join them in a second or two. Let the cell cool between joints. **Never hold the iron on the cell.**
@@ -155,7 +204,7 @@ The cell has flat copper tabs on its ends, not screw terminals.
 4. Check the polarity with a meter against the **BATT** marking on the charger before you plug anything in.
 5. Seal the fuse and every splice in adhesive-lined heat shrink.
 
-If you're fitting the INA219 (step 10), it goes in the red wire between P+ and the JST-PH lead. Build the harness as above anyway; you'll cut into that wire then.
+If you're fitting the INA219, it goes in the red wire between P+ and the JST-PH lead: join P+ to its VIN+ lead and the JST-PH lead's red to its VIN− lead (both from step 4). Without it, P+ goes straight to the JST-PH lead's red.
 
 <img src="../images/step-harness.png" alt="The cell harness: nickel strip or quick solder joints on the tabs, then the cell plus through a 2 A fuse to B plus, minus to B minus, and P plus and P minus to a JST-PH lead, checked against the plus mark under BATT">
 
@@ -219,13 +268,9 @@ The boards can be held by the printed turn buttons or by M2 screws. The buttons 
 5. **Protection board.** Zip-tie it to the sled in the empty space at the top left, through the two slots there.
 6. **INA219 (optional).** It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost.
    - Stick it flat on the back of the sled, behind the MiniBoost, with a square of double-sided foam tape. That spot is clear of the cell and its strap.
-   - It goes in the red wire of the cell's lead: P+ to its **VIN+** screw terminal, and **VIN−** on to the red wire of the JST-PH lead. Cut the red wire between them if you joined it in step 5. The black wire stays as it is.
-   - Solder four wires from its **VIN, GND, SCL** and **SDA** pins to **J6** on the RAK19003: **VDD, GND, SCL** and **SDA**. J6 is a row of four solder pads, labelled on the board. Easiest before the RAK19003 goes on the sled.
+   - Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5.
    - Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
-7. **Power path.**
-   - Solder the JST-PH male lead to the charger's **DC in** pads. The panel plugs into it.
-   - Run **LOAD** to the MiniBoost's **VIN** and GND on a JST-PH pigtail.
-   - Cut the USB-A end off the kit's USB-C cable. Solder red to the MiniBoost's **5 V** and black to **GND**, and insulate the data wires. Plug the USB-C end into the RAK19003.
+7. **Power path.** The leads are already on from step 4. Plug the LOAD pigtail into the charger's **LOAD** socket and the USB-C cable into the RAK19003. The DC in lead waits for the panel.
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
 8. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
 

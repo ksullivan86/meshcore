@@ -10,7 +10,7 @@ Planned changes to the Tahoe repeater.
 
 - [x] **Board outlines on the sled.** A 0.6 mm raised outline just inside each board's footprint, with its name (CHARGER, RAK19003, BOOST) and "USB-C" at the end where each board's USB-C socket goes. The charger's outline is broken where the battery strap crosses. Done in the CAD and STLs.
 - [x] **Clamp posts shaped differently from standoffs.** Done, but the clamps and posts go away with the board bays below.
-- [ ] **Redraw the sled pictures** to show the outlines, labels and six-sided posts: the sled steps (part 1 and 2), putting it in, opening it, `inside-A.png` and `sled.png`.
+- [ ] **Redraw the sled pictures** (also: `step-sled-2.png` still shows the leads being soldered on the sled, which now happens in step 4) to show the outlines, labels and six-sided posts: the sled steps (part 1 and 2), putting it in, opening it, `inside-A.png` and `sled.png`.
 
 ## Tool-less board bays (replacing the swing clamps)
 
@@ -32,7 +32,7 @@ The replacement is a **board bay** (`BOARD BAYS` in the CAD): standoffs for supp
 
 ## Build guide: one soldering session for board prep
 
-- [ ] **Add a "Board prep" step** that does all the simple soldering in one sitting, while the station is set up. Put it right before the battery harness (step 5): do the fine board work first with a small tip at a lower temperature, then swap to the big chisel tip and go hotter for the battery tabs. The cold-cutoff test (step 6) then follows with everything ready. It gathers jobs now spread across steps 4, 5 and 10:
+- [x] **Add a "Board prep" step** (done: step 4 is now "Prep the boards", with `step-prep-station.png` and `step-prep-boards.png`; steps 5 and 10 point back to it instead of repeating the soldering) that does all the simple soldering in one sitting, while the station is set up. Put it right before the battery harness (step 5): do the fine board work first with a small tip at a lower temperature, then swap to the big chisel tip and go hotter for the battery tabs. The cold-cutoff test (step 6) then follows with everything ready. It gathers jobs now spread across steps 4, 5 and 10:
   - Charger: cut TH and VS on the front, bridge 3.65V on the back, solder the thermistor to TH and a − pad (step 4 as it is now).
   - Charger DC in: a JST-PH **male** lead to DCIN + and −. The panel's cut cable plugs into it later.
   - Charger LOAD to MiniBoost: a JST-PH lead from the charger's LOAD socket to the MiniBoost's VIN and GND.
@@ -42,7 +42,7 @@ The replacement is a **board bay** (`BOARD BAYS` in the CAD): standoffs for supp
   - Adhesive heat shrink on every joint, and a label on each lead (masking tape and a pen is fine).
   - Not in this step: the panel cable's JST-PH lead, because the cable has to go through the gland first (step 8). The battery tabs stay in step 5.
   - Cut and strip every lead to length first. The doc pass should give the lengths, measured off the sled layout.
-- [ ] **Station example in that step**, with what's recommended and what you can get away with:
+- [x] **Station example in that step**, with what's recommended and what you can get away with:
 
   | Item | Recommended | On a budget |
   |---|---|---|
