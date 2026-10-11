@@ -26,9 +26,39 @@ The replacement is a **board bay** (`BOARD BAYS` in the CAD): standoffs for supp
   - MiniBoost `BAY_MB` at `MB0` (8, 99). Hooks on the left edge, latch on the right edge, tongue running up.
   - INA219 `BAY_INA` at (-27, 95) on the front, where the protection board is now. It can't go on the back: the sled prints with its back on the bed.
   - Move the protection board to the back, zip-tied flat at about x 6 to 28, z 30 to 44 (beside the battery, clear of every tongue). Replace the zip slots at (-20, 100) and (-4, 100) with four at (14, 22.5), (24, 22.5), (14, 39.5), (24, 39.5).
-  - Remove the swing clamps, their nine posts and the clamp spine from the sled and the kit STLs. Add an outline and "INA219" label for the new bay.
+  - Remove the swing clamps, their nine posts and the clamp spine from the sled and the kit STLs. Every bay now carries its own raised outline and labels (the seventh entry in its settings, required), so drop the separate `sled_marks2d` labels for these four boards when the bays go on.
   - Re-run `check.py asm sled` and `check.py pose`, and a sled version of `check_bays.py`, then re-export the nine kits.
 - [ ] **Docs for the bays:** build guide step 10 (fitting and removing boards, the protection board's new place, the INA219 in its bay instead of foam tape), the parts list (no foam tape), and the wiring routes.
+
+## Build guide: one soldering session for board prep
+
+- [ ] **Add a "Board prep" step** that does all the simple soldering in one sitting, while the station is set up. Put it right before the battery harness (step 5): do the fine board work first with a small tip at a lower temperature, then swap to the big chisel tip and go hotter for the battery tabs. The cold-cutoff test (step 6) then follows with everything ready. It gathers jobs now spread across steps 4, 5 and 10:
+  - Charger: cut TH and VS on the front, bridge 3.65V on the back, solder the thermistor to TH and a − pad (step 4 as it is now).
+  - Charger DC in: a JST-PH **male** lead to DCIN + and −. The panel's cut cable plugs into it later.
+  - Charger LOAD to MiniBoost: a JST-PH lead from the charger's LOAD socket to the MiniBoost's VIN and GND.
+  - MiniBoost to RAK19003: the short USB-C cable (USB-A end cut off), red to 5V, black to GND.
+  - INA219 (optional): four wires from VIN, GND, SCL and SDA to the RAK19003's J6 pads, while the RAK19003 is loose on the bench, and two leads on the VIN+ / VIN− terminals for the cell's red wire.
+  - Optional 1000 µF capacitor on the RAK19003's BAT socket.
+  - Adhesive heat shrink on every joint, and a label on each lead (masking tape and a pen is fine).
+  - Not in this step: the panel cable's JST-PH lead, because the cable has to go through the gland first (step 8). The battery tabs stay in step 5.
+  - Cut and strip every lead to length first. The doc pass should give the lengths, measured off the sled layout.
+- [ ] **Station example in that step**, with what's recommended and what you can get away with:
+
+  | Item | Recommended | On a budget |
+  |---|---|---|
+  | Iron | Temperature-controlled, 60 W or more, interchangeable tips (e.g. Pinecil V2 on a 65 W USB-C PD supply, or a Hakko FX-888D) | An adjustable 60 W kit iron. Avoid unregulated irons: they can't hold the heat the battery tabs need |
+  | Tips | A small conical or 1 to 1.6 mm chisel for the boards; a 3 to 5 mm chisel for the battery tabs | One medium chisel for both, if it gets the tabs hot in 2 to 3 seconds |
+  | Solder | 63/37 leaded rosin core, 0.6 to 0.8 mm | 60/40 works; lead-free works but needs about 30 °C more |
+  | Flux | No-clean flux pen | The rosin in the solder, plus a little paste for the tabs |
+  | Holding | PCB holder or helping hands with a heavy base; Kapton tape to hold wires | Blu-Tack or tape on a scrap of wood |
+  | Tip cleaning | Brass wool | A damp (not wet) sponge |
+  | Heat shrink | Heat gun on low | A hair dryer won't shrink adhesive-lined tube; never use a lighter near the battery |
+  | Cutting and stripping | Flush cutters and an adjustable wire stripper for 22 to 28 AWG | Flush cutters and careful thumbnail stripping |
+  | Checking | Multimeter with continuity beep | Any cheap meter with continuity |
+  | Safety | Fume extractor, safety glasses, a silicone mat | A fan blowing the fumes away across an open window, glasses |
+  | Cleanup | Isopropyl alcohol and an old toothbrush | Same |
+
+  Lay it out once and leave it: boards in the holder in the middle, iron and its stand on your strong-hand side, tip cleaner and flux next to it, the pre-cut labelled leads in order of use, the heat gun parked behind. Temperatures: about 330 to 350 °C for the boards, about 400 °C for the battery tabs.
 
 ## Names in the docs and pictures
 

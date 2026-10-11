@@ -1,7 +1,5 @@
 """Checks for the board-bay test plates: one body, tongue free of everything but its root,
-board fits home without touching anything but the latch (preload), tilt-in path clears the hooks.
-Export the four plates first, e.g.: openscad -o stl/bay_test_bq.stl -D 'PART="bay_test_bq"' tahoe-repeater.scad
-(and bay_test_rak, bay_test_mb, bay_test_ina), then run: python3 check_bays.py   (needs trimesh with manifold3d)"""
+board fits home without touching anything but the latch (preload), tilt-in path clears the hooks."""
 import trimesh, numpy as np, math, sys
 from trimesh.transformations import rotation_matrix as R
 SL_T, SO, PCB, GAP, PRE, PW, TL = 3.0, 7.0, 1.6, 0.2, 0.15, 2.6, 17
@@ -15,9 +13,11 @@ def inter(a, b): return vol(trimesh.boolean.intersection([a, b], check_volume=Fa
 B = {
  'bq':  dict(W=31.75, H=25.4, so=7, hook='B', latch=('T', 22, 25, 1),
              comp=[(11.4, 20.3, 18.65, 26.0, 0, 3.2), (7.43, 15.43, 0, 6, 0, 4.5), (16.32, 24.32, 0, 6, 0, 4.5)]),
- 'rak': dict(W=35, H=30, so=7, hook='R', latch=('L', 7.5, 10.5, 1),
+ 'rak': dict(W=35, H=30, so=7, hook='L', latch=('R', 20, 25, 1),
              comp=[(-0.77, 6.58, 13.83, 22.77, 0, 3.26), (-21.77, -0.77, 12.1, 24.5, -1.62, 4.88), (12, 32, 0, 30, 0, 2.7)],
-             under=[(21, 31, 16, 26, 0.01, 3.5)]),   # RAK1901, heights from the plate face
+             under=[(21, 31, 16, 26, 0.01, 3.5),      # RAK1901, heights from the plate face
+                    (6.0, 11.0, 0.5, 6.5, 1.0, 6.99), (6.0, 11.0, 23.5, 29.5, 1.0, 6.99)],
+             holes=[(35, 15, 2.7), (4, 4, 2.7), (4, 26, 2.7)]),   # BAT and SOLAR sockets' pins, 7 mm in
  'mb':  dict(W=11.43, H=17.78, so=7, hook='L', latch=('R', 7, 10, 1), comp=[(1.18, 6.18, 6.26, 11.26, 0, 4.5)]),
  'ina': dict(W=20.4, H=25.6, so=4, hook='B', latch=('T', 3, 6, 1), comp=[]),
 }
@@ -34,6 +34,9 @@ for name, c in B.items():
     # board home: pushed against the hooks (GAP toward the hook edge)
     shift = {'L': (-GAP, 0), 'R': (GAP, 0), 'B': (0, -GAP), 'T': (0, GAP)}[c['hook']]
     board = box(shift[0], W + shift[0], shift[1], H + shift[1], so, so + PCB)
+    for hu, hv, hd in c.get('holes', []):   # holes and half-holes the board really has
+        cyl = trimesh.creation.cylinder(radius=hd/2, height=PCB + 2, sections=32); cyl.apply_translation([hu + shift[0], hv + shift[1], so + PCB/2])
+        board = trimesh.boolean.difference([board, cyl], check_volume=False)
     parts = [board] + [box(u0 + shift[0], u1 + shift[0], v0 + shift[1], v1 + shift[1], so + PCB + h0, so + PCB + h1) for u0, u1, v0, v1, h0, h1 in c['comp']]
     parts += [box(u0, u1, v0, v1, h0, h1) for u0, u1, v0, v1, h0, h1 in c.get('under', [])]
     # the latch pillar, in the bay frame, to split its preload contact off from the rest

@@ -827,9 +827,12 @@ module buttons_print() {   // all nine on a snap-off spine, arms up, feet up
 // To fit: slide the board's edge under the hooks, press the other edge down; the latch's ramp
 // pushes it out and it snaps over the edge. To remove: push the latch's top outward, lift.
 // Bay frame: u, v in the board's own frame (corner at 0), h up from the plate's face; the
-// plate occupies h -SL_T..0. A bay: [size, standoff height, standoffs, hooks, latch, stops]
-//   standoffs [[u, v, d], ...]; hooks [[edge, t0, t1], ...]; latch [edge, t0, t1, dir];
-//   stops [[edge, t0, t1], ...]. Edges "L", "R", "B", "T"; t runs along the edge in +v (L, R)
+// plate occupies h -SL_T..0. A bay: [size, standoff height, standoffs, hooks, latch, stops, labels]
+//   standoffs [[u, v, d, (pin d), (keep u >= this)], ...]: an optional locating pin on top, and
+//   an optional cut so a standoff only reaches this far under the board; hooks [[edge, t0, t1], ...]; latch [edge, t0, t1, dir];
+//   stops [[edge, t0, t1], ...]; labels [[text, u, v, size, rotation, spacing], ...]: every bay
+//   gets a raised outline and at least one label, so it's always clear which board goes where.
+//   Edges "L", "R", "B", "T"; t runs along the edge in +v (L, R)
 //   or +u (B, T); the tongue runs from the pillar in direction dir (+1 or -1) along t.
 BAY_SLOT_H = 1.75;    // board thickness + 0.15: the slot under each lip
 BAY_GAP    = 0.2;     // the board's edge to a hook's or stop's wall
@@ -847,6 +850,7 @@ BAY_TSLOT  = 1.4;     // slot outside the tongue: room for it to flex 1.1 mm
 BAY_ISLOT  = 0.8;     // slot inside the tongue
 BAY_ESLOT  = 1.0;     // slot across the tongue's free end
 BAY_RAMP_N = 0.6;     // the latch's ramp tops out this far past the board's edge
+BAY_PIN_H  = 1.3;     // locating pins: less than the board's thickness
 // edge frame (t along the edge, n outward from the board's edge, h up) to the bay frame
 function bay_ef(e, sz) = e == "L" ? [[0, -1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
   : e == "R" ? [[0, 1, 0, sz[0]], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -879,9 +883,29 @@ module bay_tongue_cut(t0, t1, dir) {
   translate([ta, -p + BAY_PW, -SL_T - 1]) cube([tb - ta, BAY_TSLOT, SL_T + 1.01]);             // outside
   translate([fe[0], -p - BAY_ISLOT, -SL_T - 1]) cube([fe[1] - fe[0], BAY_ISLOT + BAY_PW + BAY_TSLOT, SL_T + 1.01]);
 }
+// the tongue and its slots, in the bay frame, so the outline stays off the moving part
+module bay_tongue2d(b) let(l = b[4], tr = bay_tongue(l[1], l[2], l[3]), p = BAY_GAP + BAY_PRE)
+  multmatrix(bay_ef(l[0], b[0])) translate([min(tr[0], l[1]) - BAY_ESLOT - 0.2, -p - BAY_ISLOT - 0.2])
+    square([BAY_TL + BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_TSLOT + 0.4]);
+module bay_marks2d(b) difference() {
+  union() {
+    difference() { square(b[0]); offset(delta = -MK_W) square(b[0]); }    // outline just inside the board's edge
+    for (t = b[6]) mk_text(t[0], t[1], t[2], t[3], rot = t[4], sp = t[5]);
+  }
+  bay_tongue2d(b);
+  for (g = len(b) > 7 ? b[7] : []) translate([-1, g[0]]) square([b[0][0] + 2, g[1] - g[0]]);   // gaps, e.g. under a strap
+}
 module bay_add(b) {
   sz = b[0]; so = b[1];
-  for (s = b[2]) translate([s[0], s[1], 0]) cylinder(d = s[2], h = so, $fn = 36);
+  assert(len(b[6]) > 0, "every bay needs a label");
+  translate([0, 0, -0.01]) linear_extrude(height = MK_H + 0.01) bay_marks2d(b);
+  for (s = b[2]) intersection() {
+    translate([s[0], s[1], 0]) {
+      cylinder(d = s[2], h = so, $fn = 36);
+      if (len(s) > 3 && s[3] > 0) translate([0, 0, so - 0.01]) cylinder(d1 = s[3], d2 = s[3] - 0.6, h = BAY_PIN_H, $fn = 24);
+    }
+    if (len(s) > 4) translate([s[4], s[1] - s[2], -1]) cube([2*s[2], 2*s[2], so + BAY_PIN_H + 2]);
+  }
   for (k = b[3]) multmatrix(bay_ef(k[0], sz)) bay_hook(k[1], k[2], so);
   for (k = b[5]) multmatrix(bay_ef(k[0], sz)) bay_stop(k[1], k[2], so);
   let(l = b[4]) multmatrix(bay_ef(l[0], sz)) bay_pillar(l[1], l[2], so);
@@ -903,23 +927,29 @@ BAY_BQ = [BQ_SIZE, SO_H,                                     // charger: JST soc
   [[2.54, 2.54, 6], [29.21, 2.54, 6], [2.54, 22.86, 6]],
   [["B", 3.0, 6.5], ["B", 25.2, 28.7]],                      // either side of the two JST sockets
   ["T", 22.0, 25.0, 1],                                      // right of the USB-C; the tongue runs right, clear of the cell
-  [["L", 20.2, 22.5], ["R", 20.2, 22.5]]];                   // above the battery strap
-BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C on the left edge
-  [[4, 4, 5.5], [4, 26, 5.5]],
-  [["R", 3, 7], ["R", 21, 25]],
-  ["L", 7.5, 10.5, 1],                                       // below the USB-C; the tongue runs up, under the cable's plug
-  [["B", 6, 9], ["T", 2.5, 5.5]]];
+  [["L", 20.2, 22.5], ["R", 20.2, 22.5]],                    // above the battery strap
+  [["CHARGER", 15.875, 3.1, 3, 0, 0.92], ["USB-C", 15.875, 22.05, 3, 0, 1]],   // USB-C at the end its socket goes
+  [[CS_Z[0] - 0.5 - BQ0[1], CS_Z[0] + CS_LEN + 0.5 - BQ0[1]]]];   // no outline under the battery strap
+BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C, button and both JST sockets on the left edge
+  [[35, 15, 6, 2.2, 32.5],                                   // at the half-hole, with a pin in it: locates the board up and down
+   [33, 5, 3.5]],                                            // no standoffs near the left edge: the JST sockets' pins are 7 mm in
+  [["L", 1.5, 4.0], ["L", 26.0, 28.5]],                      // short hooks at the corners, clear of the USB-C, button and sockets
+  ["R", 20, 25, 1],                                          // latch on the right edge, above the half-hole; tongue runs up
+  [],                                                        // no stops: the pin and the hooks locate it
+  [["RAK19003", 18.5, 11.5, 3, 0, 1], ["USB-C", 2.95, 16.5, 2.5, 90, 1]]];
 BAY_MB = [MB_SIZE, SO_H,                                     // MiniBoost: four pins along the bottom edge
   [[MB_HOLE[0], MB_HOLE[1], 6], [MB_REST[0], MB_REST[1], 4]],
   [["L", 2.8, 5.8], ["L", 11.8, 14.8]],                      // either side of the inductor
   ["R", 7.0, 10.0, 1],
-  [["B", 8.5, 10.4], ["T", 6.0, 8.5]]];
+  [["B", 8.5, 10.4], ["T", 6.0, 8.5]],
+  [["BOOST", 3.4, 6.6, 2.2, 90, 0.9]]];
 INA_SIZE = [20.4, 25.6];                                     // Adafruit INA219 #904: terminal block on the right edge
 BAY_INA = [INA_SIZE, 4,
   [[2.54, 2.54, 5], [17.86, 2.54, 5], [1.8, 20.5, 5], [17.4, 20.5, 5]],
   [["B", 2.6, 6.0], ["B", 14.4, 17.8]],                      // either side of a STEMMA QT socket
   ["T", 3.0, 6.0, 1],
-  [["L", 11, 14], ["R", 11, 14]]];
+  [["L", 11, 14], ["R", 11, 14]],
+  [["INA219", 10.2, 12.8, 3, 0, 1]]];
 module bay_tests() {   // one small test plate per board, side by side, in print pose
   translate([8, 8, SL_T]) bay_test(BAY_BQ);
   translate([66, 8, SL_T]) bay_test(BAY_RAK);
