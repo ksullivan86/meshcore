@@ -47,7 +47,7 @@ def scad(part, out, defs):
 
 def build(defs):
     d = os.path.join(HERE, '..', 'build', 'check'); os.makedirs(d, exist_ok=True)
-    parts = ['a_boss', 'a_tray', 'a_corner', 'a_front', 'a_keeper', 'a_shell', 'a_tray_full', 'a_front_full', 'a_pads', 'a_blocker',
+    parts = ['a_boss', 'a_tray', 'a_corner', 'a_front', 'a_door', 'a_tb', 'a_tb_open', 'd_adapter', 'a_shell', 'a_tray_full', 'a_front_full', 'a_pads', 'a_blocker',
              'e_case', 'd_board', 'd_panel', 'd_panel_low', 'd_cell', 'd_strap']
     jobs = [(p, os.path.join(d, p + '.stl')) for p in parts] + [(p, os.path.join(d, p + '.dxf')) for p in ('s_boss', 's_boss_low')]
     with ThreadPoolExecutor(6) as ex:
@@ -222,7 +222,7 @@ def run(defs):
     def rep(name, ok, detail):
         res.append(bool(ok)); print(f"  {'PASS' if ok else 'FAIL'}  {name}: {detail}")
     # 1. the coupon: every piece one body, and they go together
-    names = {'a_tray': 'tray', 'a_boss': 'shell corner', 'a_front': 'front (panel side and corner)', 'a_keeper': 'panel keeper'}
+    names = {'a_tray': 'tray', 'a_boss': 'shell corner', 'a_front': 'front (panel side and corner)', 'a_door': 'panel door'}
     for k, nm in names.items():
         n = bodies(M[k]); rep(f'coupon: {nm} is one piece', n == 1 and M[k].is_watertight, f'{n} bodies, watertight {M[k].is_watertight}, {vol(M[k]) / 1000:.1f} cm3')
     tot = sum(vol(M[k]) for k in names) / 1000
@@ -266,18 +266,24 @@ def run(defs):
     front = M['a_front_full']
     v = vol(inter(M['d_panel'], front)); slack = (I['PKT_X'][1] - I['PKT_X'][0] - I['PANEL'][0], I['PKT_Y'][1] - I['PKT_Y'][0] - I['PANEL'][1])
     rep('panel drops into its pocket', v < 0.01 and min(slack) >= 0.4, f'overlap {v:.3f} mm3; pocket {slack[0]:.2f} wider and {slack[1]:.2f} longer than the panel')
-    kp = M['a_keeper']; zk0, zk1, kgap, barb, fw, fl, fr, lip = I['KP']
-    v = [vol(inter(kp, M[k])) for k in ('a_front_full', 'd_panel', 'd_panel_low', 'd_board', 'a_tray_full', 'a_shell')]
-    g = min(gap(kp, M[k], 3000) for k in ('d_panel', 'd_panel_low'))
-    rep('keeper sits behind the panel', bodies(kp) == 1 and max(v) < 0.01 and abs(g - kgap) <= 0.05,
-        'overlaps ' + ', '.join(f'{x:.3f}' for x in v) + f' mm3 with the front, panel (both ends of its play), board, tray, shell; {g:.2f} mm off the glass')
-    held = inter(moved(kp, [0, 0, -0.5]), front)
-    zones = sorted(tuple(int(round(c)) for c in b.centroid[:2]) for b in held.split(only_watertight=False)) if not empty(held) else []
-    strain = max(1.5 * fw * barb / L ** 2 for L in (fl, fr))
-    rep('keeper held by two lips and two catches', len(zones) == 4 and strain <= STRAIN_MAX,
-        f'pulled back 0.5 mm it meets the front at {len(zones)} places {zones}; finger strain {strain * 100:.1f} % clicking in')
-    top = I['Z_BT'] + 3.2; room = zk0 - I['Z_BT']
-    rep('keeper clear of the parts on the board', room >= 3.3, f'{room:.2f} mm between the board and the keeper (USB-C socket is about 3.2 tall)')
+    door, tb, ad = M['a_door'], M['a_tb'], M['d_adapter']; zdoor, dgap, ztb, adgap, slide = I['DOOR']
+    v = [vol(inter(door, M[k])) for k in ('a_front_full', 'd_panel', 'd_panel_low', 'd_board', 'a_tray_full', 'a_shell', 'a_tb', 'd_adapter')]
+    g = min(gap(door, M[k], 3000) for k in ('d_panel', 'd_panel_low'))
+    rep('door closes over the panel', bodies(door) == 1 and max(v) < 0.01 and abs(g - dgap) <= 0.05,
+        'overlaps ' + ', '.join(f'{x:.3f}' for x in v) + f' mm3 with the front, panel (both ends of its play), board, tray, shell, turn buttons, adapter; {g:.2f} mm off the glass')
+    up = moved(door, [0, 0, -0.5]); rail = vol(inter(up, front)); arms = [vol(inter(up, b)) for b in tb.split(only_watertight=False)]
+    free = vol(inter(up, M['a_tb_open']))
+    rep('door held by the rail and two turn buttons', rail > 0.5 and len(arms) == 2 and min(arms) > 0.3 and free < 0.01,
+        f'pulled back 0.5 mm it meets the rail over {rail:.1f} mm3 and the buttons over {arms[0]:.1f} and {arms[1]:.1f} mm3; with the buttons swung open, {free:.2f} mm3')
+    way = [moved(door, [slide, 0, -dz]) for dz in (4, 2, 1, 0.5, 0)] + [moved(door, [dx, 0, 0]) for dx in (slide * 0.66, slide * 0.33)]
+    w = max(vol(inter(q, front)) + vol(inter(q, M['a_tb_open'])) + vol(inter(q, M['d_panel'])) for q in way)
+    rep('door goes in: down, then slid left under the rail', w < 0.01, f'worst overlap on the way {w:.3f} mm3 (set down {slide} mm to the right, buttons open)')
+    v = [vol(inter(M[a], M[k])) for a in ('a_tb', 'a_tb_open') for k in ('d_board', 'a_tray_full', 'a_shell', 'd_panel', 'd_adapter')]
+    room = min(ztb - I['Z_BT'], zdoor - I['Z_BT'])
+    rep('door and turn buttons clear of the board', max(v) < 0.01 and room >= 0.4,
+        f'buttons, shut or open: overlap {max(v):.3f} mm3; their posts end {ztb - I["Z_BT"]:.2f} mm above the board, the door is {zdoor - I["Z_BT"]:.2f} mm above it')
+    v = vol(inter(ad, M['a_front_full'])) + vol(inter(ad, M['a_tray_full'])); g = gap(ad, M['a_tray_full'], 1500)
+    rep('ribbon adapter sits in its seat under the tray\'s post', v < 0.01 and abs(g - adgap) <= 0.1, f'overlap {v:.3f} mm3; post {g:.2f} mm behind it')
     mx, my = (I['WIN'][0] - I['PANEL_ACTIVE'][0]) / 2, (I['WIN'][1] - I['PANEL_ACTIVE'][1]) / 2
     rep('window shows the active area', min(mx, my) >= 0.5, f'{mx:.2f} and {my:.2f} mm round it')
     # 7. docks

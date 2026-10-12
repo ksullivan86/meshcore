@@ -825,7 +825,8 @@ module buttons_print() {   // all nine on a snap-off spine, arms up, feet up
 // latch: a pillar on a tongue cut into the plate. The tongue flexes sideways in the plate's
 // own plane, along the print layers. Two stops on the other two edges locate the board.
 // To fit: slide the board's edge under the hooks, press the other edge down; the latch's ramp
-// pushes it out and it snaps over the edge. To remove: push the latch's top outward, lift.
+// pushes it out and it snaps over the edge. To remove: pull the latch outward by its ear or the
+// pull tab beyond it (never by the pillar's top), lift.
 // Bay frame: u, v in the board's own frame (corner at 0), h up from the plate's face; the
 // plate occupies h -SL_T..0. A bay: [size, standoff height, standoffs, hooks, latch, stops, labels]
 //   standoffs [[u, v, d, (pin d), (keep u >= this)], ...]: an optional locating pin on top, and
@@ -857,9 +858,6 @@ BAY_PAD_L  = 9;       // ... this far from the tongue's outer face, part of the 
 BAY_GRIP_H = 4.5;     // ... with a low grip at its outer end, its top overhanging toward the board for a fingertip or tool. The pillar sits at the very end of the tongue.
 BAY_GRIP_T = 1.6;     // grip thickness at its foot
 BAY_GRIP_O = 1.0;     // the grip's top overhangs this far toward the board, on a 45 degree underside
-BAY_PUSH_FLEX = 6;    // push-down latch (test): a strip from under the board out past its edge. Its flex zone, under the board, ...
-BAY_PUSH_T = 1.6;     // ... is this thick, thinned from the top so it still prints flat on the bed
-BAY_PUSH_S = 0.8;     // slots either side of the strip and past its end
 BAY_EAR    = 3.5;     // finger tab: an ear on the latch's outer face, away from the board. Pull it outward to open.
 BAY_EAR_H  = [1.0, 6.0];   // its underside starts here and rises at 45 degrees; its top
 // edge frame (t along the edge, n outward from the board's edge, h up) to the bay frame
@@ -913,28 +911,18 @@ module bay_tongue_cut(t0, t1, dir) {
 module bay_tongue2d(b) let(l = b[4], tr = bay_tongue(l[1], l[2], l[3]), p = BAY_GAP + BAY_PRE)
   multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 0.2, -p - BAY_ISLOT - 0.2])
     square([tr[1] - tr[0] + 2*BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_PAD_L + BAY_TSLOT + 0.4]);
-// push-down latch: the strip's t and n ranges, in the edge frame
-function bay_push_t(l) = bay_pad(l[1], l[2], l[3]);
-function bay_push_n() = let(p = BAY_GAP + BAY_PRE) [-p - BAY_PUSH_FLEX, -p + BAY_PW + BAY_PAD_L];
-module bay_push_cut(l) let(g = bay_push_t(l), nn = bay_push_n(), S = BAY_PUSH_S, p = BAY_GAP + BAY_PRE) {
-  for (t = [g[0] - S, g[1]]) translate([t, nn[0], -SL_T - 1]) cube([S, nn[1] - nn[0] + S, SL_T + 1.01]);   // sides
-  translate([g[0] - S, nn[1], -SL_T - 1]) cube([g[1] - g[0] + 2*S, S, SL_T + 1.01]);                     // past the grip
-  translate([g[0] - 0.01, nn[0], -SL_T + BAY_PUSH_T]) cube([g[1] - g[0] + 0.02, -p - nn[0], SL_T - BAY_PUSH_T + 1]);   // flex zone, thinned
-}
-module bay_push2d(b) let(l = b[4], g = bay_push_t(l), nn = bay_push_n(), S = BAY_PUSH_S)
-  multmatrix(bay_ef(l[0], b[0])) translate([g[0] - S - 0.2, nn[0] - 0.2]) square([g[1] - g[0] + 2*S + 0.4, -nn[0] + 0.4]);
-module bay_marks2d(b, push = false) difference() {
+module bay_marks2d(b) difference() {
   union() {
     difference() { square(b[0]); offset(delta = -MK_W) square(b[0]); }    // outline just inside the board's edge
     for (t = b[6]) mk_text(t[0], t[1], t[2], t[3], rot = t[4], sp = t[5]);
   }
-  if (push) bay_push2d(b); else bay_tongue2d(b);
+  bay_tongue2d(b);
   for (g = len(b) > 7 ? b[7] : []) translate([-1, g[0]]) square([b[0][0] + 2, g[1] - g[0]]);   // gaps, e.g. under a strap
 }
-module bay_add(b, push = false) {
+module bay_add(b) {
   sz = b[0]; so = b[1];
   assert(len(b[6]) > 0, "every bay needs a label");
-  translate([0, 0, -0.01]) linear_extrude(height = MK_H + 0.01) bay_marks2d(b, push);
+  translate([0, 0, -0.01]) linear_extrude(height = MK_H + 0.01) bay_marks2d(b);
   for (s = b[2]) intersection() {
     translate([s[0], s[1], 0]) {
       cylinder(d = s[2], h = so, $fn = 36);
@@ -946,19 +934,17 @@ module bay_add(b, push = false) {
   for (k = b[5]) multmatrix(bay_ef(k[0], sz)) bay_stop(k[1], k[2], so);
   let(l = b[4]) multmatrix(bay_ef(l[0], sz)) { bay_pillar(l[1], l[2], so); bay_grip(l[1], l[2], l[3]); }
 }
-module bay_cut(b, push = false) let(l = b[4]) multmatrix(bay_ef(l[0], b[0])) if (push) bay_push_cut(l); else bay_tongue_cut(l[1], l[2], l[3]);
+module bay_cut(b) let(l = b[4]) multmatrix(bay_ef(l[0], b[0])) bay_tongue_cut(l[1], l[2], l[3]);
 // footprint of everything a bay needs on its plate, for the test pieces
-module bay_foot2d(b, push = false) {
+module bay_foot2d(b) {
   l = b[4]; tr = bay_tongue(l[1], l[2], l[3]);
   offset(delta = 5) square(b[0]);
-  if (push) let(g = bay_push_t(l), nn = bay_push_n(), S = BAY_PUSH_S)
-    multmatrix(bay_ef(l[0], b[0])) translate([g[0] - S - 3, -3]) square([g[1] - g[0] + 2*S + 6, nn[1] + S + 6]);
-  else multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
+  multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
     square([tr[1] - tr[0] + 2*BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_PAD_L + BAY_TSLOT + 4]);
 }
-module bay_test(b, push = false) difference() {
-  union() { translate([0, 0, -SL_T]) linear_extrude(height = SL_T) bay_foot2d(b, push); bay_add(b, push); }
-  bay_cut(b, push);
+module bay_test(b) difference() {
+  union() { translate([0, 0, -SL_T]) linear_extrude(height = SL_T) bay_foot2d(b); bay_add(b); }
+  bay_cut(b);
 }
 // the four boards. Edges with connectors or soldered wires carry no hooks or latches.
 BAY_BQ = [BQ_SIZE, SO_H,                                     // charger: JST sockets on the bottom edge, USB-C on top
@@ -1260,7 +1246,6 @@ else if (PART == "bay_test_bq") translate([0, 0, SL_T]) bay_test(BAY_BQ);
 else if (PART == "bay_test_rak") translate([0, 0, SL_T]) bay_test(BAY_RAK);
 else if (PART == "bay_test_mb") translate([0, 0, SL_T]) bay_test(BAY_MB);
 else if (PART == "bay_test_ina") translate([0, 0, SL_T]) bay_test(BAY_INA);
-else if (PART == "bay_test_rak_push") translate([0, 0, SL_T]) bay_test(BAY_RAK, push = true);   // push-down latch, to compare
 else if (PART == "mount_test") mount_test();
 else if (PART == "buttons") { if (POSE == "print") buttons_print(); else buttons_assembled(); }
 else if (PART == "lock_pin") { if (POSE == "print") lock_pin(); else lock_pin_dummy(); }
