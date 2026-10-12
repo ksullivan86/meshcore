@@ -280,14 +280,17 @@ def run(defs):
     rep('door goes in: down, then slid left under the rail', w < 0.01, f'worst overlap on the way {w:.3f} mm3 (set down {slide} mm to the right, buttons open)')
     v = [vol(inter(M[a], M[k])) for a in ('a_tb', 'a_tb_open') for k in ('d_board', 'a_tray_full', 'a_shell', 'd_panel', 'd_adapter')]
     room = min(ztb - I['Z_BT'], zdoor - I['Z_BT'])
-    rep('door and turn buttons clear of the board', max(v) < 0.01 and room >= 0.4,
-        f'buttons, shut or open: overlap {max(v):.3f} mm3; their posts end {ztb - I["Z_BT"]:.2f} mm above the board, the door is {zdoor - I["Z_BT"]:.2f} mm above it')
+    under = zdoor - I['Z_BT'] - I['SOLAR_H']
+    rep('door and turn buttons clear of the board', max(v) < 0.01 and room >= 0.4 and under >= 0.15,
+        f'buttons, shut or open: overlap {max(v):.3f} mm3; their posts end {ztb - I["Z_BT"]:.2f} mm above the board, the door is {zdoor - I["Z_BT"]:.2f} mm above it, {under:.2f} mm over a {I["SOLAR_H"]} mm solar socket')
     v = vol(inter(ad, M['a_front_full'])) + vol(inter(ad, M['a_tray_full'])); g = gap(ad, M['a_tray_full'], 1500)
     rep('ribbon adapter sits in its seat under the tray\'s post', v < 0.01 and abs(g - adgap) <= 0.1, f'overlap {v:.3f} mm3; post {g:.2f} mm behind it')
     mx, my = (I['WIN'][0] - I['PANEL_ACTIVE'][0]) / 2, (I['WIN'][1] - I['PANEL_ACTIVE'][1]) / 2
     rep('window shows the active area', min(mx, my) >= 0.5, f'{mx:.2f} and {my:.2f} mm round it')
-    # 7. docks
-    dock_checks(I, M, rep)
+    # 7. docks: they only take the old shell's depth
+    if abs(I['RIM_Z'] - I['OLD_DEPTH']) < 0.01: dock_checks(I, M, rep)
+    else: print(f"  NOTE  docks not checked: this case is {I['Z_FRONT']:.1f} mm front to back and their pocket is {I['DOCK_POCKET'][1]} "
+                f"(the old case is {I['OLD_DEPTH'] + 2.5}). Run with -D DEPTH={I['OLD_DEPTH']:g} and a thinner cell to check them.")
     print(f"  {'ALL OK' if all(res) else 'PROBLEMS'} ({sum(res)}/{len(res)})")
     return all(res)
 

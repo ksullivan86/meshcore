@@ -53,7 +53,7 @@
 // =====================================================================
 
 /* [What to make] */
-PART    = "assembly"; // [assembly, kit, upper, lower, sleeve, bracket, sled, buttons, lock_pin, thread_test_male, thread_test_female, fit_test, mount_test, wing_spacers]
+PART    = "assembly"; // [assembly, kit, upper, lower, sleeve, bracket, sled, lock_pin, thread_test_male, thread_test_female, fit_test, mount_test, wing_spacers]
 VERSION = "A";        // [A, B, C]
 MOUNT   = "tree";     // [tree, bolt, wing]
 POSE    = "print";    // [print, assembled]
@@ -188,11 +188,12 @@ CUP_H   = 12;
 // ------------------------------ sled ------------------------------
 // The sled clicks into two sockets in the floor and pulls straight up by
 // its handle. Its two feet still take M3 screws into the floor's inserts
-// if you want them. Boards sit on standoffs and are held either by M2
-// screws into inserts or by printed turn buttons that swing over the
-// pads round their mounting holes. Board layouts: Adafruit's PCB files
-// for the bq25185 and MiniBoost, RAK's mechanical drawing for the RAK19003.
-SL_X  = 30;
+// if you want them. Each board snaps into a tool-less board bay (BOARD BAYS
+// below): standoffs, two hooks, a latch with a pull tab, and stops. The
+// protection board is zip-tied flat on the back. Board layouts: Adafruit's
+// PCB files for the bq25185, MiniBoost and INA219, RAK's mechanical drawing
+// for the RAK19003.
+SL_X  = 40;           // half width: 80 mm, so every latch's pull tab has room (was 30)
 SL_T  = 3;
 SL_Z0 = 3;
 SL_Z1 = 128;
@@ -205,12 +206,13 @@ M2_HOLE_DEPTH = SO_H + SL_T - 0.8;
 BQ0  = [-15.9, 64];   // Adafruit bq25185 #6091
 BQ_SIZE = [31.75, 25.4];
 BQ_HOLES = [[2.54, 2.54], [29.21, 2.54], [2.54, 22.86], [29.21, 22.86]];
-MB0  = [8, 99];       // Adafruit MiniBoost #4654
+MB0  = [12.5, 107];   // Adafruit MiniBoost #4654, top right
 MB_SIZE = [11.43, 17.78];
 MB_HOLE = [2.54, 15.24];
 MB_REST = [8.9, 9.0];
 RAK0 = [-17, 20];     // RAK19003, USB-C edge on the left
 RAK_SIZE = [35, 30];
+INA0 = [1, 101];      // Adafruit INA219 #904, top left, turned 90 degrees: its hooks face right, its latch left
 RAK_HOLES = [[4, 4], [4, 26], [35, 15]];   // two 2.7 mm holes, and a half-hole in the far edge
 RAK_SO_D = [5.5, 5.5, 6];
 RAK_USB = 18.3;       // USB-C centre, up from the bottom edge
@@ -234,24 +236,6 @@ HD_W = 24; HD_H = 13; HD_BAR = 4;
 // sled's front behind the charger, in the one band that's clear of standoffs and posts.
 CS_X = 27.5; CS_LEN = 14; CS_W = 2.6;
 CS_Z = [69.7];
-// turn buttons: posts beside each board, swinging arms over the hole pads
-BTN_T = 2.4;          // button thickness
-BTN_GAP = 1.2;        // arm clears parts up to 1.2 mm tall on the board
-BTN_ARM = 3.2;        // arm width
-BTN_FOOT = 2.4;       // foot that presses on the pad
-POST_D = 6; SHANK_D = 4.0; HEAD_D = 4.8;
-BTN_L = 6;            // every arm is the same length, so any button fits any post
-// [post x, post z, foot x, foot z] on the sled; each foot lands on the pad round a mounting hole
-BUTTONS = [
-  concat(bq_xz([-2.97, -2.97]), bq_xz([1.27, 1.27])),
-  concat(bq_xz([34.72, -2.97]), bq_xz([30.48, 1.27])),
-  concat(bq_xz([-2.97, 28.37]), bq_xz([1.27, 24.13])),
-  concat(bq_xz([34.72, 28.37]), bq_xz([30.48, 24.13])),
-  concat(mb_xz([-2.97, 20.75]), mb_xz([1.27, 16.51])),
-  concat(mb_xz([16.6, 0.9]), mb_xz([10.6, 0.9])),
-  concat(rak_xz([-3.8, 4]), rak_xz([2.2, 4])),
-  concat(rak_xz([2.3, 33.2]), rak_xz([2.3, 27.2])),
-  concat(rak_xz([40.0, 15]), rak_xz([34.0, 15]))];
 RAK_CORE = [12, 32];  // the RAK4631 core covers the base from here to here (u), full height
 // markings on the sled's front face, so it's clear which standoffs go with which board:
 // a low raised outline just inside each board's footprint and its name, and on the charger
@@ -709,12 +693,10 @@ module sleeve_c() difference() {
 }
 
 // ================================ SLED ================================
-function standoffs() = concat(
-  [for (h = BQ_HOLES) concat(bq_xz(h), [SO_D])],
-  [concat(mb_xz(MB_HOLE), [SO_D])],
-  [for (i = [0 : 2]) concat(rak_xz(RAK_HOLES[i]), [RAK_SO_D[i]])]);
-ZIP = [[-24, 62], [26, 62], [-20, 100], [-4, 100], [26, 88]];   // wiring, and the protection board
-H_BTN = SO_H + PCB_T + BTN_GAP;       // collar top: a button's hub sits here, clear of the board
+// wiring zip-tie slots, and four for the protection board, zip-tied flat on the back beside the cell
+ZIP = [[-24, 62], [26, 62], [26, 88]];
+PB_ZIP = [[12, 22.5], [24, 22.5], [12, 38.5], [24, 38.5]];   // two ties, each through a pair one above the other
+PB_BACK = [7, 23.5, 22, 14];                                  // where the protection board sits on the back: x, z, width, height
 // cylinder from the plate's front face forward (toward -y) by h
 module fwd(x, z, d, h, fn = 0) translate([x, 0.01, z]) rotate([90, 0, 0])
   if (fn > 0) cylinder(d = d, h = h + 0.01, $fn = fn); else cylinder(d = d, h = h + 0.01);
@@ -744,13 +726,6 @@ module plate2d() difference() {
     translate([s*PR_X - PR_GAP/2, PR_TIP - 1]) square([PR_GAP, PR_ROOT - PR_TIP + 1]);
   }
 }
-// post for a turn button: collar, shank, and a head the button snaps under. The collar is
-// hexagonal (inside the old round one), so the posts don't look like the round standoffs
-module btn_post(x, z) {
-  fwd(x, z, POST_D, H_BTN, 6);
-  translate([x, -H_BTN + 0.01, z]) rotate([90, 0, 0]) cylinder(d = SHANK_D, h = BTN_T + 0.12, $fn = 32);
-  translate([x, -H_BTN - BTN_T - 0.1, z]) rotate([90, 0, 0]) cylinder(d1 = HEAD_D, d2 = SHANK_D - 0.6, h = 1.4, $fn = 32);
-}
 // the markings, in the plate's (x, z) plane
 module mk_text(t, x, z, size, rot = 0, sp = 1)
   translate([x, z]) rotate(rot) text(t, size = size, font = MK_FONT, halign = "center", valign = "center", spacing = sp);
@@ -758,65 +733,24 @@ module mk_ring(o) difference() {
   translate(o) children();
   translate(o) offset(delta = -MK_W) children();
 }
-module sled_marks2d() {
-  // charger: outline broken where the strap crosses, CHARGER below the strap, USB-C above it
-  difference() {
-    mk_ring(BQ0) square(BQ_SIZE);
-    translate([BQ0[0] - 1, MK_BAND[0]]) square([BQ_SIZE[0] + 2, MK_BAND[1] - MK_BAND[0]]);
-  }
-  mk_text("CHARGER", BQ0[0] + BQ_SIZE[0]/2, BQ0[1] + 3.1, 3, sp = 0.92);
-  mk_text("USB-C", BQ0[0] + BQ_SIZE[0]/2, BQ0[1] + BQ_SIZE[1] - 3.35, 3);
-  // RAK19003, with the notch in its lower edge; USB-C up its left edge
-  mk_ring(RAK0) difference() { square(RAK_SIZE); translate([15.5, -1]) square([13, 9]); }
-  mk_text("RAK19003", RAK0[0] + 18.5, RAK0[1] + 11.5, 3);
-  mk_text("USB-C", RAK0[0] + 2.95, RAK0[1] + 16.5, 2.5, rot = 90);
-  // MiniBoost
-  mk_ring(MB0) square(MB_SIZE);
-  mk_text("BOOST", MB0[0] + 3.4, MB0[1] + 6.6, 2.2, rot = 90, sp = 0.9);
-}
-module sled_marks() translate([0, 0.01, 0]) rotate([90, 0, 0]) linear_extrude(height = MK_H + 0.01) sled_marks2d();
+// the board bays on the sled: [bay, corner on the sled (x, z), turn in the plate's plane (degrees)]
+function sled_bays() = [[BAY_RAK, RAK0, 0], [BAY_BQ, BQ0, 0], [BAY_MB, MB0, 0], [BAY_INA, INA0, 90]];
+// a bay's frame (u, v, h) to the sled: u and v turned by a in the plate's plane, h out of the front face (-y)
+function sled_bay_m(o, a) = [[cos(a), -sin(a), 0, o[0]], [0, 0, -1, 0], [sin(a), cos(a), 0, o[1]], [0, 0, 0, 1]];
 module sled_assembled() {
   difference() {
     union() {
       translate([0, SL_T, 0]) rotate([90, 0, 0]) linear_extrude(height = SL_T) plate2d();
       for (s = [-1, 1]) translate([s*SL_FOOT[0] - 5, -9, SL_Z0]) cube([10, 9 + 0.01, 3.5]);
-      for (i = [0 : len(standoffs()) - 1]) let(p = standoffs()[i])
-        if (i == len(standoffs()) - 1)   // RAK half-hole: keep the standoff off the board's underside
-          intersection() { fwd(p[0], p[1], p[2], SO_H, 36); translate([RAK0[0] + 32.5, -SO_H - 1, p[1] - 5]) cube([10, SO_H + 2, 10]); }
-        else fwd(p[0], p[1], p[2], SO_H, 36);
-      fwd(mb_xz(MB_REST)[0], mb_xz(MB_REST)[1], 4, SO_H, 24);
-      for (b = BUTTONS) btn_post(b[0], b[1]);
-      sled_marks();
+      for (b = sled_bays()) multmatrix(sled_bay_m(b[1], b[2])) bay_add(b[0]);
     }
-    for (p = standoffs()) translate([p[0], -SO_H - 0.01, p[1]]) rotate([-90, 0, 0]) cylinder(d = M2_INSERT_D, h = M2_HOLE_DEPTH + 0.01);
+    for (b = sled_bays()) multmatrix(sled_bay_m(b[1], b[2])) bay_cut(b[0]);
     for (s = [-1, 1]) translate([s*SL_FOOT[0], SL_FOOT[1], SL_Z0 - 1]) cylinder(d = M3_CLEAR, h = 6);
-    for (z = ZIP) translate([z[0] - 2.1, -1, z[1] - 1]) cube([4.2, SL_T + 2, 2]);
+    for (z = concat(ZIP, PB_ZIP)) translate([z[0] - 2.1, -1, z[1] - 1]) cube([4.2, SL_T + 2, 2]);
     for (z0 = CS_Z) for (s = [-1, 1]) translate([s*CS_X - CS_W/2, -1, z0]) cube([CS_W, SL_T + 2, CS_LEN]);   // cell straps
   }
 }
 module sled_flat() translate([0, 0, SL_T]) rotate([-90, 0, 0]) sled_assembled();
-// turn button: a C-shaped hub that snaps over the post's head and grips its shank,
-// and an arm whose foot presses on the pad round a board's mounting hole
-module button2d() difference() {
-  union() {
-    circle(d = 8, $fn = 40);
-    hull() { circle(d = BTN_ARM, $fn = 24); translate([BTN_L, 0]) circle(d = BTN_ARM, $fn = 24); }
-  }
-  circle(d = SHANK_D - 0.1, $fn = 32);
-  translate([-5, -0.5]) square([5, 1.0]);
-}
-module button() {   // hub underside at z = 0, arm along +x, foot below
-  linear_extrude(height = BTN_T) button2d();
-  translate([BTN_L, 0, -(BTN_GAP + 0.05)]) cylinder(d = BTN_FOOT, h = BTN_GAP + 0.06, $fn = 24);
-}
-module buttons_assembled() for (b = BUTTONS)   // swung shut over the pads
-  translate([b[0], -H_BTN, b[1]]) rotate([90, 0, 0]) rotate(atan2(b[3] - b[1], b[2] - b[0])) button();
-module buttons_print() {   // all nine on a snap-off spine, arms up, feet up
-  n = len(BUTTONS);
-  for (i = [0 : n - 1]) translate([0, i*10, BTN_T]) mirror([0, 0, 1]) button();
-  translate([-6.5, -2, 0]) cube([1.2, (n - 1)*10 + 4, 1.2]);
-  for (i = [0 : n - 1]) translate([-5.5, i*10 + 1.6, 0]) cube([2.3, 0.8, 0.8]);   // off the C split
-}
 
 // ============================ BOARD BAYS ============================
 // Tool-less board holders, built from plain features standing on a plate. A board sits on
@@ -950,7 +884,7 @@ module bay_test(b) difference() {
 BAY_BQ = [BQ_SIZE, SO_H,                                     // charger: JST sockets on the bottom edge, USB-C on top
   [[2.54, 2.54, 6], [29.21, 2.54, 6], [2.54, 22.86, 6]],
   [["B", 3.0, 6.5], ["B", 25.2, 28.7]],                      // either side of the two JST sockets
-  ["T", 22.0, 25.0, 1],                                      // right of the USB-C; the tongue runs right, clear of the cell
+  ["T", 25.0, 28.0, -1],                                     // right of the USB-C, near the corner; the tongue runs left along the top edge
   [["L", 20.2, 22.5], ["R", 20.2, 22.5]],                    // above the battery strap
   [["CHARGER", 15.875, 3.1, 3, 0, 0.92], ["USB-C", 15.875, 22.05, 3, 0, 1]],   // USB-C at the end its socket goes
   [[CS_Z[0] - 0.5 - BQ0[1], CS_Z[0] + CS_LEN + 0.5 - BQ0[1]]]];   // no outline under the battery strap
@@ -964,8 +898,8 @@ BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C,
 BAY_MB = [MB_SIZE, SO_H,                                     // MiniBoost: four pins along the bottom edge
   [[MB_HOLE[0], MB_HOLE[1], 6], [MB_REST[0], MB_REST[1], 4]],
   [["L", 2.8, 5.8], ["L", 11.8, 14.8]],                      // either side of the inductor
-  ["R", 7.0, 10.0, 1],
-  [["B", 8.5, 10.4], ["T", 6.0, 8.5]],
+  ["R", 7.0, 10.0, -1],                                     // tongue runs down, past the board's bottom corner
+  [["B", 8.0, 9.9], ["T", 6.0, 8.5]],                         // bottom stop clear of the tongue's slot
   [["BOOST", 3.4, 6.6, 2.2, 90, 0.9]]];
 INA_SIZE = [20.4, 25.6];                                     // Adafruit INA219 #904: terminal block on the right edge
 BAY_INA = [INA_SIZE, 4,
@@ -977,7 +911,7 @@ BAY_INA = [INA_SIZE, 4,
 module bay_tests() {   // one small test plate per board, side by side, in print pose
   translate([8, 8, SL_T]) bay_test(BAY_BQ);
   translate([66, 8, SL_T]) bay_test(BAY_RAK);
-  translate([8, 52, SL_T]) bay_test(BAY_MB);
+  translate([8, 69, SL_T]) bay_test(BAY_MB);
   translate([48, 58, SL_T]) bay_test(BAY_INA);
 }
 
@@ -1125,8 +1059,10 @@ CLR_BRKT  = [0.35, 0.35, 0.33];
 module cell_dummy() color([0.22, 0.42, 0.58]) translate([CELL_P[0], CELL_P[1], CELL_Z0]) cylinder(d = CELL_D, h = CELL_L);
 module boards_dummy() {
   yb = -SO_H - PCB_T;   // boards' top faces
+  // each board sits pushed against its bay's hooks, BAY_GAP from its outline
   // RAK19003 (notch in its lower edge, half-hole in its far edge), its USB-C and the cable's plug,
   // the RAK4631 core on top and a RAK1901 underneath
+  translate([-BAY_GAP, 0, 0]) {
   color([0.15, 0.15, 0.15]) difference() {
     translate([RAK0[0], yb, RAK0[1]]) cube([RAK_SIZE[0], PCB_T, RAK_SIZE[1]]);
     translate([RAK0[0] + 15.5, yb - 1, RAK0[1] - 1]) cube([13, PCB_T + 2, 9]);
@@ -1136,15 +1072,22 @@ module boards_dummy() {
   color([0.1, 0.1, 0.1]) translate([RAK0[0] - 0.77 - 21, yb - 3.26/2 - 3.25, RAK0[1] + RAK_USB - 6.2]) cube([21, 6.5, 12.4]);
   color("White") translate([RAK0[0] + RAK_CORE[0], yb - 4.2, RAK0[1]]) cube([RAK_CORE[1] - RAK_CORE[0], 2.7, RAK_SIZE[1]]);
   color([0.1, 0.4, 0.2]) translate([RAK0[0] + 21, -SO_H + 0.01, RAK0[1] + 16]) cube([10, 3.5, 10]);
+  }
   // bq25185 with its USB-C and two JST sockets
+  translate([0, 0, -BAY_GAP]) {
   color([0.1, 0.25, 0.55]) translate([BQ0[0], yb, BQ0[1]]) cube([BQ_SIZE[0], PCB_T, BQ_SIZE[1]]);
   color("Silver") translate([BQ0[0] + 15.875 - 4.47, yb - 3.2, BQ0[1] + BQ_SIZE[1] - 6.75]) cube([8.94, 3.2, 7.35]);
   color("White") for (x = [11.43, 20.32]) translate([BQ0[0] + x - 4, yb - 4.5, BQ0[1]]) cube([8, 4.5, 6]);
+  }
   // MiniBoost and its inductor
+  translate([-BAY_GAP, 0, 0]) {
   color([0.1, 0.25, 0.55]) translate([MB0[0], yb, MB0[1]]) cube([MB_SIZE[0], PCB_T, MB_SIZE[1]]);
   color([0.2, 0.2, 0.2]) translate([MB0[0] + 3.683 - 2.5, yb - 4.5, MB0[1] + 8.763 - 2.5]) cube([5, 4.5, 5]);
-  // protection board
-  color([0.15, 0.15, 0.15]) translate([-27, -2.5, 97]) cube([22, 2.5, 14]);
+  }
+  // INA219, turned 90 degrees, on its lower standoffs
+  color([0.1, 0.25, 0.55]) translate([INA0[0] - INA_SIZE[1] + BAY_GAP, -BAY_INA[1] - PCB_T, INA0[1]]) cube([INA_SIZE[1], PCB_T, INA_SIZE[0]]);
+  // protection board, zip-tied flat on the back
+  color([0.15, 0.15, 0.15]) translate([PB_BACK[0], SL_T, PB_BACK[1]]) cube([PB_BACK[2], 2.5, PB_BACK[3]]);
 }
 module ports_dummy() {
   color([0.1, 0.1, 0.1]) translate([VENT_P[0], VENT_P[1], 0.01]) cylinder(d = 18.5, h = 10);
@@ -1208,7 +1151,6 @@ module assembly(v, m) {
   if (v == "C") color(CLR_SHELL) sleeve_c();
   color(CLR_BRKT) bracket(bv(v), m);
   color([0.75, 0.7, 0.6]) sled_assembled();
-  color([0.75, 0.7, 0.6]) buttons_assembled();
   cell_dummy(); boards_dummy(); ports_dummy();
   for (z = joints(v)) translate([0, 0, z]) { oring_dummy(); lock_screw_dummy(); lock_pin_dummy(); }
   mount_dummy(bv(v)); panel_dummy(bv(v));
@@ -1224,7 +1166,6 @@ module kit(v, m) {
   translate([-75, 200]) translate([0, 0, TT_FL]) thread_test_male();
   translate([75, 200]) thread_test_female();
   translate([160, 200]) fit_test();
-  translate([290, 170]) buttons_print();
   for (i = [0 : len(joints(v)) - 1]) translate([290, 280 + i*20]) lock_pin();
   translate([0, 480]) bracket_print(bv(v), m);
   if (m == "wing" && wing_spacer_len(bv(v)) > 1) translate([200, 330, 0]) wing_spacers_print(bv(v));
@@ -1247,6 +1188,5 @@ else if (PART == "bay_test_rak") translate([0, 0, SL_T]) bay_test(BAY_RAK);
 else if (PART == "bay_test_mb") translate([0, 0, SL_T]) bay_test(BAY_MB);
 else if (PART == "bay_test_ina") translate([0, 0, SL_T]) bay_test(BAY_INA);
 else if (PART == "mount_test") mount_test();
-else if (PART == "buttons") { if (POSE == "print") buttons_print(); else buttons_assembled(); }
 else if (PART == "lock_pin") { if (POSE == "print") lock_pin(); else lock_pin_dummy(); }
 else if (PART == "wing_spacers") wing_spacers_print(bv(VERSION));

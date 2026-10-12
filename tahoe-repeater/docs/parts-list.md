@@ -25,7 +25,7 @@ The boxes can't be ticked on GitHub itself. Print the page, or paste the list in
 ### Optional
 
 - [ ] **RAK1901 temperature and humidity sensor** (Sensirion SHTC3). [Rokland](https://store.rokland.com/products/rak-wireless-rak1901-temperature-and-humidity-sensor-sensirion-shtc3-pid-100001), $7.97. It plugs into slot C or D on the underside of the RAK19003, and the sled leaves room for it. It measures the air inside the box, so it tells you about heat and condensation in there, not the weather outside.
-- [ ] **Adafruit INA219 current sensor** (#904). [Mouser 485-904](https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D), $9.95. MeshCore can't see the real cell voltage because the RAK runs from the 5 V boost. The INA219 reports the cell's voltage and current in telemetry. Its wiring is step 4 of the build guide: it goes in the cell lead's red wire and on the RAK19003's I²C pads (J6). You'll also need a small square of double-sided foam tape to stick it to the back of the sled, and a few inches of thin hookup wire.
+- [ ] **Adafruit INA219 current sensor** (#904). [Mouser 485-904](https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D), $9.95. MeshCore can't see the real cell voltage because the RAK runs from the 5 V boost. The INA219 reports the cell's voltage and current in telemetry. Its wiring is step 4 of the build guide: it goes in the cell lead's red wire and on the RAK19003's I²C pads (J6). It snaps into its own bay on the sled. You'll also need a few inches of thin hookup wire.
 - [ ] **1000 µF low-ESR capacitor, 10 V or more, on a JST-PH 2-pin plug.** Only if the node reboots when it transmits. It plugs into the RAK's empty BAT port (see Troubleshooting in the build guide).
 - [ ] **Bigger antenna: ALFA AOA-915-5ACM** (5 dBi, N-male), [Rokland](https://store.rokland.com/products/alfa-aoa-915-5acm-5-dbi-omni-outdoor-915mhz-802-11ah-mini-antenna-for-lora-halow-application), $14.97, plus an [SMA-male to N-female adapter](https://store.rokland.com/products/sma-male-to-n-female-connector-adapter-pigtail), $5.97. On a tree, it does best mounted higher up on a short run of coax.
 
@@ -48,12 +48,11 @@ The boxes can't be ticked on GitHub itself. Print the page, or paste the list in
 
 ## Screws, nuts and inserts for the enclosure
 
-Stainless where you can. Most of these come in a basic M2/M3 assortment. Only the lock-tab nut is really needed: the latch and the printed buttons do the jobs the rest used to, and the screws are there if you'd rather use them.
+Stainless where you can. Most of these come in a basic M2/M3 assortment. Only the lock-tab nut is really needed: the latch and the sled's board bays do the jobs the rest used to, and the screws are there if you'd rather use them.
 
 - [ ] **Lock-tab nut:** 1 × plain M3 hex nut (DIN 934, 5.5 mm across flats, 2.4 mm thick), 2 for C. It gets sealed inside the base (A and C), the can (B) or the sleeve (C) during printing, so the lock screw has something to go into if you ever want it, and it can't be added later. It has to be a plain nut; the nylon-insert lock nuts in the bracket are too tall for the lock tab.
 - [ ] **Lock screw (optional):** 1 × M3 × 20 socket-head screw, 1 × M3 split lock washer (DIN 127) and 1 × M3 flat washer (DIN 125), 2 of each for C. The split washer goes under the head, then the flat washer, so the split washer never bites into the plastic.
 - [ ] **Sled (optional):** 2 × M3 × 8 or M3 × 10 socket-head screws and 2 × M3 heat-set inserts, 5 mm wide (the fit test checks the hole size). The sled clicks into the floor without them.
-- [ ] **Boards (optional):** 8 × M2 × 5 screws with washers, and 8 × M2 heat-set inserts, 3.5 mm wide. That's four for the charger, one for the MiniBoost and three for the RAK19003. Only if you use screws instead of the printed turn buttons.
 
 ## Mounting hardware
 
@@ -104,7 +103,7 @@ How many: one strap in the middle channel as extra hold with tree screws. With n
 - Soldering iron, 60 W or more with a wide chisel tip for the cell tabs, plus solder and flux.
 - Multimeter.
 - Heat gun or lighter for the heat shrink.
-- A 2.5 mm hex key for the M3 socket heads (and 1.5 mm if you use M2 screws for the boards), a Phillips screwdriver and small pliers. For B, long-nose pliers and a long 2.5 mm hex driver, because the can's floor is a long reach down.
+- A 2.5 mm hex key for the M3 socket heads, a Phillips screwdriver and small pliers. For B, long-nose pliers and a long 2.5 mm hex driver, because the can's floor is a long reach down.
 - An 8 mm (5/16 in) nut driver for the SMA bulkhead nut.
 - A craft knife, and 2.5 mm and 5 mm drill bits turned by hand, to clear a string of plastic from the lock screw or pin holes if needed. A 13/64 in (5 mm) bit, if the panel mount's top hole needs opening up for the #10 screw.
 - Drill with a 3 mm (1/8 in) bit for pilot holes in the tree.
@@ -171,7 +170,6 @@ Bolt Depot sells metric stainless hardware by the piece. Everything here is 18-8
 - [ ] [M3 socket-head screws](https://boltdepot.com/Browse?Category=Socket_screws&F_Diameter=3mm&Units=Metric): × 2 / 3 / 0 at 16 or 20 mm for the panel mount; optionally × 1 at 20 mm for the lock screw (2 for C) and × 2 at 8 or 10 mm for the sled
 - [ ] M3 hex nut, plain (DIN 934), × 1 (2 for C): the lock-tab nut
 - [ ] [M3 × 25 fully threaded hex bolts (tap bolts, DIN 933)](https://boltdepot.com/Browse?Category=Hex_bolts&F_Diameter=3mm&Units=Metric), × 0 / 0 / 3
-- [ ] Optional, instead of the turn buttons: M2 × 5 screws and M2 washers, × 8 each
 
 ### boltsandnuts.com
 
@@ -181,8 +179,8 @@ Bolt Depot sells metric stainless hardware by the piece. Everything here is 18-8
 
 These are common enough that any electronics or hardware supplier, or an Amazon assortment, will have them.
 
-- [ ] Optional: M3 heat-set inserts, 5 mm wide, × 2 (to screw the sled down), and M2 heat-set inserts, 3.5 mm wide, × 8 (to screw the boards down)
-- [ ] Optional, with the INA219: double-sided foam mounting tape (a 2 cm square) and a few inches of thin hookup wire
+- [ ] Optional: M3 heat-set inserts, 5 mm wide, × 2 (to screw the sled down)
+- [ ] Optional, with the INA219: a few inches of thin hookup wire
 - [ ] Small black UV-rated zip ties and a small silica gel packet
 - [ ] Optional: a 1000 µF low-ESR capacitor, 10 V or more, on a JST-PH 2-pin plug
 

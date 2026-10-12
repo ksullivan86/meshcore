@@ -12,7 +12,6 @@ Adafruit MiniBoost 5 V (#4654),Radio and power,Mouser,https://www.mouser.com/Pro
 "U.FL to SMA-female bulkhead pigtail, about 20 cm (8 in), RG178",Radio and power,eBay,https://www.ebay.com/itm/387516099576,2.48,1,1,1,,yes,"Choose 8 in and SMA female, not RP-SMA. At 20 cm the sled comes out without unplugging it.",Amazon B07TXH2N83; the RAK kit lead if it is a bulkhead type (then unplug the U.FL to take the sled out)
 RAK1901 temperature and humidity sensor,Radio and power,Rokland,https://store.rokland.com/products/rak-wireless-rak1901-temperature-and-humidity-sensor-sensirion-shtc3-pid-100001,7.97,1,1,1,,optional,,
 Adafruit INA219 current sensor (#904),Radio and power,Mouser,https://www.mouser.com/ProductDetail/Adafruit/904?qs=GURawfaeGuDOI%2Fva45%252BkSg%3D%3D,9.95,1,1,1,,optional,Reports the cell voltage and current; step 4 of the build guide.,"Adafruit direct, Digi-Key"
-Double-sided foam mounting tape,Radio and power,Anywhere,,,1,1,1,,optional,A 2 cm square holds the INA219 on the back of the sled.,
 "1000 uF low-ESR capacitor, 10 V+, on a JST-PH plug",Radio and power,Anywhere,,,1,1,1,,optional,Only if the node reboots when it transmits.,
 "ALFA AOA-915-5ACM antenna, 5 dBi, N-male",Radio and power,Rokland,https://store.rokland.com/products/alfa-aoa-915-5acm-5-dbi-omni-outdoor-915mhz-802-11ah-mini-antenna-for-lora-halow-application,14.97,1,1,1,,optional,,
 SMA-male to N-female adapter,Radio and power,Rokland,https://store.rokland.com/products/sma-male-to-n-female-connector-adapter-pigtail,5.97,1,1,1,,optional,For the ALFA antenna.,
@@ -33,8 +32,6 @@ M3 x 20 socket-head screw (lock screw),Enclosure screws,Bolt Depot,https://boltd
 "M3 hex nut, plain, DIN 934, 2.4 mm thick (lock-tab nut)",Enclosure screws,Bolt Depot,,,1,1,1,+1,recommended,"Sealed in each lock tab during printing, for the lock screw. It can't be added later. Must be a plain nut.",
 M3 x 8 or M3 x 10 socket-head screw (sled),Enclosure screws,Bolt Depot,https://boltdepot.com/Browse?Category=Socket_screws&F_Diameter=3mm&Units=Metric,,2,2,2,,optional,The sled clicks into the floor without them.,
 "M3 heat-set insert, 5 mm wide",Enclosure screws,Anywhere,,,2,2,2,,optional,Only to screw the sled down.,
-M2 x 5 screw with washer,Enclosure screws,Bolt Depot,,,8,8,8,,optional,Only if you use screws instead of the printed turn buttons.,
-"M2 heat-set insert, 3.5 mm wide",Enclosure screws,Anywhere,,,8,8,8,,optional,Only if you use screws instead of the printed turn buttons.,
 "#10 x 3-1/2 in stainless pan-head wood screw, 25-pack (QISHENG)",Mounting hardware,Amazon,https://www.amazon.com/dp/B0CDHLHHXY,13.99,3,3,3,,yes,"Qty is screws; one pack covers it. The keyhole, the rail and the top hole. With straps only, you need none.","Everbilt #10 x 2 in 20-pack, Home Depot 802932 ($6.87), for thin bark"
 "M3 socket-head screw, x 16 or x 20 (panel mount)",Mounting hardware,Bolt Depot,https://boltdepot.com/Browse?Category=Socket_screws&F_Diameter=3mm&Units=Metric,,2,3,0,,yes,"x 16 for a mount base up to 5 mm thick, x 20 for 5.5 to 9 mm.",
 "M3 nylon-insert lock nut, DIN 985 (4 mm thick)",Mounting hardware,Bolt Depot,https://boltdepot.com/Product-Details?product=4792,0.07,2,3,0,,yes,"Sealed in the bracket, nylon side down.","McMaster-Carr, Amazon assortments"

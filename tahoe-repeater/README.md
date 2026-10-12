@@ -29,7 +29,7 @@ There's one file for each version and mount style. Each file holds every printed
 - the top (A) or the lid (B and C)
 - the base (A and C) or the can (B)
 - the sleeve (C)
-- the board sled, and nine turn buttons that hold the boards on it
+- the board sled, with a snap-in bay for each board
 - a lock pin (two for C, which has two joints)
 - the bracket
 - two thread test rings, a small fit-test bar and a panel-mount test disc
@@ -92,7 +92,7 @@ Not sure? Start with **A, tree-screw** on your own tree, or **A, bolt-on** if yo
 **Inside**
 
 - A sled holds the RAK19003 (with the RAK4631), the bq25185 charger and the 5 V boost board. It clicks into the floor and pulls straight up by a handle. There's room for a RAK1901 temperature and humidity sensor under the RAK board.
-- Printed turn buttons hold the boards on the sled, so you don't need a screwdriver. M2 screws into heat-set inserts still fit if you'd rather use them.
+- Each board snaps into its own bay on the sled: two hooks on one edge, a latch with a pull tab on the other. No screwdriver, screws or inserts.
 - A cup holds the 15 Ah cell upright behind the sled, and a hook-and-loop strap holds it to the sled. See [Inside](#inside).
 
 **Bracket**
@@ -176,7 +176,7 @@ The latch, pin and screw all line up where the joint lands when it's hand-tight.
 
 The sled clicks into two sockets in the floor on two sprung prongs. To take it out, unplug the panel lead at the charger and pull the sled straight up by its handle. The cell comes with it, strapped on, because its leads run to the protection board on the sled. With the 20 cm antenna lead from the parts list, you can set the sled down beside the box without unplugging the antenna.
 
-The boards sit on standoffs. Nine printed turn buttons snap onto posts beside them and swing over the pads round each board's mounting holes, so a board comes off with a flick of each button. If you'd rather use screws, the standoffs still take M2 heat-set inserts and M2 × 5 screws. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it.
+Each board snaps into its own bay. It sits on standoffs, one edge slides under two fixed hooks, and a latch clicks over the other edge. Pull the latch's tab outward and the board lifts out. The protection board is zip-tied flat on the back of the sled. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it. (The picture still shows the earlier turn buttons; it's being redrawn.)
 
 ## Straps
 
@@ -227,12 +227,11 @@ Settings: ASA, 0.4 mm nozzle, 0.2 mm layers, 7 walls, 30% gyroid infill, 5 top a
 | B can | 9 h 30 m | 297 g | **Pause at 134.8 mm** for the lock tab's nut |
 | Lid (B and C) | 6 h 15 m | 140 g | Supports inside (tree, build plate only) |
 | C sleeve | 8 h 40 m | 277 g | **Pause at 126.8 mm** for the lock tab's nut |
-| Sled | 1 h 15 m | 26 g | |
-| Turn buttons (all nine) | 6 m | 1 g | |
+| Sled | about 1 h 30 m | about 32 g | Estimated from the earlier sled, now 80 mm wide with its board bays |
 | Bracket A | 5 h 10 m to 5 h 25 m | 141 to 147 g | **Pause at 9.2 mm** for the lock nuts (tree-screw, bolt-on) |
 | Bracket B and C | 6 h 45 m to 7 h 5 m | 175 to 181 g | **Pause at 29.2 mm** for the lock nuts (tree-screw, bolt-on) |
 
-The wing-nut brackets don't need a pause. The times are PrusaSlicer estimates; Bambu Studio on a P1S will give you its own. A full version A comes to about 540 g and 18 hours, B to about 645 g and 24 hours, and C to about 700 g and 26½ hours. The test pieces add about 135 g and 5 hours. One 1 kg spool covers any of them, test pieces included.
+The wing-nut brackets don't need a pause. The times are PrusaSlicer estimates; Bambu Studio on a P1S will give you its own. A full version A comes to about 545 g and 18 hours, B to about 650 g and 24 hours, and C to about 705 g and 26½ hours. The test pieces add about 135 g and 5 hours. One 1 kg spool covers any of them, test pieces included.
 
 The [build guide](docs/build-guide.md#2-print-the-parts) shows how to add the pauses and how to drop the nuts in. The bracket's lock nuts go in nylon side down.
 
@@ -253,8 +252,8 @@ Revision 8 was never published on its own, so this covers everything since revis
 - **Tool-less locking.** Every joint has a latch that clicks shut by itself, and a printed lock pin on a tether. The lock screw still fits. The tabs are wider to carry all three.
 - **The locks line up where the joint lands.** The thread has a little play, so hand-tight ended a few degrees past where the tabs were drawn lined up. The upper part's thread is now turned 2.5° to allow for that, and the screw and pin sit in slots. The turn from drop-in to closed is about 93° instead of exactly 90°.
 - **Tool-less sled.** It clicks into the floor and pulls out by a handle. The two M3 screws that held it down are optional.
-- **Turn buttons** hold the boards, and M2 screws are optional.
-- **The RAK19003 mounts on its real holes.** Revision 7 had them in the wrong places, so don't print that sled. The board now sits on its two holes and the half-hole at its far edge.
+- **Board bays** hold the boards: each one snaps in under two hooks and a latch with a pull tab, with no tools, screws or inserts. The sled is 80 mm wide to fit them, and the protection board is zip-tied on its back.
+- **The RAK19003 mounts on its real holes.** Revision 7 had them in the wrong places, so don't print that sled. Its bay locates it by a pin in the half-hole at its far edge.
 - **One hook-and-loop strap holds the cell,** instead of zip ties. It goes round the middle of the cell, where it can cross the sled clear of every board.
 - **Version C,** a new sleeve between A's base and B's lid.
 - **Lock nuts in the bracket.** The nuts sealed in the bracket are M3 nylon-insert lock nuts, so the panel mount's screws can't work loose. Their pockets are deeper, and the pause moved to 9.2 mm (A) and 29.2 mm (B and C).

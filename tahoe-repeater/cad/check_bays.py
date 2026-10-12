@@ -12,14 +12,14 @@ def vol(m):
 def inter(a, b): return vol(trimesh.boolean.intersection([a, b], check_volume=False))
 # per bay: size, standoff h, hook edge, latch [edge, t0, t1, dir], components [(u0,u1,v0,v1,h0 above board top, h1)]
 B = {
- 'bq':  dict(W=31.75, H=25.4, so=7, hook='B', latch=('T', 22, 25, 1),
+ 'bq':  dict(W=31.75, H=25.4, so=7, hook='B', latch=('T', 25, 28, -1),
              comp=[(11.4, 20.3, 18.65, 26.0, 0, 3.2), (7.43, 15.43, 0, 6, 0, 4.5), (16.32, 24.32, 0, 6, 0, 4.5)]),
  'rak': dict(W=35, H=30, so=7, hook='L', latch=('R', 22, 27, 1),
              comp=[(-0.77, 6.58, 13.83, 22.77, 0, 3.26), (-21.77, -0.77, 12.1, 24.5, -1.62, 4.88), (12, 32, 0, 30, 0, 2.7)],
              under=[(21, 31, 16, 26, 0.01, 3.5),      # RAK1901, heights from the plate face
                     (6.0, 11.0, 1.3, 6.5, 1.0, 6.99), (6.0, 11.0, 23.5, 28.7, 1.0, 6.99)],
              holes=[(35, 15, 2.7), (4, 4, 2.7), (4, 26, 2.7)]),   # BAT and SOLAR sockets' pins, 7 mm in
- 'mb':  dict(W=11.43, H=17.78, so=7, hook='L', latch=('R', 7, 10, 1), comp=[(1.18, 6.18, 6.26, 11.26, 0, 4.5)]),
+ 'mb':  dict(W=11.43, H=17.78, so=7, hook='L', latch=('R', 7, 10, -1), comp=[(1.18, 6.18, 6.26, 11.26, 0, 4.5)]),
  'ina': dict(W=20.4, H=25.6, so=4, hook='B', latch=('T', 3, 6, 1), comp=[]),
 }
 def ef(e, W, H):   # edge frame -> bay frame, as in the CAD

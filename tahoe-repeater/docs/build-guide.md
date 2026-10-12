@@ -47,13 +47,13 @@ ASA, 0.4 mm nozzle, 0.2 mm layers (first layer 0.2 mm too), 7 walls, 30% gyroid 
 
 ### Split the file into plates
 
-Load your file in Bambu Studio, right-click it and choose **Split > To objects**. You get ten parts for A or B and twelve for C, plus three small spacers with the wing-nut mount on B or C. The parts that take a nut do it at different heights, so give each one its own plate and every plate needs at most one pause.
+Load your file in Bambu Studio, right-click it and choose **Split > To objects**. You get nine parts for A or B and eleven for C, plus three small spacers with the wing-nut mount on B or C. The parts that take a nut do it at different heights, so give each one its own plate and every plate needs at most one pause.
 
 | Plate | A | B | C |
 |---|---|---|---|
 | 1 | Test pieces and the lock pin | Test pieces, the lock pin and any wing-nut spacers | Test pieces, both lock pins and any wing-nut spacers |
-| 2 | Top | Can, sled and buttons: **pause at 134.8 mm** | Sleeve: **pause at 126.8 mm** |
-| 3 | Base, sled and buttons: **pause at 4.8 mm** | Lid, with supports | Base, sled and buttons: **pause at 4.8 mm** |
+| 2 | Top | Can and sled: **pause at 134.8 mm** | Sleeve: **pause at 126.8 mm** |
+| 3 | Base and sled: **pause at 4.8 mm** | Lid, with supports | Base and sled: **pause at 4.8 mm** |
 | 4 | Bracket: **pause at 9.2 mm** | Bracket: **pause at 29.2 mm** | Lid, with supports |
 | 5 | | | Bracket: **pause at 29.2 mm** |
 
@@ -63,7 +63,7 @@ The wing-nut brackets don't need a pause. The test pieces are the two thread tes
 
 **Lid (B and C):** turn on supports for that plate: tree supports, **build plate only**. They fill the inside of the lid under its sloped roof and snap out afterwards. Nothing else needs supports.
 
-**Buttons:** the nine turn buttons print flat on a thin spine. Snap them off it afterwards and trim any nub with a knife.
+**Sled:** it prints flat, board side up. Each board's latch is a strip cut free of the plate, so check the slots round each strip are clean and the strip flexes freely before you fit the boards.
 
 ### Print the test pieces first
 
@@ -118,7 +118,7 @@ Each nut should fall in flat and sit a little below the top of its pocket. Push 
 - If the holes don't line up, measure again, change `MOUNT_HOLE_SPACING` (and `MOUNT_HOLE_ANG` if the holes aren't evenly spaced) and print a new disc. [Changing the design](customizing.md#the-panel-mounts-holes) shows how.
 - Once the disc fits, the bracket will too, as long as you export the bracket with the same settings.
 
-**Fit-test bar.** Press an M3 heat-set insert into each of the three larger holes (4.1, 4.3 and 4.5 mm) and an M2 insert into each of the smaller ones (3.0, 3.1 and 3.2 mm). The file uses 4.3 for the M3 inserts in the floor and 3.1 for the M2 inserts in the sled. Both are only needed if you screw the sled or the boards down instead of using the prongs and buttons. If another size holds better, change `INSERT_D` or `M2_INSERT_D` in the source ([how](customizing.md)). An M3 nylon-insert lock nut should drop easily into the pocket marked *nut* and sit below the surface, and so should a plain M3 nut. The pocket marked *bolt* opens on the underside. A wing-nut bolt's head should push into it snugly.
+**Fit-test bar.** Press an M3 heat-set insert into each of the three larger holes (4.1, 4.3 and 4.5 mm). The file uses 4.3 for the M3 inserts in the floor, which are only needed if you screw the sled down as well as clicking it in. The three smaller holes (3.0, 3.1 and 3.2 mm) are for M2 inserts, which nothing uses now that the boards snap into bays, so you can skip them. If another size holds better, change `INSERT_D` or `M2_INSERT_D` in the source ([how](customizing.md)). An M3 nylon-insert lock nut should drop easily into the pocket marked *nut* and sit below the surface, and so should a plain M3 nut. The pocket marked *bolt* opens on the underside. A wing-nut bolt's head should push into it snugly.
 
 <img src="../images/step-fit-test.png" alt="The fit-test bar with inserts pressed into the 4.1, 4.3 and 4.5 mm holes and the 3.0, 3.1 and 3.2 mm holes, and a lock nut in the nut pocket">
 
@@ -200,7 +200,7 @@ Same station: swap to the big chisel tip and turn the iron up to about 400 °C. 
 
 1. **Best:** have a short nickel strip spot-welded to each tab (a battery or e-bike shop will do it, or use a handheld welder), then solder your leads to the strips, away from the cell.
 2. **Otherwise,** solder the leads straight to the tabs, quick and hot. Use a 60 W or stronger iron with a wide chisel tip at about 400 °C. Tin the tab with one touch of two or three seconds, tin the lead, then join them in a second or two. Let the cell cool between joints. **Never hold the iron on the cell.**
-3. Wire it in this order: cell **+** → 2 A fuse, within 2 cm of the tab → protection board **B+**. Cell **−** → protection board **B−**. Protection board **P+** and **P−** → a JST-PH female lead. The cell will stand positive end up, and the protection board sits near the top of the sled, so leave the leads long enough to reach.
+3. Wire it in this order: cell **+** → 2 A fuse, within 2 cm of the tab → protection board **B+**. Cell **−** → protection board **B−**. Protection board **P+** and **P−** → a JST-PH female lead. The cell will stand positive end up, and the protection board sits low on the back of the sled, behind the RAK19003, so leave the lead from the fuse to **B+** long enough to reach down the cell (about 15 cm), and the **P+** and **P−** lead long enough to reach round to the charger on the front.
 4. Check the polarity with a meter against the **BATT** marking on the charger before you plug anything in.
 5. Seal the fuse and every splice in adhesive-lined heat shrink.
 
@@ -259,20 +259,23 @@ Do this now, with no electronics inside, so a leak only wets a paper towel.
 
 ## 10. Build up the sled
 
-The boards can be held by the printed turn buttons or by M2 screws. The buttons need no tools and no inserts. The steps below use the buttons, with the screw way in brackets.
+Every board snaps into its own bay on the front of the sled, with no tools, screws or inserts. A bay is a few round standoffs the board sits on, two fixed hooks along one edge, a latch on the opposite edge and two small stops on the other edges. Each bay is outlined and named on the sled (RAK19003, CHARGER, BOOST, INA219), and the charger's says USB-C at the end its USB-C socket goes.
 
-1. **Cell strap.** Do this before the charger goes on. Thread the ½ in hook-and-loop strap in through one of the two long slots at the sides of the sled, across the front of the sled where the charger will sit, and out through the other slot. Pull it through until the ends hanging out the back are about the same length. It lies flat against the sled, behind the charger, in the only band across the front that's clear of every standoff and post.
+**Fitting a board:** tilt it, slide the edge with the hooks under them, then press the other edge down until the latch clicks over it. **Taking it out:** pull the latch's pull tab (the flat tab outside the latch, with the low grip at its end) or the ear on the latch's outer face away from the board, and lift that edge. Never push or pull the top of the latch itself, which can snap off.
+
+1. **Cell strap.** Do this before the charger goes on. Thread the ½ in hook-and-loop strap in through one of the two long slots at the sides of the sled, across the front of the sled where the charger will sit, and out through the other slot. Pull it through until the ends hanging out the back are about the same length. It lies flat against the sled, behind the charger, in the only band across the front that's clear of every bay.
 2. **Sensor (optional).** If you have a RAK1901, plug it into slot C or D on the underside of the RAK19003 and screw it down before the board goes on the sled.
-3. **Buttons.** Snap the nine turn buttons off their spine. Press one onto each post beside the board positions. The C-shaped end clicks over the post's head and then turns stiffly on it.
-4. **Boards.** Swing the buttons out of the way. Each board's place is outlined and named on the sled (CHARGER, RAK19003, BOOST), and the charger's outline says USB-C at the end where its USB-C socket goes. The round pegs are the standoffs the boards sit on; the six-sided ones are the buttons' posts. Set the RAK19003 (with the RAK4631 plugged in on top) on its three standoffs, the charger on its four and the MiniBoost on its one, and swing each button back over its board, so its foot sits on the pad round the mounting hole. That's four buttons for the charger, three for the RAK19003 and two for the MiniBoost. (With screws instead: press the eight M2 inserts into the standoffs, the same way as the M3s, and screw the boards down with M2 × 5 screws and washers.)
-5. **Protection board.** Zip-tie it to the sled in the empty space at the top left, through the two slots there.
-6. **INA219 (optional).** It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost.
-   - Stick it flat on the back of the sled, behind the MiniBoost, with a square of double-sided foam tape. That spot is clear of the cell and its strap.
-   - Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5.
-   - Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
-7. **Power path.** The leads are already on from step 4. Plug the LOAD pigtail into the charger's **LOAD** socket and the USB-C cable into the RAK19003. The DC in lead waits for the panel.
+3. **Boards.**
+   - **RAK19003** (with the RAK4631 plugged in on top), at the bottom: the USB-C edge under the hooks on the left, the latch on the right. The pin on the right-hand standoff goes into the half-hole in the board's edge.
+   - **Charger**, over the strap: the edge with the two JST sockets under the hooks at the bottom, the latch at the top right, beside the USB-C.
+   - **MiniBoost**, top right: pins at the bottom, the left edge under the hooks, the latch on the right.
+   - **INA219 (optional)**, top left, turned on its side with its screw terminals at the top: the edge with the STEMMA QT sockets under the hooks on the right, the latch on the left. It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost. Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5. Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
+4. **Protection board.** It goes flat on the back of the sled, low down behind the right half of the RAK19003 (on the left, seen from the back), clear of the cell. Hold it there with two zip ties, each through a pair of the four small slots, one slot above the other, so each tie wraps round the board and across the front under the RAK19003.
+5. **Power path.** The leads are already on from step 4. Plug the LOAD pigtail into the charger's **LOAD** socket and the USB-C cable into the RAK19003. The DC in lead waits for the panel.
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
-8. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
+6. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
+
+The two pictures below still show the earlier turn buttons and the old protection board and INA219 places; they're being redrawn for the bays.
 
 <img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots, the RAK1901 under the RAK19003, the turn buttons onto their posts, the boards onto their standoffs, and the buttons swung shut">
 
@@ -439,7 +442,7 @@ While you're up there, check that the wing nuts (if you have them) are still tig
 
 **The lock pin won't go in.** Check the latch has clicked, so the joint is fully closed. The pin's split end has to squeeze through the lower tab before it clicks into its groove, so it takes a firm push. If the hole has a string of plastic across it from printing, clear it with a 5 mm drill bit turned by hand.
 
-**The sled won't click in, or the boards rattle.** Push the sled straight down, not at an angle, so both prongs go into their sockets together. If a board rattles, check its buttons are swung fully over their pads.
+**The sled won't click in, or the boards rattle.** Push the sled straight down, not at an angle, so both prongs go into their sockets together. If a board rattles, check its latch has clicked fully over the board's edge and the other edge is right under both hooks.
 
 **The nozzle hit a nut after the pause.** The nut wasn't flat in its pocket. It should sit below the top of the pocket, so push each one down before you resume. If they won't go down, check the nut pocket on the fit-test bar.
 

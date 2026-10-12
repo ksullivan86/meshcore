@@ -6,7 +6,7 @@ Everything is in one OpenSCAD file, [`cad/tahoe-repeater.scad`](../cad/tahoe-rep
 
 1. Install [OpenSCAD](https://openscad.org) and open `cad/tahoe-repeater.scad`. The preview (F5) shows the assembled repeater with a stand-in panel.
 2. Open the Customizer (**Window > Customizer**) and set:
-   - **PART**: `upper` (A top, or B and C lid), `lower` (A and C base, or B can), `sleeve` (C), `bracket`, `sled`, `buttons`, `lock_pin`, `thread_test_male`, `thread_test_female`, `fit_test`, `mount_test`, `wing_spacers` (B and C wing-nut only), or `kit` for everything laid out.
+   - **PART**: `upper` (A top, or B and C lid), `lower` (A and C base, or B can), `sleeve` (C), `bracket`, `sled`, `lock_pin`, `thread_test_male`, `thread_test_female`, `fit_test`, `mount_test`, `wing_spacers` (B and C wing-nut only), or `kit` for everything laid out.
    - **VERSION**: `A`, `B` or `C`. C uses B's brackets and spacers.
    - **MOUNT**: `tree` (tree-screw), `bolt` (bolt-on) or `wing` (wing-nut). Only the bracket uses it.
    - **POSE**: `print` puts the part the way it prints. `assembled` puts it where it sits on the tree.
@@ -46,7 +46,7 @@ The fit-test bar tells you which of these to change.
 | Setting | Default | What it is |
 |---|---|---|
 | `INSERT_D` | 4.3 | Hole for the M3 heat-set inserts (the sled's feet). |
-| `M2_INSERT_D` | 3.1 | Holes for the M2 inserts (the board standoffs). |
+| `M2_INSERT_D` | 3.1 | The M2 gauge holes on the fit-test bar. Nothing on the sled uses M2 inserts now. |
 | `NUT_AF` | 5.8 | Hex pockets for the sealed M3 nuts, across flats. |
 | `NUT_H` | 2.8 | Depth of the lock tab's pocket, for a plain 2.4 mm M3 nut. It must stay a bit more than the nut, so the nozzle clears it after the pause. |
 | `LOCKNUT_H` | 4.4 | Depth of the bracket's pockets, for 4 mm M3 nylon-insert lock nuts. A plain nut fits too; it just sits deeper. |
@@ -99,4 +99,4 @@ It also stops with an error if the O-ring's stretch, squeeze or fill goes out of
 
 - **A bigger or different panel mount.** Besides the three settings above, `PAD_D` is the round pad behind the mount (64 mm). The file checks that the mount's holes and nuts stay inside it.
 - **Poles and posts.** The three tree screws all sit on the bracket's center line, so an adapter plate for a pole or post could bolt to those same three holes. There isn't one yet.
-- **Another cell or board.** The cell cup (`CELL_P`, `CUP_RI`), the sled (`SL_*`), the board positions (`BQ0`, `MB0`, `RAK0`) and the turn buttons' posts and feet (`BUTTONS`) are all settings. Keep everything inside a 42 mm radius of the center, so it can pass through the opening at the top of B's can and C's sleeve. The cell strap (`CS_Z`) has to cross the front of the sled in a band that's clear of every standoff and post, so check it again if you move a board.
+- **Another cell or board.** The cell cup (`CELL_P`, `CUP_RI`), the sled (`SL_*`) and the board positions (`BQ0`, `MB0`, `RAK0`, `INA0`) are all settings, and each board's bay is one line (`BAY_BQ`, `BAY_RAK`, `BAY_MB`, `BAY_INA`): its size, standoffs, hooks, latch, stops and labels. `sled_bays()` places them, and can turn one in the plate's plane. Each latch needs about 15 mm of clear plate outside its edge for its pull tab. Keep everything inside a 42 mm radius of the center, so it can pass through the opening at the top of B's can and C's sleeve. The cell strap (`CS_Z`) has to cross the front of the sled in a band that's clear of every bay, so check it again if you move a board. `cad/check_sled.py` checks each board fits its bay on the sled.

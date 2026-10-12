@@ -10,7 +10,7 @@ Planned changes to the Tahoe repeater.
 
 - [x] **Board outlines on the sled.** A 0.6 mm raised outline just inside each board's footprint, with its name (CHARGER, RAK19003, BOOST) and "USB-C" at the end where each board's USB-C socket goes. The charger's outline is broken where the battery strap crosses. Done in the CAD and STLs.
 - [x] **Clamp posts shaped differently from standoffs.** Done, but the clamps and posts go away with the board bays below.
-- [ ] **Redraw the sled pictures** (also: `step-sled-2.png` still shows the leads being soldered on the sled, which now happens in step 4) to show the outlines, labels and six-sided posts: the sled steps (part 1 and 2), putting it in, opening it, `inside-A.png` and `sled.png`.
+- [ ] **Redraw the sled pictures** for the 80 mm sled with its board bays (no turn buttons; the INA219 in its bay at the top left; the protection board zip-tied on the back), and the fitting and removing of a board (also: `step-sled-2.png` still shows the leads being soldered on the sled, which now happens in step 4): the sled steps (part 1 and 2), putting it in, opening it, `inside-A.png`, `sled.png` and the plates picture `step-plates.png`. The build guide and README say the pictures are being redrawn; take those notes out when they are.
 
 ## Tool-less board bays (replacing the swing clamps)
 
@@ -20,15 +20,15 @@ The replacement is a **board bay** (`BOARD BAYS` in the CAD): standoffs for supp
 
 - [x] **Bay design and four single-board test plates:** `stl/tahoe-repeater-board-bay-tests.stl` (charger, RAK19003, MiniBoost, INA219). Checked by `cad/check_bays.py`: one piece each, nothing touches a board (the latch sits 0.05 mm clear), each tongue is free to its root, and each board tilts in under its hooks.
 - [x] **Print the test plates and try each board.** All four boards fit and are held firmly. The RAK bay took several rounds: latch on the right edge, no standoffs near the JST pins, stronger hooks, the ear and outer pull tab, a 22 mm tongue and a 2.4 mm slot behind it. If a board is ever loose or tight in the hooks, change `BAY_SLOT_H` (1.75); for a stiffer or softer latch, change `BAY_TL` (22, longer is softer).
-- [ ] **Put the bays on the sled** once the test plates work. Map each bay onto the front face with `multmatrix([[1,0,0,X0],[0,0,-1,0],[0,1,0,Z0],[0,0,0,1]])` (u to x, v to z, h to -y) and subtract its `bay_cut` from the plate. Positions (bay corner on the sled):
-  - Charger `BAY_BQ` at `BQ0` (-15.9, 64). With the 22 mm tongue its root reaches x 28, so move the wiring zip slot at (26, 88) clear of it. Its pull tab reaches about z 101 at x 6 to 11; check it against the battery strap and the zip slots above. Hooks on the bottom edge either side of the JST sockets, latch on the top edge right of the USB-C, tongue running right (clear of the battery, which touches the plate along x = -5). Stops above the battery strap.
-  - RAK19003 `BAY_RAK` at `RAK0` (-17, 20). Hooks on the right edge, latch on the left edge below the USB-C. The half-hole standoff stays.
-  - MiniBoost `BAY_MB` at `MB0` (8, 99). Hooks on the left edge, latch on the right edge, tongue running up.
-  - INA219 `BAY_INA` at (-27, 95) on the front, where the protection board is now. It can't go on the back: the sled prints with its back on the bed.
-  - Move the protection board to the back, zip-tied flat at about x 6 to 28, z 30 to 44 (beside the battery, clear of every tongue). Replace the zip slots at (-20, 100) and (-4, 100) with four at (14, 22.5), (24, 22.5), (14, 39.5), (24, 39.5).
-  - Remove the swing clamps, their nine posts and the clamp spine from the sled and the kit STLs. Every bay now carries its own raised outline and labels (the seventh entry in its settings, required), so drop the separate `sled_marks2d` labels for these four boards when the bays go on.
-  - Re-run `check.py asm sled` and `check.py pose`, and a sled version of `check_bays.py`, then re-export the nine kits.
-- [ ] **Docs for the bays:** build guide step 10 (fitting and removing boards, the protection board's new place, the INA219 in its bay instead of foam tape), the parts list (no foam tape), and the wiring routes.
+- [x] **Put the bays on the sled.** The sled is 80 mm wide now (`SL_X` 40, was 30), so every latch's pull tab has room and points out to a side; it still passes the 42 mm radius of B's and C's openings. `sled_bays()` places each bay, turned in the plate's plane if needed:
+  - RAK19003 at (-17, 20), as before: hooks on the left (USB-C) edge, latch on the right, tongue running up.
+  - Charger at (-15.9, 64), as before, over the battery strap: hooks at the bottom, latch at the top right (moved to 25 to 28 mm along the edge), tongue running left along the top edge.
+  - MiniBoost at (12.5, 107), top right: hooks on the left, latch on the right, tongue running down (its bottom stop moved 0.5 mm to clear the tongue's slot).
+  - INA219 at (1, 101), top left, turned 90°: hooks on the right, latch on the left, screw terminals at the top.
+  - Protection board zip-tied flat on the back at x 7 to 29, z 23.5 to 37.5, through four slots at (12, 22.5), (24, 22.5), (12, 38.5), (24, 38.5). The old slots at (-20, 100) and (-4, 100) are gone.
+  - The turn buttons, their posts, the M2 insert holes and the separate sled labels are gone; each bay carries its own outline and label. The kits are one part fewer.
+  - Checked: `cad/check_sled.py` (each board fits its bay on the sled, each tongue is free, each board tilts in), `check.py asm` (no clashes in any version or mount), `check.py sweep` (the turn and the drop-in), the sled pulling straight up out of each base, and `check.py sled` (the prongs).
+- [x] **Docs for the bays:** build guide step 10 (fitting and removing boards, each board's place, the protection board on the back), step 5 (lead lengths to the protection board), the print plates and fit-test bar, the parts list and parts.csv (no foam tape or M2 screws), customizing and the README.
 
 ## Build guide: one soldering session for board prep
 

@@ -21,25 +21,29 @@ IRON_D       = 7.0;             // widest part of the heat-set tip on the solder
 // ---------------- still to measure (PLAN 8): planned values until the calipers say otherwise ----------------
 BOARD_HOLES  = [43.0, 47.0];    // mounting-hole pattern, x by y (PLAN 2: the old board bosses; 2.5 in from each edge)
 BOARD_HOLE_D = 2.2;             // mounting-hole diameter: the 2.0 mm pins fitted on the first coupon
-TOP_CLR      = 5.0;             // board's top face to the inside of the front skin: joystick, tallest top-side part
+SOLAR_H      = 4.8;             // solar socket's height above the board. It sits under the screen, so it sets how far back the board
+                                //   goes. About 4.7 on the edge-on photo (scaled from the 3.5 battery socket); measure it
+TOP_TALL     = 5.6;             // tallest part anywhere else on top of the board. Not measured: the old case leaves 5.9 there (ref)
+USB_H        = 3.3;             // USB-C socket's height above the board (a standard part)
 SO_H         = 3.0;             // standoff height. The battery socket under the board is about 3.5 tall: the tray is cut away there
 BAT_NOTCH    = [5, 14, -9, 9];  // that cut, in board coordinates [u0, u1, v0, v1] from the bottom-left corner seen from the front.
                                 //   Placed from Seeed's photo of the underside; the cell's lead comes up through it
 CELL_MAX     = [10.5, 37, 68];  // [T, W, L] the biggest cell the bay takes: 103665 = 10 x 36 x 65, plus tolerance and its PCM
 STRAP_T      = 1.2;             // one layer of 1/2 in hook-and-loop strap, behind the cell (not in the plan's stack-up)
 PANEL_ACTIVE = [23.70, 48.55];  // the panel's active area (PLAN 1)
-DEPTH        = 24.0;            // the shell's depth. 24 is the old shell (PLAN 2) and what the docks take; a thinner cell
-                                //   can use less: the echo "least depth" says how little (the docks then no longer fit)
+DEPTH        = 0;               // the shell's depth. 0 = as shallow as the cell in CELL_MAX allows, so a thinner cell gives a slimmer
+                                //   case. 24 = the old shell (PLAN 2), the only depth the old docks take: that fits a cell up to 9.2 thick
+CELL_SPARE   = 0.3;             // room behind the cell, for swelling
 
 // ---------------- reference numbers (PLAN 2 and ref) ----------------
 REF_SHELL = [55.0, 91.9, 24.0];     // PLAN 2: back shell's bounding box
 X0 = 1.0; X1 = 55.0;                // ref: the body itself is 54 wide. x 0..1 is only a 1 mm bump on the old shell at y ~60
 BODY_L = REF_SHELL[1];
-RIM_Z  = DEPTH;                     // the shell's rim; the front plate sits on it
+OLD_DEPTH = REF_SHELL[2];
 W  = X1 - X0;
 XC = (X0 + X1)/2;
 WALL    = 2.0;                      // PLAN 2: walls ~2
-BACK_CH = 6.3;                      // ref: all four back edges are 45 deg chamfers this big (PLAN 2: section at y 0.5 starts at z 5.8)
+OLD_BACK_CH = 6.3;                  // ref: all four back edges are 45 deg chamfers this big (PLAN 2: section at y 0.5 starts at z 5.8)
 END_R   = 3.5;                      // ref: corner radius seen from the front (PLAN 2: section at y 0.5 spans x 2.7..53.3)
 REBATE  = [1.1, 1.0];               // ref: the rim's inner 1.1 mm stops 1.0 short, for the front plate's tongue
 FRONT_H = 2.5;                      // ref: the old front plate, outer face to the face on the rim. Docked depth = 24 + 2.5 = 26.5
@@ -115,7 +119,7 @@ DOOR_T   = 0.8;                     // door thickness
 DOOR_GAP = 0.2;                     // door to the back of the glass (room for a thin foam pad)
 DOOR_SLIDE = 0.9;                   // the door goes in this far to the right, then slides left under the rail
 RAIL_CLR = 0.2;                     // door's bevel to the rail, measured straight up
-RAIL_GAP_Y = [36.8, 47.7];          // no rail here: the USB-C socket is right under it (placed from the photo)
+RAIL_GAP_Y = [36.8, 47.7];          // the USB-C socket is under the rail here (placed from the photo): the rail is left out if they'd touch
 RIBBON_X = [18.5, 31.5];            // notch for the panel's ribbon (photo: 2 to 13 mm in from the panel's right edge, seen from the front)
 TB_POS   = [[39.5, 16.0], [39.5, 49.0]];   // turn buttons: below the board's bottom edge, and on bare board above the menu button
 TB_T     = 1.6;                     // turn button thickness (Tahoe: 2.4; there's less room here)
@@ -130,12 +134,17 @@ FIT_CORNER = [17.0, 72.0];          // shell and front corner (top left): from t
 FIT_FRONT  = [44.0, 80.5];          // front, panel side: from the left edge to this x, from the dock end to this y
 
 // ---------------- derived: the stack, front to back (PLAN 3) ----------------
+// the board goes far enough back that the solar socket clears the panel's door, and the tallest part clears the skin
+TOP_CLR = max(TOP_TALL + 0.3, SOLAR_H + 0.2 + DOOR_T + DOOR_GAP + PANEL[2] + PANEL_PAD - PANEL_RECESS);
+STACK   = TRAY_T + SO_H + PCB_T + TOP_CLR - (FRONT_H - FRONT_T);   // back of the tray to the shell's rim
+RIM_Z   = DEPTH > 0 ? DEPTH : ceil(10*(BACK_T + CELL_MAX[0] + CELL_SPARE + STACK) - 0.001)/10;   // the shell's rim; the front plate sits on it
 Z_FRONT = RIM_Z + FRONT_H;          // outer face of the front
 Z_SKIN  = Z_FRONT - FRONT_T;        // inside of the front skin
 Z_BT    = Z_SKIN - TOP_CLR;         // board, top face
 Z_BB    = Z_BT - PCB_T;             // board, underside
 Z_TF    = Z_BB - SO_H;              // tray, front face
 Z_TB    = Z_TF - TRAY_T;            // tray, back face = top of the shell's bosses = front of the cell
+BACK_CH = DEPTH > 0 ? OLD_BACK_CH : max(1.5, min(OLD_BACK_CH, Z_TB - 4.4));   // a slim shell gets smaller chamfers, so they stay off the insert bosses
 HUMP    = max(0, CELL_MAX[0] + STRAP_T + BACK_T - Z_TB);   // PLAN 4: only above the dock line
 HUMP_HW = max(W/2 - BACK_CH - HUMP, CELL_MAX[1]/2 + STRAP_T + 0.5 + WALL*sqrt(2) - BACK_T);   // half-width of the hump's face
 Z_SEAT  = Z_FRONT - HEAD_H;         // under the screw heads
@@ -319,13 +328,14 @@ module hump_solid(w, f) {
   k    = w*sqrt(2) - f;
   zf   = -HUMP + f;
   hw   = HUMP_HW - k;
-  wide = HUMP_HW + HUMP > W/2 - BACK_CH;        // its flanks lie outside the body's own chamfer: run them out to the side walls
-  rise = wide ? (W/2 - w) - hw : HUMP;
+  wide = HUMP_HW + HUMP > W/2 - BACK_CH + 0.001;   // its flanks lie outside the body's own chamfer: run them out to the side walls
+  rise = wide ? (W/2 - w) - hw : HUMP + 1;      // otherwise they carry on the chamfer's own slope, a hair inside it so the two join cleanly
+  e    = wide ? 0 : 0.005;
   y1   = BODY_L - BACK_CH - HUMP - k;
   intersection() {
     hull() {
-      slab(zf) rrect(XC - hw, XC + hw, 0, y1);
-      slab(zf + rise) rrect(XC - hw - rise, XC + hw + rise, 0, y1 + rise);
+      slab(zf) rrect(XC - hw + e, XC + hw - e, 0, y1 - e);
+      slab(zf + rise) rrect(XC - hw - rise + e, XC + hw + rise - e, 0, y1 + rise - e);
     }
     yz_prof(X0 - 1, X1 + 1, [[DOCK_KEEP + k, f], [DOCK_KEEP + k + HUMP, zf - EPS], [BODY_L + 1, zf - EPS],
                               [BODY_L + 1, RIM_Z], [DOCK_KEEP + k, RIM_Z]]);
@@ -347,7 +357,8 @@ module shell(bosses = SCREWS, holes = true) difference() {
   }
   slab(RIM_Z - REBATE[1], REBATE[1] + 1) inner2d(WALL - REBATE[0]);    // rebate for the front's tongue
   if (holes) for (p = bosses) translate([p[0], p[1], Z_TB]) insert_hole();
-  box(POGO_C[0] - POGO_WIN[0]/2, POGO_C[0] + POGO_WIN[0]/2, -1, WALL + 1,   // pogo window
+  if (RIM_Z >= POGO_C[1] + POGO_WIN[1]/2 + 2.5)                               // pogo window, where the shell is deep enough for it
+  box(POGO_C[0] - POGO_WIN[0]/2, POGO_C[0] + POGO_WIN[0]/2, -1, WALL + 1,
       POGO_C[1] - POGO_WIN[1]/2, POGO_C[1] + POGO_WIN[1]/2);
 }
 
@@ -421,7 +432,8 @@ module door() {
 // on the front: the rail along the left, grown from the tongue, 45 deg underneath so it prints
 module door_rail() {
   ha = HD0 - (DX0 - X0 - WALL) + RAIL_CLR;   // its edge at the wall
-  for (y = [[DY0 - 0.3, RAIL_GAP_Y[0]], [RAIL_GAP_Y[1], DY1 + 0.3]])
+  usb = Z_BT + USB_H + 0.2 > Z_SKIN - H_TONGUE;
+  for (y = usb ? [[DY0 - 0.3, RAIL_GAP_Y[0]], [RAIL_GAP_Y[1], DY1 + 0.3]] : [[DY0 - 0.3, DY1 + 0.3]])
     xz_prof(y[0], y[1], [[X0 + WALL - 0.45, Z_SKIN - ha], [X0 + WALL, Z_SKIN - ha], [X0 + WALL + H_TONGUE - ha, Z_SKIN - H_TONGUE], [X0 + WALL - 0.45, Z_SKIN - H_TONGUE]]);
 }
 // turn buttons: a C-shaped hub that snaps over the post's head, and an arm that swings over the door's ear
@@ -565,12 +577,14 @@ else if (PART == "s_boss_low") projection(cut = true) translate([0, 0, -(Z_TB - 
 
 echo(str("wtl: stack: front ", Z_FRONT, ", board ", Z_BB, " to ", Z_BT, ", tray ", Z_TB, " to ", Z_TF,
          ", cell bay ", Z_TB - BACK_T, " deep in the dock zone, hump ", HUMP,
-         "; least depth for this cell ", CELL_MAX[0] + BACK_T + RIM_Z - Z_TB));
+         "; top of the board to the front skin ", TOP_CLR));
+echo(str("wtl: shell ", RIM_Z, " deep, case ", Z_FRONT, " front to back", DEPTH > 0 ? " (set by DEPTH)" : str(" (fitted to a ", CELL_MAX[0], " mm cell)"),
+         ". The old shell is ", OLD_DEPTH, ": at that depth the cell could be ", OLD_DEPTH - BACK_T - CELL_SPARE - STACK, " thick"));
 echo(str("wtl: ribbon adapter seat: x ", AD_C[0] - ADAPTER[0]/2, " to ", AD_C[0] + ADAPTER[0]/2, ", y ", AD_C[1] - ADAPTER[1]/2, " to ", AD_C[1] + ADAPTER[1]/2,
          "; ", BODY_L - WALL - AD_C[1] - ADAPTER[1]/2, " mm above it for the extension to fold"));
 echo(str("wtl: case screws: 4 x M3 x ", SCREW_L, " socket head, into M3 x ", INSERT_L, " heat-set inserts"));
 echo(str("wtl-chk: {",
-  "\"X0\": ", X0, ", \"X1\": ", X1, ", \"BODY_L\": ", BODY_L, ", \"RIM_Z\": ", RIM_Z, ", \"WALL\": ", WALL, ", \"BACK_T\": ", BACK_T,
+  "\"X0\": ", X0, ", \"X1\": ", X1, ", \"BODY_L\": ", BODY_L, ", \"RIM_Z\": ", RIM_Z, ", \"OLD_DEPTH\": ", OLD_DEPTH, ", \"TOP_CLR\": ", TOP_CLR, ", \"SOLAR_H\": ", SOLAR_H, ", \"WALL\": ", WALL, ", \"BACK_T\": ", BACK_T,
   ", \"Z_FRONT\": ", Z_FRONT, ", \"Z_SKIN\": ", Z_SKIN, ", \"Z_BT\": ", Z_BT, ", \"Z_BB\": ", Z_BB, ", \"Z_TF\": ", Z_TF, ", \"Z_TB\": ", Z_TB,
   ", \"HUMP\": ", HUMP, ", \"DOCK_KEEP\": ", DOCK_KEEP, ", \"DOCK_POCKET\": ", DOCK_POCKET, ", \"DOCK_SLOT\": ", DOCK_SLOT,
   ", \"POGO_C\": ", POGO_C, ", \"POGO_WIN\": ", POGO_WIN,
