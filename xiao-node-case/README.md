@@ -23,18 +23,28 @@ The MakerWorld shell (model 1011485) works, but:
 
 ## Decided
 
-- **Versions:** 2-bay and 3-bay, each its own STL.
+- **Versions:** 1-bay, 2-bay and 3-bay, each its own STL.
 - **LoRa:** SMA bulkhead per kit, like the MakerWorld shell.
-- **Buttons:** printed plungers for the XIAO's B (boot) and R (reset) buttons beside its USB-C, and the Wio-SX1262's user button.
+- **Buttons:** printed plungers for the XIAO's B (boot) and R (reset) buttons and the Wio-SX1262's user button. In the kit the XIAO sits on top of the Wio board, with B and R on either side of its USB-C, so all three plungers come from the top/front.
 - **USB labels:** debossed text by each USB-C opening, set in the CAD (e.g. HA, OBS, RELAY).
 - **Board holding:** the Tahoe repeater's turn buttons. The bay floor has a relief pocket under the factory-soldered header pins, so the pins never touch the case and can't be pushed back through the board. The board rests on its edges.
 - **Lid:** the Tahoe repeater's flexure latch (arm rides over a post and clicks in), adapted to a slide-on lid, since a quarter-turn thread doesn't suit a rectangular box. The M3 screw into a nut stays as an option.
 - **WiFi:** the stock FPC antenna on an inside wall by default, with an optional RP-SMA bulkhead per kit (a CAD setting).
 - **Mounting:** desk only. A wide, low base, no wall slots.
+- **WiFi/BLE antenna fit:** a molded pocket for the stock FPC antenna and a routed channel for its U.FL cable, sized to the real cable length with a gentle bend, so it goes in without forcing. The FPC sits on the far wall from the LoRa pigtails.
+- **Ballast:** a pocket in the base for a stack of M6 fender washers (or steel/lead shot), closed by the base plate, so the case stays put with full-size antennas. Optional magnet pockets in the feet.
+- **Battery:** not planned. See the notes below.
 
 ## Open questions
 
-None. Ready to build.
+Needed from the real kit before building (photos of both sides next to a ruler):
+- assembled stack height, and how far the soldered header pins stick out
+- stock FPC antenna size and cable length; LoRa pigtail length
+
+## Notes
+
+- **Magnets** don't affect the radios (a static field doesn't touch RF), but they only help on a steel surface. Weight works anywhere.
+- **Battery:** a cell would let one bay keep running as a repeater through a power cut, but the HA companion and the observer need WiFi, which goes down with the power unless the router is on a UPS. A LiPo held at full charge 24/7 indoors also wears out and is a needless risk, so the base uses ballast instead.
 
 ## Folder layout (once there's something to print)
 

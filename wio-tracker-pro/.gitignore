@@ -1,0 +1,5 @@
+# third-party reference downloads and the check meshes cut from them: never commit, never copy into the design
+stl files/
+ref/
+build/
+__pycache__/

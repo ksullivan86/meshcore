@@ -840,9 +840,10 @@ BAY_LIP    = 0.8;     // how far lips reach over the board
 BAY_LIP_T  = 1.4;     // lip and ramp height above the slot
 BAY_TILT   = 18;      // hook lips rise inward so the board can be tilted in under them
 BAY_SHELF  = 1.2;     // shelves reach this far under the board
-BAY_WALL   = 2.0;     // hook wall thickness
-BAY_STOP_W = 1.4;     // stop thickness
-BAY_STOP_UP = 1.0;    // stops rise this far above the board's underside
+BAY_WALL   = 2.6;     // hook wall thickness
+BAY_BUTT   = 2.0;     // buttress on the outside of each hook's wall, at its foot
+BAY_STOP_W = 2.0;     // stop thickness
+BAY_STOP_UP = 1.8;    // stops rise this far above the board's underside (a little above its top)
 BAY_PRE    = 0.15;    // latch preload: it sits this far into the board once the board is home
 BAY_PW     = 2.6;     // latch pillar and tongue width (in its bending direction)
 BAY_TL     = 17;      // tongue length, free end to root
@@ -851,6 +852,8 @@ BAY_ISLOT  = 0.8;     // slot inside the tongue
 BAY_ESLOT  = 1.0;     // slot across the tongue's free end
 BAY_RAMP_N = 0.6;     // the latch's ramp tops out this far past the board's edge
 BAY_PIN_H  = 1.3;     // locating pins: less than the board's thickness
+BAY_TAB    = 5;       // finger tab: the tongue runs on past the pillar's free end ...
+BAY_GRIP_H = 3;       // ... with a low grip on it. Push the grip outward to open the latch.
 // edge frame (t along the edge, n outward from the board's edge, h up) to the bay frame
 function bay_ef(e, sz) = e == "L" ? [[0, -1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
   : e == "R" ? [[0, 1, 0, sz[0]], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -861,20 +864,24 @@ module bay_hook(t0, t1, so) {
   sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T;
   translate([t0, -BAY_SHELF, 0]) cube([t1 - t0, BAY_SHELF + BAY_GAP + 0.01, so]);           // shelf
   translate([t0, BAY_GAP, 0]) cube([t1 - t0, BAY_WALL, top]);                                // wall
+  bay_prof(t0, t1, [[BAY_GAP + BAY_WALL - 0.01, 0], [BAY_GAP + BAY_WALL + BAY_BUTT, 0],        // buttress
+                    [BAY_GAP + BAY_WALL - 0.01, so]]);
   bay_prof(t0, t1, [[BAY_GAP + 0.01, sh], [0, sh], [-BAY_LIP, sh + BAY_LIP*tan(BAY_TILT)],    // lip
                     [-BAY_LIP, top], [BAY_GAP + 0.01, top]]);
 }
 module bay_stop(t0, t1, so) {
   top = so + BAY_STOP_UP;
-  translate([t0, -BAY_SHELF, 0]) cube([t1 - t0, BAY_SHELF + BAY_GAP + 0.01, so]);
+  translate([t0, -0.8, 0]) cube([t1 - t0, 0.8 + BAY_GAP + 0.01, so]);
   bay_prof(t0, t1, [[BAY_GAP, 0], [BAY_GAP + BAY_STOP_W, 0], [BAY_GAP + BAY_STOP_W, top], [BAY_GAP + 0.5, top], [BAY_GAP, top - 0.5]]);
 }
-function bay_tongue(t0, t1, dir) = dir > 0 ? [t0, t0 + BAY_TL] : [t1 - BAY_TL, t1];   // t range of the tongue
+function bay_tongue(t0, t1, dir) = dir > 0 ? [t0 - BAY_TAB, t0 + BAY_TL] : [t1 - BAY_TL, t1 + BAY_TAB];   // t range: finger tab, pillar, root
 module bay_pillar(t0, t1, so) {
   sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T; p = BAY_GAP + BAY_PRE;
   bay_prof(t0, t1, [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, top], [BAY_RAMP_N, top],
                     [-p - BAY_LIP, sh + 0.4], [-p - BAY_LIP, sh], [-p, sh]]);
 }
+module bay_grip(t0, t1, dir) let(p = BAY_GAP + BAY_PRE, g = dir > 0 ? [t0 - BAY_TAB + 0.5, t0] : [t1, t1 + BAY_TAB - 0.5])
+  bay_prof(g[0], g[1], [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, BAY_GRIP_H - 0.5], [-p + BAY_PW - 0.5, BAY_GRIP_H], [-p, BAY_GRIP_H]]);
 module bay_tongue_cut(t0, t1, dir) {
   p = BAY_GAP + BAY_PRE; tr = bay_tongue(t0, t1, dir);
   fe = dir > 0 ? [tr[0] - BAY_ESLOT, tr[0]] : [tr[1], tr[1] + BAY_ESLOT];       // free end slot
@@ -885,8 +892,8 @@ module bay_tongue_cut(t0, t1, dir) {
 }
 // the tongue and its slots, in the bay frame, so the outline stays off the moving part
 module bay_tongue2d(b) let(l = b[4], tr = bay_tongue(l[1], l[2], l[3]), p = BAY_GAP + BAY_PRE)
-  multmatrix(bay_ef(l[0], b[0])) translate([min(tr[0], l[1]) - BAY_ESLOT - 0.2, -p - BAY_ISLOT - 0.2])
-    square([BAY_TL + BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_TSLOT + 0.4]);
+  multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 0.2, -p - BAY_ISLOT - 0.2])
+    square([tr[1] - tr[0] + 2*BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_TSLOT + 0.4]);
 module bay_marks2d(b) difference() {
   union() {
     difference() { square(b[0]); offset(delta = -MK_W) square(b[0]); }    // outline just inside the board's edge
@@ -908,15 +915,15 @@ module bay_add(b) {
   }
   for (k = b[3]) multmatrix(bay_ef(k[0], sz)) bay_hook(k[1], k[2], so);
   for (k = b[5]) multmatrix(bay_ef(k[0], sz)) bay_stop(k[1], k[2], so);
-  let(l = b[4]) multmatrix(bay_ef(l[0], sz)) bay_pillar(l[1], l[2], so);
+  let(l = b[4]) multmatrix(bay_ef(l[0], sz)) { bay_pillar(l[1], l[2], so); bay_grip(l[1], l[2], l[3]); }
 }
 module bay_cut(b) let(l = b[4]) multmatrix(bay_ef(l[0], b[0])) bay_tongue_cut(l[1], l[2], l[3]);
 // footprint of everything a bay needs on its plate, for the test pieces
 module bay_foot2d(b) {
   l = b[4]; tr = bay_tongue(l[1], l[2], l[3]);
   offset(delta = 5) square(b[0]);
-  multmatrix(bay_ef(l[0], b[0])) translate([min(tr[0], l[1]) - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
-    square([BAY_TL + BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_TSLOT + 6]);
+  multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
+    square([tr[1] - tr[0] + 2*BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_TSLOT + 6]);
 }
 module bay_test(b) difference() {
   union() { translate([0, 0, -SL_T]) linear_extrude(height = SL_T) bay_foot2d(b); bay_add(b); }
@@ -931,11 +938,11 @@ BAY_BQ = [BQ_SIZE, SO_H,                                     // charger: JST soc
   [["CHARGER", 15.875, 3.1, 3, 0, 0.92], ["USB-C", 15.875, 22.05, 3, 0, 1]],   // USB-C at the end its socket goes
   [[CS_Z[0] - 0.5 - BQ0[1], CS_Z[0] + CS_LEN + 0.5 - BQ0[1]]]];   // no outline under the battery strap
 BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C, button and both JST sockets on the left edge
-  [[35, 15, 6, 2.2, 32.5],                                   // at the half-hole, with a pin in it: locates the board up and down
+  [[35, 15, 4, 2.2, 32.5],                                   // at the half-hole, with a pin in it: locates the board up and down
    [33, 5, 3.5]],                                            // no standoffs near the left edge: the JST sockets' pins are 7 mm in
-  [["L", 1.5, 4.0], ["L", 26.0, 28.5]],                      // short hooks at the corners, clear of the USB-C, button and sockets
-  ["R", 20, 25, 1],                                          // latch on the right edge, above the half-hole; tongue runs up
-  [],                                                        // no stops: the pin and the hooks locate it
+  [["L", 1.0, 5.0], ["L", 25.0, 29.0]],                      // hooks at the corners, clear of the USB-C, button and sockets
+  ["R", 22, 27, 1],                                          // latch on the right edge, above the half-hole; tongue runs up, tab below
+  [["B", 5, 10], ["T", 3, 8]],                               // stops on the long edges
   [["RAK19003", 18.5, 11.5, 3, 0, 1], ["USB-C", 2.95, 16.5, 2.5, 90, 1]]];
 BAY_MB = [MB_SIZE, SO_H,                                     // MiniBoost: four pins along the bottom edge
   [[MB_HOLE[0], MB_HOLE[1], 6], [MB_REST[0], MB_REST[1], 4]],
