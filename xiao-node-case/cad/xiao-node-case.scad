@@ -12,7 +12,7 @@
 // header pins hang below the XIAO.
 //
 // Each kit has its own bay: a USB-C opening in the front wall with a
-// debossed label and two paperclip holes either side for B and R, an SMA
+// debossed label, an SMA
 // bulkhead for its LoRa pigtail in the back wall, and a pocket for its
 // stock WiFi FPC antenna on the bay's right-hand wall (a thin divider, or
 // the case's side wall for the last bay), or an RP-SMA bulkhead instead
@@ -35,10 +35,13 @@
 //          flexure latch (the Tahoe repeater's arm and post, laid out
 //          straight) clicks shut at the end. Push the latch grip toward
 //          the side wall and slide the lid back to open.
-//   PLATE  the base plate. Its pocket takes M6 fender washers on pins, or
-//          steel or lead shot; the body's floor closes it. Four M3
-//          socket-head screws from underneath into nuts in the body's
-//          corner bosses hold the two together. Optional magnet pockets.
+//   PLATE  the base plate. Its pockets take M6 fender washers on pins, or
+//          steel or lead shot; the body's floor closes them. It slides on
+//          from the back: a lip up each side runs in a V-groove along the
+//          bottom of the body's side walls, the grooves stop it at the
+//          front, and a springy tab at the back clicks a bump up into a
+//          pocket under the body. Pull the tab down to slide it off.
+//          No screws anywhere. Optional magnet pockets.
 //
 // Frame: X across the case, +Y from the front (USB-C) toward the back,
 // Z up. Origin at the front-left inside corner on the floor's top face.
@@ -47,12 +50,11 @@
 // =====================================================================
 
 /* [What to make] */
-PART = "assembly";   // [assembly, kit, fit_test, body, cap, lid, plate, screw_test, section, bay_view]
+PART = "assembly";   // [assembly, kit, fit_test, body, cap, lid, plate, section, bay_view]
 BAYS = 2;            // [1, 2, 3]
 LABELS = ["HA", "OBS", "RELAY"];   // debossed under each USB-C opening, left to right
 WIFI = "fpc";        // [fpc, rpsma]  stock FPC antenna on the bay's right wall, or an RP-SMA bulkhead per kit
 MAGNETS = false;     // four magnet pockets under the base plate
-LID_SCREW = false;   // an M3 screw down through the lid into a nut, as well as the latch
 
 /* [Measured on the kit] */
 STACK_H = 9.32;       // the two boards: the XIAO's underside to the top of the Wio's LoRa module
@@ -60,7 +62,6 @@ PIN_BELOW = 9.0;      // the header (plastic and pins) below the XIAO's undersid
 FPC = [38, 18];       // stock WiFi FPC antenna: length, height
 FPC_CABLE = 60;       // its cable
 PIGTAIL = 85;         // LoRa U.FL-to-SMA pigtail cable
-SCREW_HEAD = [5.0, 3.0];  // M3 socket head: diameter, height
 
 /* [From Seeed's STEP file and drawings] */
 // Wio-SX1262 for XIAO (Seeed's 3D file): 17.78 x 21.44 x 1.6, its front edge 0.04 ahead of the XIAO's
@@ -91,8 +92,10 @@ SIDE_W = 3.2;         // side walls: they carry the lid's grooves
 FLOOR_T = 3.0;        // the latch tongues are cut into it (the Tahoe sled's plate is 3 mm)
 LID_T = 2.4;          // lid and cap
 DT = 1.2; DT_B = 0.8; DT_C = 0.25;   // dovetail: reach into the wall, straight part at its foot, clearance
-USB_Y = 0.3;          // the USB-C socket's face, behind the front wall's inside face
-USB_BOOT = [12.6, 7.2, 2.0];   // opening for a normal cable's boot: width, height, corner radius
+USB_HOLE = [9.6, 3.8, 0.8];    // the hole through the wall: the socket sits in it (8.94 x 3.26), the plug's shell goes through
+USB_BOOT = [12.6, 7.2, 2.0];   // shallow recess round it outside, for a normal cable's boot: width, height, corner radius
+BOOT_REACH = 0.45;    // a USB-C plug's boot stops about this far short of the socket's face
+WIO_RELIEF = 1.0;     // the front wall is this much thinner where the Wio board's front edge swings while the kit tilts in
 WALL_ABOVE = 1.6;     // front wall above the openings
 CAP_CLR = 0.6;        // cap above the stack's tallest part
 CAP_D = 14.0;         // cap reaches this far back from the front wall's inside face
@@ -104,29 +107,33 @@ LABEL_D = 0.6; LABEL_SIZE = 4.5;
 LABEL_FONT = "Liberation Sans:style=Bold";
 SMA_HOLE = 6.7;       // SMA / RP-SMA bulkhead, 1/4"-36 thread
 SMA_NUT = 8.0;        // its nut across flats
-M3_CLEAR = 3.4;
-NUT_AF = 5.8; NUT_H = 2.6;   // pocket for an M3 nut (5.5 x 2.4)
-BOSS_R = 4.0; BOSS_H = 4.2;  // corner bosses for the base plate's screws
-BOSS_P = [2.6, 3.4];         // their centres, in from each inside corner
+// base plate fixing: side lips in V-grooves, and a snap tab at the back
+GROOVE = [1.2, 1.2, 2.0, 3.0];   // V-groove in each side wall's outside face: depth, half-height, centre above the body's underside, stops short of the front face
+FLANGE_T = 2.0;       // the plate's side lips
+PL_CLR = 0.2;         // lips to the walls, and the V to its groove
+SNAP = [6, 16, 1.2, 0.8, 0.6];   // snap tab: width, length (root toward the front), thickness, slot down each side, bump height
+SNAP_RISER = [5, 3, 4];          // the block on its free end carrying the bump: width, length, its back face this far in from the back edge
+SNAP_TAB = 4;         // the tab reaches this far past the back, to pull it down by
 // base plate and ballast
 WASHER = [6.4, 18, 1.6];     // M6 fender washer: hole, outside diameter, thickness
 BALLAST_N = 4;               // washers per stack
 BALLAST_M = 8.6;             // pocket margin from the inside walls
 PLATE_FL = 1.2;              // plate under the pocket
 MAGNET = [10, 3];            // magnet pockets, diameter and depth
-// bays: the XIAO's front corners under hooks on the front wall, the latch on its back edge right
-// of the board-to-board connector, stops on its long edges in front of the header plastic
+// bays: the XIAO's front corners under hooks in the front wall. The latch is on its left edge
+// behind the last header pin, and springs sideways, so plugging a cable in doesn't load it:
+// the push goes into a solid rail along the back edge, and pulling the cable out into the
+// hooks' walls. A rail along the right edge (the latch's preload pushes the board against it)
+// and a stop at each front corner keep it from sliding sideways.
 STANDOFFS = [[5.2, 3.6, 3], [12.6, 3.6, 3], [5.2, 17.4, 3], [12.6, 17.4, 3]];   // under the XIAO, between the header rows
-HOOKS = [["B", 0.2, 1.9], ["B", 15.9, 17.6]];   // short: the paperclips pass just inside them
-LATCH = ["T", 15.0, 17.6, -1];   // the tongue runs left along the back edge; the finger tab is right of the board
+HOOKS = [["B", 0.2, 2.2], ["B", 15.6, 17.6]];
+LATCH = ["L", 19.6, 21.2, -1];   // the tongue runs forward along the left edge, in the floor; the finger tab is beside the back-left corner
 STOPS = [["L", 0.0, 1.0], ["R", 0.0, 1.0]];
+// rails: [edge, t0, t1, top above the board's underside]; no shelf under the board (the header plastic is there)
+RAILS = [["R", 1.4, 19.8, 1.8], ["T", 0.5, 17.3, XIAO_T - 0.1]];   // the right one as tall as a stop (BAY_STOP_UP)   // the back one stays under the board-to-board connector
 MK_H = 0.6;           // raised marks on the floor: three 0.2 mm layers
 MK_W = 1.0;           // outline width, inside the board's edge
 MK_FONT = "Liberation Sans:style=Bold";
-// paperclip holes for B and R: from outside the USB-C opening, down onto each button
-CLIP_D = 1.4;         // the hole (a paperclip is 0.8 to 1.0)
-CLIP_U = [-0.5, KIT[0] + 0.5];   // where they enter the front wall's outside face (u), for B and R
-CLIP_RISE = 7.2;      // and how far above the button's top (steep enough to pass over the front hooks)
 // plunger (Wio user button)
 TAB_L = 10;           // flexure tab length, root to free end
 TAB_W = 3.0;          // its width
@@ -137,7 +144,7 @@ NUB_GAP = 0.3;        // nub to button at rest
 LED_WIN = 1.8;
 // spool beside each bay for the FPC cable's slack
 SPOOL = [3.5, 4.5];   // core and lip radius
-SPOOL_P = [23.2, 10.4];   // its centre, in the board frame (right of the board)
+SPOOL_P = [23.0, 30.0];   // its centre, in the board frame (behind the board, right)
 // latch (copied from tahoe-repeater.scad, laid out straight): latch frame n across
 // (+x, outward from the post), t along the lid's slide (+y), t = 0 at the cap's back face
 LT_POST = [4.8, 11.8];    // latch post, on a bar from the cap; its catch face is at the first t
@@ -160,10 +167,11 @@ FN = 64;
 W_IN = BAYS*P;
 WIO_TOP = STACK_H - MODULE[4];     // the Wio's top face, above the XIAO's underside
 GAP = WIO_TOP - WIO[2] - XIAO_T;   // between the boards
-BY = USB_Y + USB[2];               // every XIAO's front edge, y
+BY = 0.2;                          // every XIAO's front edge, y: BAY_GAP behind the front wall, so its USB-C socket sits in the wall
+USB_FACE = BY - USB[2];            // the socket's face, y (inside the wall)
 function BX(i) = i*P + (P - KIT[0])/2;   // board i's left edge, x
 function bxy(i, p) = [BX(i) + p[0], BY + p[1]];             // board frame to the case's, the bay's nominal position
-function kxy(i, p) = [BX(i) + p[0], BY - BAY_GAP + p[1]];   // ... and where the kit really sits: pushed against the hooks
+function kxy(i, p) = [BX(i) + BAY_GAP + p[0], BY + p[1]];   // ... and where the kit really sits: pushed against the right rail
 FPC_TOP = FPC_Z0 + FPC[1] + 0.4;
 ZB = max(PIN_BELOW + 1.0, 0.5);    // the XIAO's underside, above the floor
 ZX = ZB + XIAO_T;                  // XIAO top face
@@ -173,13 +181,17 @@ BOOT_Z = [ZUC - USB_BOOT[1]/2, ZUC + USB_BOOT[1]/2];
 Z_LU = max(ZB + STACK_H + CAP_CLR, ZW + LORA_UFL_H + 0.4, BOOT_Z[1] + WALL_ABOVE);   // lid and cap undersides
 SL_T = FLOOR_T;                    // the board bays' plate is the floor
 function kit_bay(i) = [KIT, ZB, STANDOFFS, HOOKS, LATCH, STOPS, [[LABELS[i], KIT[0]/2, KIT[1]/2, 4, 90, 1]]];
+// a rail: a stop with no shelf under the board, as tall as asked
+module bay_rail(t0, t1, so, up) let(top = so + up)
+  bay_prof(t0, t1, [[BAY_GAP, 0], [BAY_GAP + BAY_STOP_W, 0], [BAY_GAP + BAY_STOP_W, top], [BAY_GAP + 0.5, top], [BAY_GAP, top - 0.5]]);
 Z_TOP = Z_LU + LID_T;
 DIV_H = FPC_TOP + 0.8;
 SMA_Z = max(SMA_NUT/cos(30)/2 + 0.8, Z_LU/2);
 LX = W_IN - LT_ARM_N[1] - LT_SLOT - 4;   // latch frame origin, x
 PLATE_T = PLATE_FL + BALLAST_N*WASHER[2] + 0.4;
-CB = [SCREW_HEAD[0] + 0.8, SCREW_HEAD[1] + 0.3];   // counterbore for a socket head, flush
-SCREW_L = PLATE_T - CB[1] + FLOOR_T + BOSS_H - 0.6;   // longest M3 screw that stays under the nut's top
+Y_BACK = D_IN + WALL;              // the back face
+PL_X = [-SIDE_W - PL_CLR - FLANGE_T, W_IN + SIDE_W + PL_CLR + FLANGE_T];      // the plate, x range
+FLANGE_H = GROOVE[2] + GROOVE[1] + 0.8;   // lips' height above the plate's top face
 function lora_slots() = let(m = WIFI == "rpsma" ? 2*BAYS : BAYS)
   [for (k = [0 : m - 1]) m == 1 ? W_IN/2 : 8 + k*(W_IN - 16)/(m - 1)];
 function lora_idx() = WIFI == "rpsma" ? [for (i = [0 : BAYS - 1]) BAYS == 1 ? 0 : round(i*(2*BAYS - 1)/(BAYS - 1))] : [for (i = [0 : BAYS - 1]) i];
@@ -190,15 +202,12 @@ function pin_uv() = [for (s = [-1, 1]) for (k = [0 : PIN_N - 1])
   [KIT[0]/2 + s*PIN_SPAN/2, KIT[1]/2 - (PIN_N - 1)*PIN_PITCH/2 + k*PIN_PITCH]];
 function hdr_v() = [KIT[1]/2 - PIN_SPAN/2 - HDR[0]/2, KIT[1]/2 + PIN_SPAN/2 + HDR[0]/2];
 function plungers() = [[WIO_BTN, -1, "U", WIO_TOP + WIO_SW[2]]];   // (u, v), which way the tab's root goes, letter, button top (h)
-function clip_target(k) = let(b = k == 0 ? BTN_B : BTN_R) [b[0], b[1], XIAO_T + SW[2]];          // board frame
-function clip_entry(k) = [CLIP_U[k], -BY + BAY_GAP - WALL, XIAO_T + SW[2] + CLIP_RISE];   // on the front wall's outside face
 function fpc_wall_x(i) = i == BAYS - 1 ? W_IN : (i + 1)*P - DIV_T/2;   // the bay's right wall, its inside face
 FPC_Y = (D_IN - FPC[0])/2;
 
-echo(str("xnc: bays ", BAYS, ", outside ", W_IN + 2*SIDE_W, " x ", D_IN + 2*WALL, " x ", PLATE_T + FLOOR_T + Z_TOP,
+echo(str("xnc: bays ", BAYS, ", outside ", PL_X[1] - PL_X[0], " x ", D_IN + 2*WALL, " x ", PLATE_T + FLOOR_T + Z_TOP,
          " mm (body ", FLOOR_T + Z_TOP, ", plate ", PLATE_T, "); XIAO's underside ", ZB, " above the floor; lid underside ", Z_LU,
          "; gap between the boards ", GAP));
-echo(str("xnc: base plate screws: M3 x ", floor(SCREW_L), " or shorter (", SCREW_L, " max), socket head ", SCREW_HEAD));
 echo(str("xnc: LoRa SMA x ", [for (i = [0 : BAYS - 1]) lora_x(i)], WIFI == "rpsma" ? str(", RP-SMA x ", [for (i = [0 : BAYS - 1]) wifi_x(i)]) : ""));
 assert(BAYS >= 1 && BAYS <= 3, "BAYS is 1, 2 or 3");
 assert(GAP >= USB[1] + 0.3, "the boards are too close together for the XIAO's USB-C socket: check STACK_H");
@@ -209,12 +218,14 @@ assert(LT_SLOT >= LT_POST_N[1] - LT_HOOK_N + 0.3, "latch arm can't flex far enou
 assert(LT_HOOK[1] < LT_POST[0] && LT_POST[1] < LT_ARM[1] - 6, "latch hook, post and root out of order");
 assert(LT_BAR_N[1] - LT_HOOK_N <= -0.3, "latch bar runs into the hook");
 assert(len(LABELS) >= BAYS, "one label per bay");
+assert(BAY_TSLOT >= LATCH_LIP + BAY_GAP + BAY_PRE + 0.2, "the latch tongue can't flex far enough to clear its lip");
+assert(BY == BAY_GAP && RAILS[0][3] == BAY_STOP_UP, "BY and the right rail are written out: keep them equal to BAY_GAP and BAY_STOP_UP");
 assert(WIFI != "fpc" || DIV_H <= Z_LU - 0.4, "FPC too tall for the case");
 assert(WIFI != "fpc" || FPC[0] + 2 <= D_IN, "FPC too long for the bay wall");
 
 // ============================== HELPERS ==============================
 module box(x0, x1, y0, y1, z0, z1) translate([x0, y0, z0]) cube([x1 - x0, y1 - y0, z1 - z0]);
-module rrect(w, h, r) offset(r = r) offset(delta = -r) square([w, h], center = true);
+module rrect(w, h, r) offset(r = r, $fn = 48) offset(delta = -r) square([w, h], center = true);
 module bay_frame(i) translate([BX(i), BY, ZB]) children();   // board frame: u, v, h
 module rod(a, b, d) let(v = b - a, l = norm(b - a))   // a cylinder from point a to point b
   translate(a) rotate([0, acos(v[2]/l), atan2(v[1], v[0])]) cylinder(d = d, h = l, $fn = 24);
@@ -276,6 +287,7 @@ module mk_text(t, x, z, size, rot = 0, sp = 1)
 BAY_SLOT_H = XIAO_T + 0.15;   // board thickness + 0.15: the slot under each lip (1.75 on the Tahoe, for 1.6 mm boards)
 BAY_GAP    = 0.2;     // the board's edge to a hook's or stop's wall
 BAY_LIP    = 0.8;     // how far lips reach over the board
+LATCH_LIP  = 1.2;     // how far the latch's lip reaches over it (0.8 on the Tahoe: the XIAO pulled out from under it)
 BAY_LIP_T  = 1.4;     // lip and ramp height above the slot
 BAY_TILT   = 18;      // hook lips rise inward so the board can be tilted in under them
 BAY_SHELF  = 1.2;     // shelves reach this far under the board
@@ -286,7 +298,7 @@ BAY_STOP_UP = 1.8;    // stops rise this far above the board's underside (a litt
 BAY_PRE    = 0.15;    // latch preload: it sits this far into the board once the board is home
 BAY_PW     = 2.6;     // latch pillar and tongue width (in its bending direction)
 BAY_TL     = 17;      // tongue length, free end to root
-BAY_TSLOT  = 1.4;     // slot outside the tongue: room for it to flex 1.1 mm
+BAY_TSLOT  = 1.9;     // slot outside the tongue: room for it to flex (1.4 on the Tahoe; wider here for the deeper latch lip)
 BAY_ISLOT  = 0.8;     // slot inside the tongue
 BAY_ESLOT  = 1.0;     // slot across the tongue's free end
 BAY_RAMP_N = 0.6;     // the latch's ramp tops out this far past the board's edge
@@ -317,7 +329,7 @@ function bay_tongue(t0, t1, dir) = dir > 0 ? [t0 - BAY_TAB, t0 + BAY_TL] : [t1 -
 module bay_pillar(t0, t1, so) {
   sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T; p = BAY_GAP + BAY_PRE;
   bay_prof(t0, t1, [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, top], [BAY_RAMP_N, top],
-                    [-p - BAY_LIP, sh + 0.4], [-p - BAY_LIP, sh], [-p, sh]]);
+                    [-p - LATCH_LIP, sh + 0.4], [-p - LATCH_LIP, sh], [-p, sh]]);
 }
 module bay_grip(t0, t1, dir) let(p = BAY_GAP + BAY_PRE, g = dir > 0 ? [t0 - BAY_TAB + 0.5, t0] : [t1, t1 + BAY_TAB - 0.5])
   bay_prof(g[0], g[1], [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, BAY_GRIP_H - 0.5], [-p + BAY_PW - 0.5, BAY_GRIP_H], [-p, BAY_GRIP_H]]);
@@ -366,7 +378,7 @@ module lid_prof2d(c) polygon([[-DT + c, 0], [W_IN + DT - c, 0], [W_IN + DT - c, 
 module kit_bay_add(i, fit = false) {
   // the bay, kept inside the case (the front hooks' walls and buttresses merge into the front wall)
   intersection() {
-    translate([BX(i), BY, 0]) bay_add(kit_bay(i));
+    translate([BX(i), BY, 0]) { bay_add(kit_bay(i)); for (r = RAILS) multmatrix(bay_ef(r[0], KIT)) bay_rail(r[1], r[2], ZB, r[3]); }
     box(0, W_IN, -WALL, D_IN, -1, Z_LU);
   }
   if (WIFI == "fpc" && !fit) {
@@ -390,49 +402,39 @@ module shell() difference() {
 }
 module body_cuts(fit) {
   for (i = [0 : BAYS - 1]) {
-    xc = BX(i) + USB_U;
+    xc = BX(i) + BAY_GAP + USB_U;   // where the kit sits: pushed right by the latch
     translate([BX(i), BY, 0]) bay_cut(kit_bay(i));   // the latch's tongue
     // USB-C opening
-    translate([xc, -WALL - 1, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = WALL + 2) rrect(USB_BOOT[0], USB_BOOT[1], USB_BOOT[2]);
+    translate([xc, -WALL - 1, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = WALL + 2) rrect(USB_HOLE[0], USB_HOLE[1], USB_HOLE[2]);
+    translate([xc, -WALL - 1, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = USB_FACE - BOOT_REACH + 0.3 + WALL + 1)
+      rrect(USB_BOOT[0], USB_BOOT[1], USB_BOOT[2]);   // the boot's recess
     // label underneath it
     zl = BOOT_Z[0] - 0.9 - LABEL_SIZE/2;
     translate([xc, -WALL - 0.01, zl]) rotate([90, 0, 0]) mirror([0, 0, 1]) linear_extrude(height = LABEL_D + 0.01)
       text(LABELS[i], size = LABEL_SIZE, font = LABEL_FONT, halign = "center", valign = "center");
+    // relief in the front wall's inside face for the Wio board's front edge as the kit tilts in
+    let(a = bay_pt(i, [-0.6, 0, max(WIO_TOP - WIO[2] - 0.6, XIAO_T + USB[1]/2 + USB_HOLE[1]/2 + 0.85)]), b = bay_pt(i, [KIT[0] + 0.6, 0, 0]))
+      box(a[0], b[0], -WIO_RELIEF, 0.01, a[2], Z_LU + 0.01);
     // FPC pocket on the bay's right wall
     if (WIFI == "fpc") let(x = fpc_wall_x(i)) box(x - 0.01, x + FPC_REC, FPC_Y - 0.3, FPC_Y + FPC[0] + 0.3, FPC_Z0, FPC_TOP);
-    // paperclip holes for B and R, a countersink outside, and their letters above
-    for (k = [0, 1]) let(a = bay_pt(i, clip_entry(k)), b = bay_pt(i, clip_target(k)), d = (b - a)/norm(b - a)) {
-      rod(a - 3*d, a + (WALL + 1.0)/d[1]*d, CLIP_D);   // through the wall, and a little past it
-      translate([a[0], -WALL - 0.01, a[2]]) rotate([-90, 0, 0]) cylinder(d1 = 3.2, d2 = CLIP_D, h = 0.9, $fn = 24);
-      translate([a[0], -WALL - 0.01, a[2] + 2.9]) rotate([90, 0, 0]) mirror([0, 0, 1]) linear_extrude(height = LABEL_D + 0.01)
-        text(k == 0 ? "B" : "R", size = 2.6, font = LABEL_FONT, halign = "center", valign = "center");
-    }
     // LoRa SMA, and the RP-SMA if fitted
     for (x = concat([lora_x(i)], WIFI == "rpsma" ? [wifi_x(i)] : []))
       translate([x, D_IN - 1, SMA_Z]) rotate([-90, 0, 0]) cylinder(d = SMA_HOLE, h = WALL + 2, $fn = 48);
   }
-  if (!fit) for (p = boss_xy()) translate([p[0], p[1], 0]) {   // base plate screws into nuts
-    translate([0, 0, -FLOOR_T - 1]) cylinder(d = M3_CLEAR, h = FLOOR_T + BOSS_H + 2, $fn = 24);
-    translate([0, 0, BOSS_H - NUT_H]) rotate(30) cylinder(d = NUT_AF/cos(30), h = NUT_H + 1, $fn = 6);
-  }
-  if (LID_SCREW) let(x = lid_screw_x()) {   // slot in the back wall's top for the lid's boss, nut below
-    box(x - 4.7, x + 4.7, D_IN - 5, D_IN + WALL + 1, Z_LU - 1.8, Z_LU + 1);
-    translate([x, D_IN - 2.5, Z_LU - 1.8 - NUT_H]) rotate(30) cylinder(d = NUT_AF/cos(30), h = NUT_H + 0.01, $fn = 6);
-    translate([x, D_IN - 2.5, Z_LU - 12]) cylinder(d = M3_CLEAR, h = 12, $fn = 24);
+  if (!fit) {
+    // V-grooves along the bottom of the side walls, for the base plate's lips; open at the back
+    for (m = [0, 1]) translate([m == 0 ? 0 : W_IN, 0, 0]) mirror([m, 0, 0])
+      translate([-SIDE_W, -WALL + GROOVE[3], -FLOOR_T + GROOVE[2]]) rotate([-90, 0, 0]) linear_extrude(height = D_IN + 2*WALL)
+        polygon([[-1, -GROOVE[1] - 1], [GROOVE[0], 0], [-1, GROOVE[1] + 1]]);
+    // pocket under the floor for the snap tab's bump
+    box(SNAP_X - SNAP_RISER[0]/2 - 0.3, SNAP_X + SNAP_RISER[0]/2 + 0.3, SNAP_Y[0] - 0.3, SNAP_Y[1] + 0.3, -FLOOR_T - 1, -FLOOR_T + SNAP[4] + 0.2);
   }
 }
-function bay_pt(i, p) = [BX(i) + p[0], BY - BAY_GAP + p[1], ZB + p[2]];   // board frame to the case's
-function boss_xy() = [[BOSS_P[0], BOSS_P[1]], [W_IN - BOSS_P[0], BOSS_P[1]], [BOSS_P[0], D_IN - BOSS_P[1]], [W_IN - BOSS_P[0], D_IN - BOSS_P[1]]];
-function lid_screw_x() = W_IN/2 + (BAYS == 1 ? 12 : P/2);
+function bay_pt(i, p) = [BX(i) + BAY_GAP + p[0], BY + p[1], ZB + p[2]];   // board frame to the case's
 module body(fit = false) difference() {
   union() {
     shell();
     for (i = [0 : BAYS - 1]) kit_bay_add(i, fit);
-    if (!fit) for (p = boss_xy()) intersection() {
-      translate([p[0], p[1], -0.01]) cylinder(r = BOSS_R, h = BOSS_H + 0.01, $fn = 40);
-      box(0, W_IN, 0, D_IN, -1, BOSS_H + 1);
-    }
-    if (LID_SCREW) let(x = lid_screw_x()) box(x - 4.5, x + 4.5, D_IN - 6, D_IN, -0.01, Z_LU - 1.8);
   }
   body_cuts(fit);
 }
@@ -478,17 +480,12 @@ module lid() difference() {
       intersection() { lid_prof2d(DT_C); translate([-10, 0]) square([W_IN + 20, LID_T]); }
     latch_frame() translate([LT_ARM_N[0], LT_GRIP[0], Z_TOP - 0.01])   // grip on the arm's free end
       cube([LT_ARM_N[1] - LT_ARM_N[0], LT_GRIP[1] - LT_GRIP[0], LT_GRIP[2] + 0.01]);
-    if (LID_SCREW) let(x = lid_screw_x()) translate([x, D_IN - 2.5, Z_LU - 1.6]) cylinder(d = 9, h = 1.61, $fn = 48);
   }
   // chamfer over the cap's wedge, 0.1 mm clear of it
   translate([-5, 0, 0]) rotate([90, 0, 90]) linear_extrude(height = W_IN + 10)
     polygon([[CAP_D - 1, Z_LU - 1], [CAP_D + CAP_RAB + 1.1, Z_LU - 1], [CAP_D - 1, Z_LU + CAP_RAB + 1.1]]);
   // latch: notch, slots; the arm is what's left between them
   latch_frame() translate([0, 0, Z_LU - 1]) linear_extrude(height = LID_T + 5) latch_cut2d();
-  if (LID_SCREW) let(x = lid_screw_x()) translate([x, D_IN - 2.5, 0]) {
-    translate([0, 0, Z_LU - 3]) cylinder(d = M3_CLEAR, h = 10, $fn = 24);
-    translate([0, 0, Z_TOP - CB[1]]) cylinder(d = CB[0], h = CB[1] + 1, $fn = 40);
-  }
 }
 // the lid with its arm, both in place: the arm is part of the lid
 module lid_with_arm() union() {
@@ -502,50 +499,71 @@ module lid_with_arm() union() {
 // ============================== BASE PLATE ==============================
 // plate frame: its top face at z = 0, same x, y as the body
 // two ballast pockets, in front of and behind the latch tongues, which mustn't sit over a pocket
-TONGUE_Y = [BY + KIT[1] - BAY_GAP - BAY_PRE - BAY_ISLOT - 1.2, BY + KIT[1] - BAY_GAP - BAY_PRE + BAY_PW + BAY_TSLOT + 1.2];
-BALS = [[BALLAST_M, W_IN - BALLAST_M, -WALL + 1.6, TONGUE_Y[0] - 1.6], [BALLAST_M, W_IN - BALLAST_M, TONGUE_Y[1] + 1.6, D_IN + WALL - 1.6]];
+function tongue_x(i) = [BX(i) - BAY_GAP - BAY_PRE - BAY_PW - BAY_TSLOT - 1.2, BX(i) - BAY_GAP - BAY_PRE + BAY_ISLOT + 1.2 + 2*BAY_GAP];
+TONGUE_Y = [BY + LATCH[2] - BAY_TL - BAY_ESLOT - 1.2, BY + LATCH[2] + BAY_TAB + BAY_ESLOT + 1.2];
+BALS = [for (i = [0 : BAYS - 1]) [tongue_x(i)[1] + 1.6, i < BAYS - 1 ? tongue_x(i + 1)[0] - 1.6 : W_IN - BALLAST_M, -WALL + 1.6, D_IN + WALL - 1.6]];
 function ballast_pins() = let(pt = WASHER[1] + 0.8) [for (r = BALS) let(nx = floor((r[1] - r[0]) / pt), ny = floor((r[3] - r[2]) / pt),
   x0 = (r[0] + r[1])/2 - (nx - 1)*pt/2, y0 = (r[2] + r[3])/2 - (ny - 1)*pt/2) if (nx > 0 && ny > 0)
   for (a = [0 : nx - 1]) for (b = [0 : ny - 1]) [x0 + a*pt, y0 + b*pt]];
 function magnet_xy() = [for (x = [3.2, W_IN - 3.2]) for (y = [D_IN*0.3, D_IN*0.7]) [x, y]];
+// The snap tab sits in the solid strip behind a latch tongue (the middle bay's, or the right-hand
+// one of two), so it costs no ballast.
+SNAP_X = let(i = round((BAYS - 1)/2)) (tongue_x(i)[0] + tongue_x(i)[1])/2;
+SNAP_Y = [Y_BACK - SNAP_RISER[2] - SNAP_RISER[1], Y_BACK - SNAP_RISER[2]];   // the bump, y range
+SNAP_BLK = [SNAP_X - SNAP[0]/2 - SNAP[3] - 1.4, SNAP_X + SNAP[0]/2 + SNAP[3] + 1.4, Y_BACK - SNAP[1] - 1.0, Y_BACK];   // solid round the tab
+assert(SNAP_BLK[2] > TONGUE_Y[1], "snap tab runs into a latch tongue's recess");
+function in_snap_blk(p, r) = p[0] > SNAP_BLK[0] - r && p[0] < SNAP_BLK[1] + r && p[1] > SNAP_BLK[2] - r;
+// one side's lip, in x-z (plate frame), the V pointing in toward the wall at x = -SIDE_W
+module lip2d() {
+  translate([PL_X[0], -PLATE_T]) square([FLANGE_T, PLATE_T + FLANGE_H]);
+  intersection() {
+    translate([0, GROOVE[2]]) offset(delta = -PL_CLR) polygon([[-SIDE_W - 2, -GROOVE[1] - 2], [-SIDE_W + GROOVE[0], 0], [-SIDE_W - 2, GROOVE[1] + 2]]);
+    translate([PL_X[0], -1]) square([FLANGE_T + PL_CLR + GROOVE[0], FLANGE_H + 1]);
+  }
+}
 module plate() difference() {
   union() {
     difference() {
-      box(-SIDE_W, W_IN + SIDE_W, -WALL, D_IN + WALL, -PLATE_T, 0);
-      for (r = BALS) box(r[0], r[1], r[2], r[3], -PLATE_T + PLATE_FL, 1);
-      box(0, W_IN, TONGUE_Y[0], TONGUE_Y[1], -0.3, 1);   // so the tongues don't rub
+      box(PL_X[0], PL_X[1], -WALL, Y_BACK, -PLATE_T, 0);
+      difference() {
+        union() {
+          for (r = BALS) box(r[0], r[1], r[2], r[3], -PLATE_T + PLATE_FL, 1);
+          for (i = [0 : BAYS - 1]) box(tongue_x(i)[0], tongue_x(i)[1], TONGUE_Y[0], TONGUE_Y[1], -0.3, 1);   // so the tongues don't rub
+        }
+        box(SNAP_BLK[0], SNAP_BLK[1], SNAP_BLK[2], SNAP_BLK[3] + 1, -PLATE_T - 1, 2);
+      }
     }
-    for (p = ballast_pins()) translate([p[0], p[1], -PLATE_T + PLATE_FL - 0.01]) cylinder(d = WASHER[0] - 0.4, h = BALLAST_N*WASHER[2], $fn = 32);
+    for (p = ballast_pins()) if (!in_snap_blk(p, WASHER[1]/2))
+      translate([p[0], p[1], -PLATE_T + PLATE_FL - 0.01]) cylinder(d = WASHER[0] - 0.4, h = BALLAST_N*WASHER[2], $fn = 32);
+    // the side lips: the V runs from the back to just short of the grooves' front end, which stops the plate
+    for (m = [0, 1]) translate([m == 0 ? 0 : W_IN, 0, 0]) mirror([m, 0, 0]) {
+      translate([0, Y_BACK, 0]) rotate([90, 0, 0]) linear_extrude(height = Y_BACK + WALL - GROOVE[3] - PL_CLR) lip2d();
+      translate([0, Y_BACK, 0]) rotate([90, 0, 0]) linear_extrude(height = Y_BACK + WALL)
+        translate([PL_X[0], -PLATE_T]) square([FLANGE_T, PLATE_T + FLANGE_H]);
+    }
+    // snap tab: a strip of the plate's bottom layer, its root toward the front, reaching SNAP_TAB past the back to pull down
+    box(SNAP_X - SNAP[0]/2, SNAP_X + SNAP[0]/2, Y_BACK - SNAP[1], Y_BACK + SNAP_TAB, -PLATE_T, -PLATE_T + SNAP[2]);
+    // on its free end, a riser carrying the bump: a 45 degree ramp in front, a square catch behind
+    box(SNAP_X - SNAP_RISER[0]/2, SNAP_X + SNAP_RISER[0]/2, SNAP_Y[0], SNAP_Y[1], -PLATE_T + SNAP[2] - 0.01, 0);
+    translate([SNAP_X - SNAP_RISER[0]/2, 0, 0]) rotate([90, 0, 90]) linear_extrude(height = SNAP_RISER[0])
+      polygon([[SNAP_Y[0], -0.01], [SNAP_Y[0] + SNAP[4], SNAP[4]], [SNAP_Y[1], SNAP[4]], [SNAP_Y[1], -0.01]]);
   }
-  for (p = boss_xy()) translate([p[0], p[1], 0]) {
-    // counterbore from underneath, then a 0.2 mm skin (one layer) the printer can bridge across in one go,
-    // then the hole: the screw pushes through the skin. No supports needed.
-    translate([0, 0, -PLATE_T + CB[1] + 0.2]) cylinder(d = M3_CLEAR, h = PLATE_T + 1, $fn = 24);
-    translate([0, 0, -PLATE_T - 0.01]) cylinder(d = CB[0], h = CB[1] + 0.01, $fn = 40);
+  // free the tab: a slot down each side, and nothing above it but the riser
+  difference() {
+    union() {
+      box(SNAP_X - SNAP[0]/2 - SNAP[3], SNAP_X + SNAP[0]/2 + SNAP[3], Y_BACK - SNAP[1], Y_BACK + 1, -PLATE_T + SNAP[2], 1);
+      for (s = [-1, 1]) let(x = SNAP_X + s*(SNAP[0] + SNAP[3])/2)
+        box(x - SNAP[3]/2, x + SNAP[3]/2, Y_BACK - SNAP[1], Y_BACK + 1, -PLATE_T - 1, 1);
+    }
+    box(SNAP_X - SNAP_RISER[0]/2, SNAP_X + SNAP_RISER[0]/2, SNAP_Y[0], SNAP_Y[1], -PLATE_T - 2, SNAP[4] + 1);
+    box(SNAP_X - SNAP[0]/2, SNAP_X + SNAP[0]/2, Y_BACK - SNAP[1] - 1, Y_BACK + SNAP_TAB + 1, -PLATE_T - 2, -PLATE_T + SNAP[2]);
   }
   if (MAGNETS) for (p = magnet_xy()) translate([p[0], p[1], -PLATE_T - 0.01]) cylinder(d = MAGNET[0] + 0.3, h = MAGNET[1] + 0.2, $fn = 48);
 }
 
-// ============================== SCREW TEST ==============================
-// Three counterbores for your M3 socket heads (the plate's size in the middle, 0.2 either
-// side). Pick the one where the head sits flush.
-module screw_test() {   // a small bar, counterbores up so nothing overhangs: the sizes are on its front face
-  cbs = [CB[0] - 0.2, CB[0], CB[0] + 0.2]; h = CB[1] + 1.2;
-  pt = CB[0] + 2.4; w = CB[0] + 2.8;
-  difference() {
-    translate([-pt/2, -w/2, 0]) cube([3*pt, w, h]);
-    for (k = [0 : 2]) translate([k*pt, 0, 0]) {
-      translate([0, 0, -1]) cylinder(d = M3_CLEAR, h = h + 2, $fn = 24);
-      translate([0, 0, h - CB[1]]) cylinder(d = cbs[k], h = CB[1] + 1, $fn = 40);
-      translate([0, -w/2 - 0.01, h/2]) rotate([90, 0, 0]) mirror([0, 0, 1]) linear_extrude(height = 0.5)
-        text(str(cbs[k]), size = 2.0, font = LABEL_FONT, halign = "center", valign = "center");
-    }
-  }
-}
-
 // ============================== PREVIEW DUMMIES ==============================
 // the kit as the checks see it, in bay i (board frame)
-module kit_dummy(i, part = "all") translate([0, -BAY_GAP, 0]) bay_frame(i) {   // home: pushed against the hooks
+module kit_dummy(i, part = "all") translate([BAY_GAP, 0, 0]) bay_frame(i) {   // home: pushed against the right rail by the latch
   if (part == "all" || part == "boards") {
     color([0.15, 0.15, 0.15]) cube([KIT[0], KIT[1], XIAO_T]);                                          // XIAO
     color([0.1, 0.1, 0.1]) translate([0, WIO_V0, WIO_TOP - WIO[2]]) cube(WIO);                         // Wio
@@ -565,12 +583,10 @@ module kit_dummy(i, part = "all") translate([0, -BAY_GAP, 0]) bay_frame(i) {   /
   }
   if (part == "all" || part == "pins")   // header pins below the XIAO
     color("Gold") for (p = pin_uv()) translate([p[0] - 0.32, p[1] - 0.32, -PIN_BELOW]) cube([0.64, 0.64, PIN_BELOW - HDR[1] + 0.01]);
-  if (part == "clips")   // a paperclip in each hole, its tip on the button
-    for (k = [0, 1]) let(a = clip_entry(k), b = clip_target(k), d = (b - a)/norm(b - a)) rod(a - 10*d, b - 0.8*d, 0.9);   // stops 0.8 short
 }
 module fpc_dummy(i) color([0.8, 0.55, 0.1]) let(x = fpc_wall_x(i)) box(x + 0.05, x + 0.25, FPC_Y, FPC_Y + FPC[0], FPC_Z0 + 0.2, FPC_Z0 + 0.2 + FPC[1]);
 // a USB-C cable plugged in: the boot (an ordinary 11.5 x 6.5 mm one) and the plug's shell
-module plug_dummy(i) color([0.1, 0.1, 0.1]) let(xc = BX(i) + USB_U, yf = USB_Y - 0.4) {
+module plug_dummy(i) color([0.1, 0.1, 0.1]) let(xc = BX(i) + BAY_GAP + USB_U, yf = USB_FACE - BOOT_REACH) {
   translate([xc, yf - 20, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = 20) rrect(11.5, 6.5, 2);
   translate([xc, yf, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = 6.2) rrect(8.25, 2.4, 1.1);
 }
@@ -606,11 +622,11 @@ module kit() {
 
 // ============================== FIT TEST ==============================
 // Just enough of one bay to try the kit before printing a case: the floor under it with the
-// standoffs, stops and latch; the stretch of front wall with the USB-C opening, the B and R
-// paperclip holes and the hooks; two columns that carry a short piece of the cap with the
-// Wio button's plunger and the LED window; and the screw-head test bar.
-FX = [BX(0) - 3.5, BX(0) + KIT[0] + 6.5];   // across: the stops to the latch's finger tab
-FY = BY + KIT[1] + BAY_PW + BAY_TSLOT + 2;   // back to just behind the latch's tongue
+// standoffs, stops and latch; the stretch of front wall with the USB-C opening and the
+// hooks; two columns that carry a short piece of the cap with the
+// Wio button's plunger and the LED window.
+FX = [BX(0) - 6.4, BX(0) + KIT[0] + BAY_GAP + BAY_STOP_W + 1.0];   // across: the latch's tongue to the right rail
+FY = BY + LATCH[2] + BAY_TAB + BAY_ESLOT + 1.5;   // back to just behind the latch's finger tab
 module fit_body() {
   difference() {
     intersection() {
@@ -618,10 +634,10 @@ module fit_body() {
       box(FX[0], FX[1], -WALL - 1, FY, -FLOOR_T - 1, Z_LU);
     }
     // a window in the floor under the board, between the standoffs (plastic the test doesn't need)
-    let(a = bxy(0, [1.0, STANDOFFS[0][1] + STANDOFFS[0][2]/2 + 0.8]), b = bxy(0, [KIT[0] - 1.0, STANDOFFS[2][1] - STANDOFFS[2][2]/2 - 0.8]))
+    let(a = bxy(0, [2.6, STANDOFFS[0][1] + STANDOFFS[0][2]/2 + 0.8]), b = bxy(0, [KIT[0] - 1.0, STANDOFFS[2][1] - STANDOFFS[2][2]/2 - 0.8]))
       box(a[0], b[0], a[1], b[1], -FLOOR_T - 1, 1);
   }
-  for (x = [FX[0], FX[1] - 3]) box(x, x + 3, CAP_D - 3, CAP_D, -0.01, Z_LU);   // columns under the cap's back corners
+  for (x = [FX[0], FX[1] - BAY_STOP_W - 1.0]) box(x, x + 2, CAP_D - 3, CAP_D, -0.01, Z_LU);   // columns under the cap's back corners: left of the tongue, and on the right rail
 }
 module fit_cap() intersection() {
   cap();
@@ -630,7 +646,6 @@ module fit_cap() intersection() {
 module fit_test() {
   translate([0, 0, FLOOR_T]) fit_body();
   translate([0, FY + 8 + CAP_D, Z_TOP]) rotate([180, 0, 0]) fit_cap();   // turned over, behind the body
-  translate([FX[1] + 8, 0, 0]) screw_test();
 }
 
 // ================================ DISPATCH ================================
@@ -642,7 +657,6 @@ else if (PART == "body") body_print();
 else if (PART == "cap") cap_print();
 else if (PART == "lid") lid_print();
 else if (PART == "plate") plate_print();
-else if (PART == "screw_test") screw_test();
 else if (PART == "bay_view") { color(CLR) fit_body(); color(CLR) fit_cap(); kit_dummy(0); }
 // assembled poses, for the checks (check_case.py)
 else if (PART == "a_body") { if (FIT) fit_body(); else body(); }
@@ -652,7 +666,6 @@ else if (PART == "a_plate") translate([0, 0, -FLOOR_T]) plate();
 else if (PART == "d_boards") for (i = [0 : BAYS - 1]) kit_dummy(i, "boards");
 else if (PART == "d_parts") for (i = [0 : BAYS - 1]) kit_dummy(i, "parts");
 else if (PART == "d_pins") for (i = [0 : BAYS - 1]) kit_dummy(i, "pins");
-else if (PART == "d_clips") for (i = [0 : BAYS - 1]) kit_dummy(i, "clips");
 else if (PART == "d_fpc") { if (WIFI == "fpc" && !FIT) for (i = [0 : BAYS - 1]) fpc_dummy(i); }
 else if (PART == "d_plug") for (i = [0 : BAYS - 1]) plug_dummy(i);
 else if (PART == "d_sma") { if (!FIT) sma_dummy(); }
@@ -661,17 +674,18 @@ else if (PART == "s_front") projection(cut = true) translate([0, 0, -0.6]) rotat
 else if (PART == "s_cap") projection(cut = true) translate([0, 0, -(Z_TOP - 0.9)]) { if (FIT) fit_cap(); else cap(); }
 else if (PART == "s_lid") projection(cut = true) translate([0, 0, -(Z_LU + LID_T/2)]) lid_with_arm();
 // a cut through bay 0's centre, for the pictures
-else if (PART == "section") intersection() { assembly(); box(-SIDE_W - 1, BX(0) + USB_U, -WALL - 21, D_IN + WALL + 1, -FLOOR_T - PLATE_T - 1, Z_TOP + LT_GRIP[2] + 1); }
+else if (PART == "section") intersection() { assembly(); box(PL_X[0] - 1, BX(0) + USB_U, -WALL - 21, D_IN + WALL + 1, -FLOOR_T - PLATE_T - 1, Z_TOP + LT_GRIP[2] + 1); }
 FIT = false;
 LID_DY = 0;
 // numbers for check_case.py
 echo(str("xnc-chk: {",
-  "\"ZB\": ", ZB, ", \"ZX\": ", ZX, ", \"ZW\": ", ZW, ", \"Z_LU\": ", Z_LU, ", \"Z_TOP\": ", Z_TOP, ", \"BY\": ", BY - BAY_GAP, ", \"BAY_GAP\": ", BAY_GAP, ", \"BAY_PRE\": ", BAY_PRE, ", \"LATCH\": ", LATCH, ", \"BAY_TL\": ", BAY_TL, ", \"XIAO_T\": ", XIAO_T,
-  ", \"BX0\": ", BX(0), ", \"P\": ", P, ", \"D_IN\": ", D_IN, ", \"WALL\": ", WALL, ", \"KIT\": ", KIT,
+  "\"ZB\": ", ZB, ", \"ZX\": ", ZX, ", \"ZW\": ", ZW, ", \"Z_LU\": ", Z_LU, ", \"Z_TOP\": ", Z_TOP, ", \"BY\": ", BY, ", \"BXN\": ", BX(0), ", \"BAY_GAP\": ", BAY_GAP, ", \"BAY_PRE\": ", BAY_PRE, ", \"LATCH\": ", LATCH, ", \"LATCH_LIP\": ", LATCH_LIP, ", \"BAY_TSLOT\": ", BAY_TSLOT, ", \"BAY_TL\": ", BAY_TL, ", \"XIAO_T\": ", XIAO_T,
+  ", \"BX0\": ", BX(0) + BAY_GAP, ", \"P\": ", P, ", \"D_IN\": ", D_IN, ", \"WALL\": ", WALL, ", \"KIT\": ", KIT,
   ", \"USB_U\": ", USB_U, ", \"FPC\": ", FPC, ", \"FPC_Z0\": ", FPC_Z0, ", \"FPC_Y\": ", FPC_Y, ", \"FPC_CABLE\": ", FPC_CABLE,
   ", \"FPC_X0\": ", fpc_wall_x(0), ", \"PIGTAIL\": ", PIGTAIL, ", \"WIFI_UFL\": ", WIFI_UFL, ", \"LORA_UFL\": ", LORA_UFL,
   ", \"LORA_UFL_H\": ", LORA_UFL_H, ", \"SPOOL\": ", SPOOL, ", \"SPOOL_P\": ", SPOOL_P, ", \"SMA_Z\": ", SMA_Z,
   ", \"LORA_X\": ", [for (i = [0 : BAYS - 1]) lora_x(i)], ", \"PLUNGERS\": ", [for (p = plungers()) [p[0][0], p[0][1], p[3]]],
-  ", \"NUB_GAP\": ", NUB_GAP, ", \"TAB_L\": ", TAB_L, ", \"TAB_T\": ", TAB_T, ", \"CLIPS\": ", [for (k = [0, 1]) clip_target(k)], ", \"CLIP_IN\": ", [for (k = [0, 1]) clip_entry(k)],
+  ", \"NUB_GAP\": ", NUB_GAP, ", \"TAB_L\": ", TAB_L, ", \"TAB_T\": ", TAB_T,
   ", \"LT_SLOT\": ", LT_SLOT, ", \"LT_HOOK_DEPTH\": ", LT_POST_N[1] - LT_HOOK_N, ", \"WIFI\": \"", WIFI, "\"",
+  ", \"SNAP_X\": ", SNAP_X, ", \"SNAP_Y\": ", SNAP_Y, ", \"SNAP\": ", SNAP, ", \"SNAP_W\": ", SNAP_RISER[0], ", \"Y_BACK\": ", Y_BACK,
   ", \"BAYS\": ", BAYS, "}"));

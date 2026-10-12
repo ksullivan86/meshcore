@@ -47,7 +47,7 @@ def scad(part, out, defs):
 
 def build(defs):
     d = os.path.join(HERE, '..', 'build', 'check'); os.makedirs(d, exist_ok=True)
-    parts = ['a_dock', 'a_tray', 'a_corner', 'a_frame', 'a_shell', 'a_tray_full', 'a_front_full', 'a_pads', 'a_blocker',
+    parts = ['a_boss', 'a_tray', 'a_corner', 'a_front', 'a_keeper', 'a_shell', 'a_tray_full', 'a_front_full', 'a_pads', 'a_blocker',
              'e_case', 'd_board', 'd_panel', 'd_panel_low', 'd_cell', 'd_strap']
     jobs = [(p, os.path.join(d, p + '.stl')) for p in parts] + [(p, os.path.join(d, p + '.dxf')) for p in ('s_boss', 's_boss_low')]
     with ThreadPoolExecutor(6) as ex:
@@ -124,19 +124,20 @@ def old_envelope(depth):
     f = os.path.join(REF, 'ref-eink-back-shell.stl')
     if not os.path.exists(f): return None
     old = trimesh.load(f, force='mesh')
-    cut = old.section(plane_origin=[0, depth, 0], plane_normal=[0, 1, 0])
-    pts = np.vstack([old.vertices[old.vertices[:, 1] <= depth]] + [np.array(d) for d in cut.discrete])
-    return trimesh.convex.convex_hull(pts)
+    far = depth + 8   # hull a little further up, so the 0.5 mm finger notch in its side near the dock line is bridged
+    cut = old.section(plane_origin=[0, far, 0], plane_normal=[0, 1, 0])
+    pts = np.vstack([old.vertices[old.vertices[:, 1] <= far]] + [np.array(d) for d in cut.discrete])
+    return inter(trimesh.convex.convex_hull(pts), box(-10, 80, -10, depth, -10, 40))
 
 def dock_checks(I, M, rep):
-    case, coupon = M['e_case'], M['a_dock']; Wd = I['X1'] - I['X0']; depth = I['DOCK_POCKET'][2]
+    case = M['e_case']; Wd = I['X1'] - I['X0']; depth = I['DOCK_POCKET'][2]
     low = inter(case, box(-10, 80, -10, depth, -10, I['RIM_Z']))        # the shell's outside, as far up as the dock reaches
     env = old_envelope(depth)
     if env is None: print('  SKIP  dock rule: ref-eink-back-shell.stl is not in ref/')
     else:
         pts = np.vstack([low.sample(8000), low.vertices])
         proud = max(0.0, -float(trimesh.proximity.signed_distance(env, pts).min())); short = vol(minus(env, low))
-        rep('dock rule: the dock end keeps the old shell\'s profile', proud <= 0.05 and short < 30,
+        rep('dock rule: the dock end keeps the old shell\'s profile', proud <= 0.1 and short < 30,   # 0.1: mesh facets; the pocket has 0.85 slack
             f'nowhere more than {proud:.2f} mm outside the old shell and {short:.1f} mm3 smaller, over the bottom {depth} mm ({vol(low) / 1000:.1f} cm3)')
     rep('dock rule: nothing new on the bottom of the back', I['DOCK_KEEP'] >= depth + 1 and abs(I['Z_FRONT'] - 26.5) < 0.05,
         f'hump starts at {I["DOCK_KEEP"]} mm, the docks are {depth} deep; front face at {I["Z_FRONT"]} (old case 26.5)')
@@ -161,8 +162,6 @@ def dock_checks(I, M, rep):
         g, dx, back = best
         rep(f'{tag}: the case seats in the pocket', g >= 0.1 and side >= 0.2 and front >= 0.3,
             f'{pw - Wd:.2f} mm slack across, {front:.2f} front to back; sitting {-dx:.1f} left of centre and {back:.1f} off the back wall it has {g:.2f} mm all round')
-        v = vol(inter(to_dock(coupon, I, D, back=back, dx=dx), dock))
-        rep(f'{tag}: the coupon\'s dock slice seats the same way', v < 0.01, f'overlap {v:.3f} mm3')
         # pogo window on the case's end face over the slot in the pocket's floor
         cx = I['POGO_C'][0] + (D['x'][0] + D['x'][1]) / 2 - (I['X0'] + I['X1']) / 2 + dx; cy = D['y'][1] - back - I['POGO_C'][1]
         wx, wy = I['POGO_WIN'][0] / 2, I['POGO_WIN'][1] / 2
@@ -177,43 +176,43 @@ def dock_checks(I, M, rep):
         rep(f'{tag}: hump clears the dock\'s back rest', g >= 1.0, f'{I["HUMP"]:.1f} mm hump starts {I["DOCK_KEEP"] - dd:.1f} mm above the rest; nearest {g:.2f} mm')
 
 def bay_checks(I, M, rep):
-    tray, board = M['a_tray_full'], M['d_board']
-    e, t0, t1, d = I['LATCH']; ox, oy = I['BAY_O']; G, PRE, PW = I['BAY_GAP'], I['BAY_PRE'], I['BAY_PW']
-    assert e == 'B', 'bay_checks is written for a latch on the bottom edge'
-    def tb(ta, tb_, na, nb, z0, z1):   # a box in the latch edge's frame: t along +x, n outward = -y
-        return box(ox + ta, ox + tb_, oy - nb, oy - na, z0, z1)
+    tray, board, blk = M['a_tray_full'], M['d_board'], M['a_blocker']
+    ox, oy = I['BAY_O']; G, PRE, PW = I['BAY_GAP'], I['BAY_PRE'], I['BAY_PW']; H = I['BOARD'][1]
+    assert all(l[0] == 'T' for l in I['LATCHES']), 'bay_checks is written for latches on the top edge'
+    def tb(ta, tb_, na, nb, z0, z1):   # a box in the latch edge's frame: t along +x, n outward = +y
+        return box(ox + ta, ox + tb_, oy + H + na, oy + H + nb, z0, z1)
     top = I['Z_TF'] + I['SO_H'] + I['BAY_SLOT_H'] + I['BAY_LIP_T']
-    pil = tb(t0 - 0.01, t1 + 0.01, -G - PRE - 1.0, -G - PRE + PW + 0.01, I['Z_TF'] - 0.01, top + 0.1)
-    rest = minus(tray, pil)
-    pre, clash = vol(inter(board, tray)), vol(inter(board, rest)); want = PRE * I['PCB_T'] * (t1 - t0)
-    rep('bay: only the latch touches the board', clash < 0.01 and 0.5 * want < pre < 1.3 * want,
+    pils = trimesh.util.concatenate([tb(l[1] - 0.01, l[2] + 0.01, -G - PRE - 1.2, -G - PRE + PW + 0.01, I['Z_TF'] - 0.01, top + 0.1) for l in I['LATCHES']])
+    rest = minus(tray, pils)
+    pre, clash = vol(inter(board, tray)), vol(inter(board, rest)); want = PRE * I['PCB_T'] * sum(l[2] - l[1] for l in I['LATCHES'])
+    rep('bay: only the latches touch the board', clash < 0.01 and 0.5 * want < pre < 1.3 * want,
         f'latch preload {pre:.2f} mm3 ({PRE} mm), everything else {clash:.3f} mm3')
-    tr = (t1 - I['BAY_TL'], t1) if d < 0 else (t0, t0 + I['BAY_TL'])
-    ra = (tr[0] + 0.5, tr[0] + 1.5) if d < 0 else (tr[1] - 1.5, tr[1] - 0.5)
-    cut = tb(ra[0], ra[1], -G - PRE - 0.05, -G - PRE + PW + 0.05, I['Z_TB'] - 5, I['Z_TF'] + 0.5)
-    n0, n1 = bodies(tray), bodies(minus(tray, cut))
-    rep('bay: latch tongue free to its root', n1 == n0 + 1, f'{n1 - n0} more piece(s) when cut at the root')
-    # tilt in: top edge pushed under the hooks, latch edge raised, then lowered; it may slide back a little while tilted
-    H = I['BOARD'][1]; y1 = I['BOARD_Y0'] + H
-    th_max = math.degrees(math.asin((I['PCB_T'] + 0.15 + I['BAY_LIP_T'] + 0.3) / H)); worst = 0
+    reach = I['BAY_LIP'] + PRE; n0 = bodies(tray)
+    for i, (e, t0, t1, d) in enumerate(I['LATCHES']):
+        tr = (t1 - I['BAY_TL'], t1) if d < 0 else (t0, t0 + I['BAY_TL'])
+        ra = (tr[0] + 0.5, tr[0] + 1.5) if d < 0 else (tr[1] - 1.5, tr[1] - 0.5)
+        cut = tb(ra[0], ra[1], -G - PRE - 0.05, -G - PRE + PW + 0.05, I['Z_TB'] - 5, I['Z_TF'] + 0.5)
+        n1 = bodies(minus(tray, cut)); L = I['BAY_TL'] - (t1 - t0) / 2; strain = 1.5 * PW * reach / L ** 2
+        rep(f'bay: latch {i + 1} tongue free to its root, and bends far enough', n1 == n0 + 1 and strain <= 0.025,
+            f'{n1 - n0} more piece(s) when cut at the root; {strain * 100:.1f} % strain pushed {reach:.2f} mm clear of the board')
+        g0, g1 = I['GRIPS'][i]; zone = tb(g0 - 1, g1 + 1, -G - PRE - 1, 12, I['Z_TF'] + 0.05, I['Z_SKIN'])
+        grip = inter(tray, zone); rib = inter(blk, zone)
+        g = gap(rib, grip); stop = vol(inter(rib, moved(grip, [0, g + 0.25, 0])))
+        rep(f'latch {i + 1} blocker beside the grip tab', abs(g - I['BLOCK_GAP']) <= 0.1 and stop > 0.3,
+            f'gap {g:.2f} mm (want {I["BLOCK_GAP"]}); the tab pushed 0.25 further meets the rib over {stop:.1f} mm3; the latch needs {reach:.2f} mm to let go')
+    # tilt in: bottom edge pushed under the hook, top edge raised, then lowered onto the pins; it may slide back a little while tilted
+    y0 = I['BOARD_Y0']; th_max = math.degrees(math.asin((I['PCB_T'] + 0.15 + I['BAY_LIP_T'] + 0.3) / H)); worst = 0
     for th in np.linspace(th_max, 0.3, 9):
         best = 1e9
-        for off in (0, 0.2, 0.4, 0.6, 0.8):
+        for off in (0, 0.2, 0.4, 0.6, 0.8, 1.0):
             b2 = board.copy()
-            b2.apply_transform(trimesh.transformations.rotation_matrix(math.radians(-th), [1, 0, 0], [0, y1, I['Z_BB']]))
-            b2.apply_translation([0, -off, 0])
+            b2.apply_transform(trimesh.transformations.rotation_matrix(math.radians(th), [1, 0, 0], [0, y0, I['Z_BB']]))
+            b2.apply_translation([0, off, 0])
             best = min(best, vol(inter(b2, rest)))
             if best < 0.01: break
         worst = max(worst, best)
-    rep('bay: board tilts in under the hooks and onto its pins', worst < 0.05, f'{th_max:.1f} deg to 0, worst overlap {worst:.3f} mm3')
-    # latch blocker: beside the grip tab with the front on, and in the tongue's way
-    g0, g1 = I['GRIP']; zone = tb(g0 - 1, g1 + 1, -G - PRE - 1, 12, I['Z_TF'] + 0.05, I['Z_SKIN'])
-    grip = inter(tray, zone); blk = M['a_blocker']
-    g = gap(blk, grip); stop = vol(inter(blk, moved(grip, [0, -(g + 0.25), 0])))
-    rep('latch blocker beside the grip tab', abs(g - I['BLOCK_GAP']) <= 0.1 and stop > 0.3,
-        f'gap {g:.2f} mm (want {I["BLOCK_GAP"]}); the tab pushed 0.25 further meets the rib over {stop:.1f} mm3; '
-        f'the latch needs {I["BAY_LIP"] + PRE:.2f} mm to let go')
-    v = vol(inter(blk, tray)) + vol(inter(blk, board)); rep('latch blocker clear of the tray and board', v < 0.01, f'overlap {v:.3f} mm3')
+    rep('bay: board tilts in under the hook and onto its pins', worst < 0.05, f'{th_max:.1f} deg to 0, worst overlap {worst:.3f} mm3')
+    v = vol(inter(blk, tray)) + vol(inter(blk, board)); rep('latch blockers clear of the tray and board', v < 0.01, f'overlap {v:.3f} mm3')
 
 def run(defs):
     I, M, D, log = build(defs)
@@ -223,24 +222,28 @@ def run(defs):
     def rep(name, ok, detail):
         res.append(bool(ok)); print(f"  {'PASS' if ok else 'FAIL'}  {name}: {detail}")
     # 1. the coupon: every piece one body, and they go together
-    names = {'a_dock': 'dock slice', 'a_tray': 'tray skeleton', 'a_corner': 'front corner', 'a_frame': 'panel frame'}
+    names = {'a_tray': 'tray', 'a_boss': 'shell corner', 'a_front': 'front (panel side and corner)', 'a_keeper': 'panel keeper'}
     for k, nm in names.items():
         n = bodies(M[k]); rep(f'coupon: {nm} is one piece', n == 1 and M[k].is_watertight, f'{n} bodies, watertight {M[k].is_watertight}, {vol(M[k]) / 1000:.1f} cm3')
     tot = sum(vol(M[k]) for k in names) / 1000
-    rep('coupon: little plastic', tot < 14, f'{tot:.1f} cm3 in all (about {tot * 1.25:.0f} g in PETG)')
-    v = [vol(inter(M[a], M[b])) for a, b in (('a_dock', 'a_tray'), ('a_dock', 'a_corner'), ('a_tray', 'a_corner'))]
-    seat = max(gap(M['a_tray'], M['a_dock'], 2000), gap(M['a_corner'], M['a_tray'], 2000))
+    rep('coupon: little plastic', tot < 16, f'{tot:.1f} cm3 in all (about {tot * 1.25:.0f} g in PETG)')
+    v = [vol(inter(M[a], M[b])) for a, b in (('a_boss', 'a_tray'), ('a_boss', 'a_corner'), ('a_tray', 'a_corner'))]
+    seat = max(gap(M['a_tray'], M['a_boss'], 2000), gap(M['a_corner'], M['a_tray'], 2000))
     rep('coupon: boss, tray and front corner stack', max(v) < 0.01 and seat < 0.05, f'overlaps {v[0]:.3f}, {v[1]:.3f}, {v[2]:.3f} mm3; faces {seat:.2f} mm apart')
     low = inter(M['a_corner'], box(-10, 80, -10, 120, -10, I['RIM_Z'] - 0.05))
-    g = gap(low, M['a_dock']); rep('coupon: tongue and post clear of the shell', g >= 0.1, f'{g:.2f} mm')
+    g = gap(low, M['a_boss']); rep('coupon: tongue and post clear of the shell', g >= 0.1, f'{g:.2f} mm')
     # 2. heat-set inserts and screws
-    p = I['SCREWS'][1]; grow = (I['INSERT_OD'] - I['INSERT_HOLE_D']) / 2
+    p = I['SCREWS'][2]; grow = (I['INSERT_OD'] - I['INSERT_HOLE_D']) / 2
     w = min(web_round(D[k], p, I['INSERT_HOLE_D']) for k in ('s_boss', 's_boss_low')) - grow
     o = np.array([[p[0], p[1], I['Z_TB'] - I['INSERT_DEPTH'] - 0.01]])
-    under = I['Z_TB'] - I['INSERT_DEPTH'] - M['a_dock'].ray.intersects_location(o, [[0, 0, -1]], multiple_hits=True)[0][:, 2].min()
+    under = I['Z_TB'] - I['INSERT_DEPTH'] - M['a_boss'].ray.intersects_location(o, [[0, 0, -1]], multiple_hits=True)[0][:, 2].min()
     rep('insert: wall round it', w >= 1.95 and under >= 1.5, f'{w:.2f} mm once the {I["INSERT_OD"]} mm insert is in (want 2.0), {under:.1f} mm under the hole')
+    iron = trimesh.creation.cylinder(radius=I['IRON_D'] / 2, height=I['RIM_Z'] + 6 - I['Z_TB'], sections=64)
+    walls = inter(M['a_shell'], box(-10, 80, -10, 120, I['Z_TB'] + 0.3, 60))   # the shell above the bosses
+    room = min(gap(moved(iron, [q[0], q[1], (I['RIM_Z'] + 6 + I['Z_TB']) / 2 + 0.05]), walls, 3000) for q in I['SCREWS'])
+    rep('insert: the iron reaches it', room >= 1.0, f'{room:.2f} mm between a {I["IRON_D"]} mm tip and the walls, at every boss')
     eng = I['SCREW_L'] - (I['Z_SEAT'] - I['Z_TB']); spare = I['INSERT_DEPTH'] - eng
-    rep('screw length', eng >= 0.6 * I['INSERT_L'] and spare >= 0.3, f'M3 x {I["SCREW_L"]}: {eng:.1f} mm in the insert, {spare:.1f} mm short of the hole\'s end')
+    rep('screw length', eng >= 0.6 * I['INSERT_L'] and spare >= 0.3, f'M3 x {I["SCREW_L"]}: {eng:.1f} mm in the insert, {spare:.1f} mm short of the end of the hole')
     # 3. the full parts' cores go together
     pairs = (('a_shell', 'a_tray_full'), ('a_shell', 'a_front_full'), ('a_tray_full', 'a_front_full'), ('a_front_full', 'd_board'), ('a_shell', 'd_board'))
     v = [vol(inter(M[a], M[b])) for a, b in pairs]
@@ -252,7 +255,7 @@ def run(defs):
         g = gap(pad, board, 800); c = pad.centroid
         on = I['BAY_O'][0] <= c[0] <= I['BAY_O'][0] + I['BOARD'][0] and I['BOARD_Y0'] <= c[1] <= I['BOARD_Y0'] + I['BOARD'][1]
         rep(f'hold-down pad {i + 1} at ({c[0]:.1f}, {c[1]:.1f})', on and abs(g - I['PAD_GAP']) <= 0.05, f'{g:.2f} mm above the board (want {I["PAD_GAP"]})')
-    g = gap(M['a_pads'], M['a_tray_full'], 2000); rep('hold-down pads clear of the hooks and latch', g >= 0.3, f'{g:.2f} mm')
+    g = gap(M['a_pads'], M['a_tray_full'], 2000); rep('hold-down pads clear of the hook and latches', g >= 0.3, f'{g:.2f} mm')
     # 5. cell bay
     cell, strap, shell = M['d_cell'], M['d_strap'], M['a_shell']
     v = vol(inter(cell, shell)) + vol(inter(cell, M['a_tray_full'])); g = gap(cell, shell, 6000)
@@ -260,13 +263,21 @@ def run(defs):
     rep('cell at CELL_MAX fits', v < 0.01 and g >= 0.25, f'{I["CELL_MAX"]}: overlap {v:.2f} mm3, nearest {g:.2f} mm; {spare:.1f} mm spare in thickness in the dock zone')
     v = vol(inter(strap, shell)); rep('strap round the cell fits', v < 0.01, f'{I["STRAP_T"]} mm strap: overlap {v:.2f} mm3, hump {I["HUMP"]:.1f} mm')
     # 6. e-ink panel
-    front = M['a_front_full']; play = I['PANEL_PLAY']
-    v = [vol(inter(M[k], front)) for k in ('d_panel', 'd_panel_low')]
-    rep('panel sits in its pocket', max(v) < 0.01, f'overlap {v[0]:.3f} mm3 pushed home, {v[1]:.3f} mm3 slid {play:.1f} mm back onto its end stops')
-    lip, bite = I['LIP_REACH'] - play, I['SNAP_BITE'] + play
-    t = (I['SNAP_T'] + I['SNAP_TOP']) / 2; strain = 12 * bite * t / I['SNAP_SPAN'] ** 2
-    rep('panel held at both ends', lip >= 0.4 and strain <= STRAIN_MAX,
-        f'lips over it by {I["LIP_REACH"]} to {lip:.1f} mm, snap bar by {I["SNAP_BITE"]} to {bite:.1f} mm; bar strain {strain * 100:.1f} % going in')
+    front = M['a_front_full']
+    v = vol(inter(M['d_panel'], front)); slack = (I['PKT_X'][1] - I['PKT_X'][0] - I['PANEL'][0], I['PKT_Y'][1] - I['PKT_Y'][0] - I['PANEL'][1])
+    rep('panel drops into its pocket', v < 0.01 and min(slack) >= 0.4, f'overlap {v:.3f} mm3; pocket {slack[0]:.2f} wider and {slack[1]:.2f} longer than the panel')
+    kp = M['a_keeper']; zk0, zk1, kgap, barb, fw, fl, fr, lip = I['KP']
+    v = [vol(inter(kp, M[k])) for k in ('a_front_full', 'd_panel', 'd_panel_low', 'd_board', 'a_tray_full', 'a_shell')]
+    g = min(gap(kp, M[k], 3000) for k in ('d_panel', 'd_panel_low'))
+    rep('keeper sits behind the panel', bodies(kp) == 1 and max(v) < 0.01 and abs(g - kgap) <= 0.05,
+        'overlaps ' + ', '.join(f'{x:.3f}' for x in v) + f' mm3 with the front, panel (both ends of its play), board, tray, shell; {g:.2f} mm off the glass')
+    held = inter(moved(kp, [0, 0, -0.5]), front)
+    zones = sorted(tuple(int(round(c)) for c in b.centroid[:2]) for b in held.split(only_watertight=False)) if not empty(held) else []
+    strain = max(1.5 * fw * barb / L ** 2 for L in (fl, fr))
+    rep('keeper held by two lips and two catches', len(zones) == 4 and strain <= STRAIN_MAX,
+        f'pulled back 0.5 mm it meets the front at {len(zones)} places {zones}; finger strain {strain * 100:.1f} % clicking in')
+    top = I['Z_BT'] + 3.2; room = zk0 - I['Z_BT']
+    rep('keeper clear of the parts on the board', room >= 3.3, f'{room:.2f} mm between the board and the keeper (USB-C socket is about 3.2 tall)')
     mx, my = (I['WIN'][0] - I['PANEL_ACTIVE'][0]) / 2, (I['WIN'][1] - I['PANEL_ACTIVE'][1]) / 2
     rep('window shows the active area', min(mx, my) >= 0.5, f'{mx:.2f} and {my:.2f} mm round it')
     # 7. docks

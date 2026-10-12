@@ -2,7 +2,8 @@
 board fits home without touching anything but the latch (preload), tilt-in path clears the hooks."""
 import trimesh, numpy as np, math, sys
 from trimesh.transformations import rotation_matrix as R
-SL_T, SO, PCB, GAP, PRE, PW, TL = 3.0, 7.0, 1.6, 0.2, 0.15, 2.6, 17
+SL_T, SO, PCB, GAP, PRE, PW, TL = 3.0, 7.0, 1.6, 0.2, -0.05, 2.4, 22
+EAR = 3.5; PAD_W, PAD_L = 5, 9
 def box(x0, x1, y0, y1, z0, z1):
     b = trimesh.creation.box(bounds=[[x0, y0, z0], [x1, y1, z1]]); return b
 def vol(m):
@@ -41,7 +42,8 @@ for name, c in B.items():
     parts += [box(u0, u1, v0, v1, h0, h1) for u0, u1, v0, v1, h0, h1 in c.get('under', [])]
     # the latch pillar, in the bay frame, to split its preload contact off from the rest
     e, t0, t1, d = c['latch']; T = ef(e, W, H)
-    pil = box(t0 - 0.01, t1 + 0.01, -GAP - PRE - 1.0, -GAP - PRE + PW + 0.01, -0.01, so + 1.75 + 1.4 + 0.1); pil.apply_transform(T)
+    pw = max(t1 - t0, PAD_W); pa, pb = (t0, t0 + pw) if d > 0 else (t1 - pw, t1)   # pillar, ear and paddle
+    pil = box(min(t0, pa) - 0.01, max(t1, pb) + 0.01, -GAP - PRE - 1.0, -GAP - PRE + PW + PAD_L + 0.01, -0.01, so + 1.75 + 1.4 + 0.1); pil.apply_transform(T)
     rest = trimesh.boolean.difference([m, pil], check_volume=False)
     clash = sum(inter(rest, p) for p in parts)
     pre = inter(m, board)

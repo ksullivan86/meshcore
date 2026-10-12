@@ -844,16 +844,21 @@ BAY_WALL   = 2.6;     // hook wall thickness
 BAY_BUTT   = 2.0;     // buttress on the outside of each hook's wall, at its foot
 BAY_STOP_W = 2.0;     // stop thickness
 BAY_STOP_UP = 1.8;    // stops rise this far above the board's underside (a little above its top)
-BAY_PRE    = 0.15;    // latch preload: it sits this far into the board once the board is home
-BAY_PW     = 2.6;     // latch pillar and tongue width (in its bending direction)
-BAY_TL     = 17;      // tongue length, free end to root
-BAY_TSLOT  = 1.4;     // slot outside the tongue: room for it to flex 1.1 mm
+BAY_PRE    = -0.05;   // latch fit: no preload, 0.05 mm clear once the board is pushed against its hooks (0.15 was too tight)
+BAY_PW     = 2.4;     // latch pillar and tongue width (in its bending direction); 2.6 was stiff
+BAY_TL     = 22;      // tongue length, pillar to root (17 was stiffer)
+BAY_TSLOT  = 2.4;     // slot outside the tongue and the paddle: how far the latch can be pulled back (1.4 was a stretch)
 BAY_ISLOT  = 0.8;     // slot inside the tongue
 BAY_ESLOT  = 1.0;     // slot across the tongue's free end
 BAY_RAMP_N = 0.6;     // the latch's ramp tops out this far past the board's edge
 BAY_PIN_H  = 1.3;     // locating pins: less than the board's thickness
-BAY_TAB    = 5;       // finger tab: the tongue runs on past the pillar's free end ...
-BAY_GRIP_H = 3;       // ... with a low grip on it. Push the grip outward to open the latch.
+BAY_PAD_W  = 5;       // pull tab: a flat paddle on the tongue's free end, reaching outward past the ear,
+BAY_PAD_L  = 9;       // ... this far from the tongue's outer face, part of the tongue (cut free of the plate),
+BAY_GRIP_H = 4.5;     // ... with a low grip at its outer end, its top overhanging toward the board for a fingertip or tool. The pillar sits at the very end of the tongue.
+BAY_GRIP_T = 1.6;     // grip thickness at its foot
+BAY_GRIP_O = 1.0;     // the grip's top overhangs this far toward the board, on a 45 degree underside
+BAY_EAR    = 3.5;     // finger tab: an ear on the latch's outer face, away from the board. Pull it outward to open.
+BAY_EAR_H  = [1.0, 6.0];   // its underside starts here and rises at 45 degrees; its top
 // edge frame (t along the edge, n outward from the board's edge, h up) to the bay frame
 function bay_ef(e, sz) = e == "L" ? [[0, -1, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
   : e == "R" ? [[0, 1, 0, sz[0]], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -874,26 +879,37 @@ module bay_stop(t0, t1, so) {
   translate([t0, -0.8, 0]) cube([t1 - t0, 0.8 + BAY_GAP + 0.01, so]);
   bay_prof(t0, t1, [[BAY_GAP, 0], [BAY_GAP + BAY_STOP_W, 0], [BAY_GAP + BAY_STOP_W, top], [BAY_GAP + 0.5, top], [BAY_GAP, top - 0.5]]);
 }
-function bay_tongue(t0, t1, dir) = dir > 0 ? [t0 - BAY_TAB, t0 + BAY_TL] : [t1 - BAY_TL, t1 + BAY_TAB];   // t range: finger tab, pillar, root
+function bay_tongue(t0, t1, dir) = dir > 0 ? [t0, t0 + BAY_TL] : [t1 - BAY_TL, t1];   // t range: pillar at the free end, root
+function bay_pad(t0, t1, dir) = let(w = max(t1 - t0, BAY_PAD_W)) dir > 0 ? [t0, t0 + w] : [t1 - w, t1];   // t range of the paddle
 module bay_pillar(t0, t1, so) {
-  sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T; p = BAY_GAP + BAY_PRE;
-  bay_prof(t0, t1, [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, top], [BAY_RAMP_N, top],
+  sh = so + BAY_SLOT_H; top = sh + BAY_LIP_T; p = BAY_GAP + BAY_PRE; n0 = -p + BAY_PW;
+  bay_prof(t0, t1, [[-p, 0], [n0, 0], [n0, top], [BAY_RAMP_N, top],
                     [-p - BAY_LIP, sh + 0.4], [-p - BAY_LIP, sh], [-p, sh]]);
+  bay_prof(t0, t1, [[n0 - 0.01, BAY_EAR_H[0]], [n0 + BAY_EAR, BAY_EAR_H[0] + BAY_EAR],             // the ear: printable,
+                    [n0 + BAY_EAR, max(BAY_EAR_H[1], BAY_EAR_H[0] + BAY_EAR + 1.2)], [n0 - 0.01, max(BAY_EAR_H[1], BAY_EAR_H[0] + BAY_EAR + 1.2)]]);   // 45 degree underside
 }
-module bay_grip(t0, t1, dir) let(p = BAY_GAP + BAY_PRE, g = dir > 0 ? [t0 - BAY_TAB + 0.5, t0] : [t1, t1 + BAY_TAB - 0.5])
-  bay_prof(g[0], g[1], [[-p, 0], [-p + BAY_PW, 0], [-p + BAY_PW, BAY_GRIP_H - 0.5], [-p + BAY_PW - 0.5, BAY_GRIP_H], [-p, BAY_GRIP_H]]);
+module bay_grip(t0, t1, dir) let(n0 = -BAY_GAP - BAY_PRE + BAY_PW, g = bay_pad(t0, t1, dir), n1 = n0 + BAY_PAD_L)   // low grip on the paddle's outer end
+  let(a = n1 - BAY_GRIP_T, o = BAY_GRIP_O, h = BAY_GRIP_H)
+  bay_prof(g[0], g[1], [[a, 0], [n1, 0], [n1, h - 0.4], [n1 - 0.4, h], [a - o, h], [a - o, h - 0.8], [a, h - 0.8 - o]]);
 module bay_tongue_cut(t0, t1, dir) {
-  p = BAY_GAP + BAY_PRE; tr = bay_tongue(t0, t1, dir);
+  p = BAY_GAP + BAY_PRE; tr = bay_tongue(t0, t1, dir); n0 = -p + BAY_PW;
   fe = dir > 0 ? [tr[0] - BAY_ESLOT, tr[0]] : [tr[1], tr[1] + BAY_ESLOT];       // free end slot
   ta = min(tr[0], fe[0]); tb = max(tr[1], fe[1]);
-  translate([ta, -p - BAY_ISLOT, -SL_T - 1]) cube([tb - ta, BAY_ISLOT, SL_T + 1.01]);           // inside
-  translate([ta, -p + BAY_PW, -SL_T - 1]) cube([tb - ta, BAY_TSLOT, SL_T + 1.01]);             // outside
-  translate([fe[0], -p - BAY_ISLOT, -SL_T - 1]) cube([fe[1] - fe[0], BAY_ISLOT + BAY_PW + BAY_TSLOT, SL_T + 1.01]);
+  g = bay_pad(t0, t1, dir); ga = dir > 0 ? fe[0] : g[0] - BAY_ESLOT; gb = dir > 0 ? g[1] + BAY_ESLOT : fe[1];
+  difference() {
+    union() {
+      translate([ta, -p - BAY_ISLOT, -SL_T - 1]) cube([tb - ta, BAY_ISLOT, SL_T + 1.01]);           // inside
+      translate([ta, n0, -SL_T - 1]) cube([tb - ta, BAY_TSLOT, SL_T + 1.01]);                        // outside
+      translate([fe[0], -p - BAY_ISLOT, -SL_T - 1]) cube([fe[1] - fe[0], BAY_ISLOT + BAY_PW + BAY_PAD_L + BAY_TSLOT, SL_T + 1.01]);
+      translate([ga, n0, -SL_T - 1]) cube([gb - ga, BAY_PAD_L + BAY_TSLOT, SL_T + 1.01]);           // round the paddle
+    }
+    translate([g[0], n0 - 0.02, -SL_T - 2]) cube([g[1] - g[0], BAY_PAD_L + 0.02, SL_T + 3]);        // the paddle stays, joined to the tongue
+  }
 }
 // the tongue and its slots, in the bay frame, so the outline stays off the moving part
 module bay_tongue2d(b) let(l = b[4], tr = bay_tongue(l[1], l[2], l[3]), p = BAY_GAP + BAY_PRE)
   multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 0.2, -p - BAY_ISLOT - 0.2])
-    square([tr[1] - tr[0] + 2*BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_TSLOT + 0.4]);
+    square([tr[1] - tr[0] + 2*BAY_ESLOT + 0.4, BAY_ISLOT + BAY_PW + BAY_PAD_L + BAY_TSLOT + 0.4]);
 module bay_marks2d(b) difference() {
   union() {
     difference() { square(b[0]); offset(delta = -MK_W) square(b[0]); }    // outline just inside the board's edge
@@ -923,7 +939,7 @@ module bay_foot2d(b) {
   l = b[4]; tr = bay_tongue(l[1], l[2], l[3]);
   offset(delta = 5) square(b[0]);
   multmatrix(bay_ef(l[0], b[0])) translate([tr[0] - BAY_ESLOT - 3, -BAY_GAP - BAY_PRE - BAY_ISLOT - 3])
-    square([tr[1] - tr[0] + 2*BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_TSLOT + 6]);
+    square([tr[1] - tr[0] + 2*BAY_ESLOT + 6, BAY_ISLOT + BAY_PW + BAY_PAD_L + BAY_TSLOT + 4]);
 }
 module bay_test(b) difference() {
   union() { translate([0, 0, -SL_T]) linear_extrude(height = SL_T) bay_foot2d(b); bay_add(b); }
@@ -941,7 +957,7 @@ BAY_RAK = [RAK_SIZE, SO_H,                                   // RAK19003: USB-C,
   [[35, 15, 4, 2.2, 32.5],                                   // at the half-hole, with a pin in it: locates the board up and down
    [33, 5, 3.5]],                                            // no standoffs near the left edge: the JST sockets' pins are 7 mm in
   [["L", 1.0, 5.0], ["L", 25.0, 29.0]],                      // hooks at the corners, clear of the USB-C, button and sockets
-  ["R", 22, 27, 1],                                          // latch on the right edge, above the half-hole; tongue runs up, tab below
+  ["R", 22, 27, 1],                                          // latch on the right edge, above the half-hole; tongue runs up
   [["B", 5, 10], ["T", 3, 8]],                               // stops on the long edges
   [["RAK19003", 18.5, 11.5, 3, 0, 1], ["USB-C", 2.95, 16.5, 2.5, 90, 1]]];
 BAY_MB = [MB_SIZE, SO_H,                                     // MiniBoost: four pins along the bottom edge

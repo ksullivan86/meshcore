@@ -2,8 +2,9 @@
 
 Renders the parts in their assembled positions (and the kit stand-ins) with OpenSCAD into
 build/, then measures: boards, header pins and parts under the board against the case;
-the plunger over each Wio button; the paperclip holes for B and R; the USB-C cable against its opening; the FPC in its pocket
-and the cable lengths; the board bays (latch preload, tongue free, tilting the kit in under the hooks); the lid sliding home over the latch; the thinnest
+the plunger over each Wio button; the USB-C cable against its opening; the FPC in its pocket
+and the cable lengths; the board bays (latch preload, tongue free, tilting the kit in under the hooks); the lid sliding home over the latch; the base
+plate sliding on in its grooves and clicking in; the thinnest
 webs in the front wall, the cap and the lid; and that every printed part is one piece.
 
     python3 cad/check_case.py               # 1, 2 and 3 bays
@@ -38,7 +39,7 @@ def scad(part, out, defs):
 
 def build(tag, defs, fit):
     d = os.path.join(HERE, 'build', tag); os.makedirs(d, exist_ok=True)
-    parts = ['a_body', 'a_cap', 'a_lid', 'd_boards', 'd_parts', 'd_pins', 'd_clips', 'd_fpc', 'd_plug', 'd_sma']
+    parts = ['a_body', 'a_cap', 'a_lid', 'd_boards', 'd_parts', 'd_pins', 'd_fpc', 'd_plug', 'd_sma']
     if not fit: parts.append('a_plate')
     jobs = [(p, os.path.join(d, p + '.stl')) for p in parts] + \
            [(p, os.path.join(d, p + '.dxf')) for p in ('s_front', 's_cap')]
@@ -111,13 +112,16 @@ def box(x0, x1, y0, y1, z0, z1): return trimesh.creation.box(bounds=[[x0, y0, z0
 def bays_check(I, M, rep, boards, parts, pins):
     body = M['a_body']; G, PRE, PW = I['BAY_GAP'], I['BAY_PRE'], 2.6
     e, t0, t1, d = I['LATCH']; W, H = I['KIT']
+    def ef(t, n):   # the latch edge's frame (t along it, n outward) to the bay's (u, v)
+        return {'L': (-n, t), 'R': (W + n, t), 'B': (t, -n), 'T': (t, H + n)}[e]
     for i in range(I['BAYS']):
-        ox, oy = I['BX0'] + i * I['P'], I['BY'] + G          # the bay's nominal corner
-        def tb(ta, tb_, na, nb, z0, z1):                      # a box in the latch edge's frame ("T": u = t, v = H + n)
-            return box(ox + ta, ox + tb_, oy + H + na, oy + H + nb, z0, z1)
-        pil = tb(t0 - 0.01, t1 + 0.01, -G - PRE - 1.0, -G - PRE + PW + 0.01, -0.01, I['ZB'] + I['XIAO_T'] + 0.15 + 1.4 + 0.1)
+        ox, oy = I['BXN'] + i * I['P'], I['BY']                # the bay's nominal corner
+        def tb(ta, tb_, na, nb, z0, z1):                       # a box in the latch edge's frame
+            (u0, v0), (u1, v1) = ef(ta, na), ef(tb_, nb)
+            return box(ox + min(u0, u1), ox + max(u0, u1), oy + min(v0, v1), oy + max(v0, v1), z0, z1)
+        pil = tb(t0 - 0.01, t1 + 0.01, -G - PRE - I['LATCH_LIP'] - 0.2, -G - PRE + PW + 0.01, -0.01, I['ZB'] + I['XIAO_T'] + 0.15 + 1.4 + 0.1)
         rest = trimesh.boolean.difference([body, pil], engine='manifold')
-        mine = box(ox - 3, ox + W + 3, -50, 200, -50, 200)
+        mine = box(ox - 7, ox + W + 5, -50, 200, -50, 200)
         bd = inter(boards, mine)
         pre = vol(inter(bd, body)); clash = vol(inter(bd, rest)) + vol(inter(inter(trimesh.util.concatenate([parts, pins]), mine), body))
         rep(f'bay {i + 1}: only the latch touches the kit', clash < 0.01 and 0.05 < pre < 1.0,
@@ -129,19 +133,23 @@ def bays_check(I, M, rep, boards, parts, pins):
         n0 = len(body.split(only_watertight=False))
         n1 = len(trimesh.boolean.difference([body, cut], engine='manifold').split(only_watertight=False))
         rep(f'bay {i + 1}: latch tongue free to its root', n1 == n0 + 1, f'{n1 - n0} more piece(s) when cut at the root')
-        # tilt in: front edge pushed into the hooks, back raised, then lowered; may slide back a little while tilted
+        # fitting it: hold the latch open, set the kit down 1.5 mm back from the front wall with its back
+        # raised a few degrees (over the back rail), lined up with the USB-C hole, slide it forward (USB-C socket into its hole, front edge
+        # under the hooks), then lower the back. Nothing but the latch may be in the way at any point.
         kit = inter(trimesh.util.concatenate([boards, parts, pins]), mine)
-        span = H; th_max = math.degrees(math.asin((I['XIAO_T'] + 0.15 + 1.4 + 0.3) / span)); worst = 0
-        for th in np.linspace(th_max, 0.5, 8):
-            best = 1e9
-            for off in (0, 0.2, 0.4, 0.6, 0.8):
-                k2 = kit.copy()
-                k2.apply_transform(trimesh.transformations.rotation_matrix(math.radians(th), [1, 0, 0], [0, oy - G, I['ZB']]))
-                k2.apply_translation([0, off, 0])
-                best = min(best, vol(inter(k2, rest)))
-                if best < 0.01: break
-            worst = max(worst, best)
-        rep(f'bay {i + 1}: kit tilts in under the hooks', worst < 0.05, f'{th_max:.1f} deg to 0, worst overlap {worst:.3f} mm3')
+        th0 = math.degrees(math.asin((I['XIAO_T'] + 0.6) / H))   # back edge clear of the back rail
+        def pose(th, off):
+            k2 = kit.copy()
+            k2.apply_transform(trimesh.transformations.rotation_matrix(math.radians(th), [1, 0, 0], [0, oy, I['ZB']]))
+            k2.apply_translation([-0.05, off, 0]); return vol(inter(k2, rest))   # just off the right rail: the latch is held open
+        path = [(th0, off) for off in np.linspace(1.5, 0, 10)] + [(th, 0) for th in np.linspace(th0, 0.3, 6)]
+        worst = max(pose(th, off) for th, off in path)
+        rep(f'bay {i + 1}: kit goes in (slide forward at {th0:.1f} deg, then down)', worst < 0.02, f'worst overlap {worst:.3f} mm3')
+        # cable forces: pushing a plug in shoves the kit back, pulling it out shoves it forward; something solid
+        # (not the latch) must stop it within 0.3 mm each way
+        for dy, what in ((0.3, 'pushing a USB-C plug in'), (-0.3, 'pulling it out')):
+            k3 = bd.copy(); k3.apply_translation([0, dy, 0])
+            rep(f'bay {i + 1}: {what} meets a solid stop', vol(inter(k3, rest)) > 0.01, f'{vol(inter(k3, rest)):.2f} mm3 of the board against fixed walls at {abs(dy)} mm')
 
 def run(tag, defs, fit):
     print(f'\n=== {tag} ===')
@@ -163,7 +171,7 @@ def run(tag, defs, fit):
         v = (vol(inter(boards, M[k])) if k != 'a_body' else 0) + vol(inter(parts, M[k])) + vol(inter(pins, M[k]))
         rep(f'kit clear of the {k[2:]}', v < 0.01, f'overlap {v:.3f} mm3' + (' (boards against the body: see the latch below)' if k == 'a_body' else ''))
     g = gap(pins, M['a_body']); rep('header pins clear of the floor and pads', g >= 0.4, f'{g:.2f} mm (want 0.4+)')
-    g = gap(parts, M['a_body']); rep('parts on the boards clear of the body', g >= 0.1, f'{g:.2f} mm (the header plastic runs to the board edge; stops sit 0.2 off it)')
+    g = gap(parts, M['a_body']); rep('parts on the boards clear of the body', g >= 0.0, f'{g:.2f} mm (the header plastic is flush with the board edge, which the latch holds against the right rail)')
     g = gap(parts, M['a_cap']); rep('parts on the boards clear of the cap (nubs aside)', g >= 0.2, f'{g:.2f} mm')
     # board bays (as tahoe-repeater/cad/check_bays.py): the latch is the only thing that touches the boards,
     # the tongue is free to its root, and the kit tilts in under the hooks
@@ -178,19 +186,6 @@ def run(tag, defs, fit):
             strain = 1.5 * I['TAB_T'] * press / (I['TAB_L'] - 1.5) ** 2
             rep(f'bay {i + 1} plunger over the Wio button', 0.15 <= gz <= 0.6 and strain <= STRAIN_MAX,
                 f'gap {gz:.2f} mm, press {press:.2f} mm, tab strain {strain*100:.1f} %')
-    # paperclips for B and R: through their holes to the button, touching nothing else
-    clips = M['d_clips']
-    vb = vol(inter(clips, M['a_body'])); vk = vol(inter(clips, boards)) + vol(inter(clips, parts))
-    pushed = []   # each clip pushed 1.2 mm further along its hole: it should meet its button
-    for part in clips.split(only_watertight=False):
-        k = 0 if part.centroid[0] - I['BX0'] - I['P'] * round((part.centroid[0] - I['BX0']) // I['P']) < I['USB_U'] else 1
-        e, t = np.array(I['CLIP_IN'][k]), np.array(I['CLIPS'][k]); dvec = (t - e) / np.linalg.norm(t - e)
-        q = part.copy(); q.apply_translation(1.2 * dvec); pushed.append(q)
-    reach = vol(inter(trimesh.util.concatenate(pushed), parts))
-    ang = [math.degrees(math.atan2(e[2] - t[2], math.hypot(t[0] - e[0], t[1] - e[1]))) for e, t in zip(I['CLIP_IN'], I['CLIPS'])]
-    rep('paperclips reach B and R', vb < 0.01 and vk < 0.01 and reach > 0.005,
-        f'clear of the case {vb:.3f} and of the kit {vk:.3f} mm3, meets the button {reach:.3f} mm3, {ang[0]:.0f} deg down')
-    g = gap(clips, M['a_body'], 2000); rep('paperclip holes clear round a 0.9 mm clip', g >= 0.15, f'{g:.2f} mm')
     # 4. USB-C: a normal cable's boot and plug go in without touching the case
     g = min(gap(M['d_plug'], M['a_body']), gap(M['d_plug'], M['a_cap']))
     rep('USB-C cable boot clear of the opening', g >= 0.25, f'{g:.2f} mm round an 11.5 x 6.5 boot')
@@ -237,7 +232,30 @@ def run(tag, defs, fit):
             f'arm pushed out {worst:.2f} mm (room {room:.2f}) at {where}')
         l2 = M['a_lid'].copy(); l2.apply_translation([0, 0.5, 0])
         rep('latch holds the lid shut', vol(inter(l2, M['a_cap'])) > 0.05, f'pulled back 0.5 mm: hook meets post, {vol(inter(l2, M["a_cap"])):.2f} mm3')
-    # 9. thinnest webs
+    if not empty(M.get('a_plate')):
+        # 9. base plate: it slides on from the back in the side grooves. Only the snap tab's bump may meet
+        # the body on the way, and only by its height (the tab flexes down that far)
+        pl, body = M['a_plate'], M['a_body']
+        sx, sw, (_, sl, st, _, bump) = I['SNAP_X'], I['SNAP_W'], I['SNAP']
+        worst, bad = 0.0, None
+        for dy in np.arange(I['Y_BACK'] + I['WALL'] + 1.0, 0.0, -0.25):
+            p2 = pl.copy(); p2.apply_translation([0, dy, 0])
+            x = inter(p2, body)
+            if empty(x) or vol(x) < 0.001: continue
+            x = [q for q in x.split(only_watertight=False) if abs(q.volume) > 1e-4]   # drop zero-volume slivers where faces touch
+            (x0, _, z0), (x1, _, z1) = np.min([q.bounds[0] for q in x], 0), np.max([q.bounds[1] for q in x], 0)
+            if x0 < sx - sw/2 - 0.05 or x1 > sx + sw/2 + 0.05 or z1 - z0 > bump + 0.05:
+                bad = f'plate meets the body {dy:.2f} mm out, x {x0:.1f}..{x1:.1f}, z {z0:.2f}..{z1:.2f}'; break
+            worst = max(worst, z1 - z0)
+        L = I['SNAP_Y'][0] - (I['Y_BACK'] - sl); strain = 1.5 * st * bump / L ** 2
+        rep('base plate slides on in its grooves', bad is None and abs(worst - bump) < 0.05 and strain <= STRAIN_MAX,
+            bad or f'only the bump rides the underside, tab flexes {worst:.2f} mm, strain {strain*100:.1f} %')
+        v = vol(inter(pl, body)); rep('base plate clear of the body when home', v < 0.01, f'overlap {v:.3f} mm3 (the bump in its pocket)')
+        p2 = pl.copy(); p2.apply_translation([0, 0.5, 0]); v = vol(inter(p2, body))
+        rep('snap holds the plate on', v > 0.05, f'pulled back 0.5 mm: bump meets its pocket, {v:.2f} mm3')
+        p2 = pl.copy(); p2.apply_translation([0, -0.5, 0]); v = vol(inter(p2, body))
+        rep('grooves stop the plate at the front', v > 0.05, f'pushed 0.5 mm on: lips meet the grooves\' ends, {v:.2f} mm3')
+    # 10. thinnest webs
     for k, nm in (('s_front', 'front wall (inner half)'), ('s_cap', 'cap (tab level)')):
         w = webs(D[k])
         if w: rep(f'thinnest web in the {nm}', w[0] >= WEB_MIN, f'{w[0]:.2f} mm, {w[1]}')

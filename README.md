@@ -19,7 +19,7 @@ A repeater that lives on a tree: a RAK4631 radio, a 15 Ah LiFePO4 cell and a sma
 ### Planned
 
 - **Dog-collar tracker.** A small MeshCore GPS tracker that attaches to a dog's collar.
-- **Wio Tracker L1 Pro version.** A pogo-pin version built around Seeed's Wio Tracker L1 Pro.
+- **[Wio Tracker L1 case](wio-tracker-l1/).** A tool-less case for Seeed's Wio Tracker L1 E-ink with a 3000 mAh cell, with an OLED version to follow. Fit-test stage.
 
 These don't have folders yet. They'll get one when there's something to print.
 
