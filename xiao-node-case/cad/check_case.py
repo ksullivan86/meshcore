@@ -3,9 +3,10 @@
 Renders the parts in their assembled positions (and the kit stand-ins) with OpenSCAD into
 build/, then measures: boards, header pins and parts under the board against the case;
 the plunger over each Wio button; the USB-C cable against its opening; the FPC in its pocket
-and the cable lengths; the board bays (latch preload, tongue free, tilting the kit in under the hooks); the lid sliding home over the latch; the base
-plate sliding on in its grooves and clicking in; the thinnest
-webs in the front wall, the cap and the lid; and that every printed part is one piece.
+and the cable lengths; the board bays (latch preload, tongue free, tilting the kit in under
+the hooks); the lid swinging open on its hinge to its stop, and its tabs clicking shut; the
+base plate sliding on in its grooves and its catch clicking in; the thinnest webs in the
+front wall and the lid; and that every printed part is one piece.
 
     python3 cad/check_case.py               # 1, 2 and 3 bays
     python3 cad/check_case.py --bays 1 --fit   # the fit test
@@ -39,10 +40,10 @@ def scad(part, out, defs):
 
 def build(tag, defs, fit):
     d = os.path.join(HERE, 'build', tag); os.makedirs(d, exist_ok=True)
-    parts = ['a_body', 'a_cap', 'a_lid', 'd_boards', 'd_parts', 'd_pins', 'd_fpc', 'd_plug', 'd_sma']
+    parts = ['a_body', 'a_lid', 'd_boards', 'd_parts', 'd_pins', 'd_fpc', 'd_plug', 'd_sma']
     if not fit: parts.append('a_plate')
     jobs = [(p, os.path.join(d, p + '.stl')) for p in parts] + \
-           [(p, os.path.join(d, p + '.dxf')) for p in ('s_front', 's_cap')]
+           [(p, os.path.join(d, p + '.dxf')) for p in ('s_front', 's_lid')]
     with ThreadPoolExecutor(4) as ex:
         logs = list(ex.map(lambda j: scad(j[0], j[1], defs), jobs))
     m = re.search(r'xnc-chk: (\{.*\})"', logs[0])
@@ -147,9 +148,14 @@ def bays_check(I, M, rep, boards, parts, pins):
         rep(f'bay {i + 1}: kit goes in (slide forward at {th0:.1f} deg, then down)', worst < 0.02, f'worst overlap {worst:.3f} mm3')
         # cable forces: pushing a plug in shoves the kit back, pulling it out shoves it forward; something solid
         # (not the latch) must stop it within 0.3 mm each way
-        for dy, what in ((0.3, 'pushing a USB-C plug in'), (-0.3, 'pulling it out')):
+        for dy, what in ((I['RAIL_BACK'] + 0.3, 'pushing a USB-C plug in'), (-0.3, 'pulling it out')):
             k3 = bd.copy(); k3.apply_translation([0, dy, 0])
-            rep(f'bay {i + 1}: {what} meets a solid stop', vol(inter(k3, rest)) > 0.01, f'{vol(inter(k3, rest)):.2f} mm3 of the board against fixed walls at {abs(dy)} mm')
+            rep(f'bay {i + 1}: {what} meets a solid stop', vol(inter(k3, rest)) > 0.01, f'{vol(inter(k3, rest)):.2f} mm3 of the board against fixed walls at {abs(dy):.1f} mm')
+
+def pieces(m):
+    """The solid bits of a boolean result (drops the zero-volume slivers where faces just touch)."""
+    if empty(m) or vol(m) < 1e-3: return []
+    return [q for q in m.split(only_watertight=False) if abs(q.volume) > 1e-4]
 
 def run(tag, defs, fit):
     print(f'\n=== {tag} ===')
@@ -159,104 +165,116 @@ def run(tag, defs, fit):
     res = []
     def rep(name, ok, detail):
         res.append(ok); print(f"  {'PASS' if ok else 'FAIL'}  {name}: {detail}")
-    printed = {k: M[k] for k in ('a_body', 'a_cap', 'a_lid', 'a_plate') if not empty(M.get(k))}   # the fit test has no lid or plate
-    # 1. every printed part is one piece (the buttons: one per button, on their spine when printed)
+    body, lid = M['a_body'], M['a_lid']
+    printed = {k: M[k] for k in ('a_body', 'a_lid', 'a_plate') if not empty(M.get(k))}   # the fit test has no plate
+    # 1. every printed part is one piece
     for k, m in printed.items():
         n = len(m.split(only_watertight=False))
         rep(f'{k[2:]} is one piece', n == 1 and m.is_watertight, f'{n} bodies, watertight {m.is_watertight}')
-    # 2. the kit against the case: nothing touches but the pads (boards resting on them) and the button feet
+    # 2. the kit against the case: nothing touches but the pads (boards resting on them) and the latch
     boards, parts, pins = M['d_boards'], M['d_parts'], M['d_pins']
-    for k in ('a_body', 'a_cap', 'a_lid', 'a_plate'):
-        if k not in M: continue
+    for k in printed:
         v = (vol(inter(boards, M[k])) if k != 'a_body' else 0) + vol(inter(parts, M[k])) + vol(inter(pins, M[k]))
         rep(f'kit clear of the {k[2:]}', v < 0.01, f'overlap {v:.3f} mm3' + (' (boards against the body: see the latch below)' if k == 'a_body' else ''))
-    g = gap(pins, M['a_body']); rep('header pins clear of the floor and pads', g >= 0.4, f'{g:.2f} mm (want 0.4+)')
-    g = gap(parts, M['a_body']); rep('parts on the boards clear of the body', g >= 0.0, f'{g:.2f} mm (the header plastic is flush with the board edge, which the latch holds against the right rail)')
-    g = gap(parts, M['a_cap']); rep('parts on the boards clear of the cap (nubs aside)', g >= 0.2, f'{g:.2f} mm')
-    # board bays (as tahoe-repeater/cad/check_bays.py): the latch is the only thing that touches the boards,
-    # the tongue is free to its root, and the kit tilts in under the hooks
+    g = gap(pins, body); rep('header pins clear of the floor and pads', g >= 0.4, f'{g:.2f} mm (want 0.4+)')
+    g = gap(parts, body); rep('parts on the boards clear of the body', g >= 0.0, f'{g:.2f} mm (the header plastic is flush with the board edge, which the latch holds against the right rail)')
+    g = gap(parts, lid); rep('parts on the boards clear of the lid (nubs aside)', g >= 0.2, f'{g:.2f} mm')
+    # board bays (as tahoe-repeater/cad/check_bays.py)
     bays_check(I, M, rep, boards, parts, pins)
     # 3. plungers: gap from each nub to its button, and what pressing takes
     for i in range(I['BAYS']):
         bx = I['BX0'] + i * I['P']
         for (u, v, h) in I['PLUNGERS']:
             top = [bx + u, I['BY'] + v, I['ZB'] + h + 0.001]
-            gz = ray_gap(M['a_cap'], top, [0, 0, 1])
+            gz = ray_gap(lid, top, [0, 0, 1])
             press = gz + SW_TRAVEL
             strain = 1.5 * I['TAB_T'] * press / (I['TAB_L'] - 1.5) ** 2
             rep(f'bay {i + 1} plunger over the Wio button', 0.15 <= gz <= 0.6 and strain <= STRAIN_MAX,
                 f'gap {gz:.2f} mm, press {press:.2f} mm, tab strain {strain*100:.1f} %')
     # 4. USB-C: a normal cable's boot and plug go in without touching the case
-    g = min(gap(M['d_plug'], M['a_body']), gap(M['d_plug'], M['a_cap']))
+    g = min(gap(M['d_plug'], body), gap(M['d_plug'], lid))
     rep('USB-C cable boot clear of the opening', g >= 0.25, f'{g:.2f} mm round an 11.5 x 6.5 boot')
     # 5. antennas
+    HA = np.array(I['HA']); A = math.radians(I['HINGE_OPEN'])
+    def opened(p, a):   # a point on the lid, the lid a radians open
+        d = np.array(p[1:]) - HA
+        return np.array([p[0], *(HA + [d[0] * math.cos(a) + d[1] * math.sin(a), -d[0] * math.sin(a) + d[1] * math.cos(a)])])
     if not empty(M['d_fpc']):
-        rep('FPC sits in its pocket', vol(inter(M['d_fpc'], M['a_body'])) < 0.01, f'overlap {vol(inter(M["d_fpc"], M["a_body"])):.3f} mm3')
+        rep('FPC sits in its pocket', vol(inter(M['d_fpc'], body)) < 0.01, f'overlap {vol(inter(M["d_fpc"], body)):.3f} mm3')
         bx = I['BX0']
-        a = np.array([bx + I['WIFI_UFL'][0], I['BY'] + I['WIFI_UFL'][1], I['ZX'] + 1.2])   # the XIAO's U.FL, under the Wio
-        b = np.array([bx + I['KIT'][0] + 1.0, a[1], a[2]])                                   # out from under its right edge
-        c = np.array([bx + I['SPOOL_P'][0], I['BY'] + I['SPOOL_P'][1], I['ZB'] - 3.0])        # down to the spool
-        e = np.array([I['FPC_X0'], I['FPC_Y'] + I['FPC'][0] / 2, I['FPC_Z0'] + I['FPC'][1]])   # to the FPC's top edge
+        a = np.array([bx + I['WIFI_UFL'][0], I['BY'] + I['WIFI_UFL'][1], I['ZX'] + 1.2])      # the XIAO's U.FL, under the Wio
+        b = np.array([a[0], I['BY'] + I['KIT'][1] + 3.0, a[2]])                                 # out from under its back edge, over the rail
+        c = np.array([bx + I['SPOOL_P'][0], I['BY'] + I['SPOOL_P'][1], I['ZB'] - 3.0])          # down to the spool
+        e = np.array([I['FPC_X0'], I['FPC_Y'] + I['FPC'][0] / 2, I['FPC_Z0'] + I['FPC'][1]])    # to the FPC's top edge
         L = sum(np.linalg.norm(q - p) for p, q in ((a, b), (b, c), (c, e)))
         slack = I['FPC_CABLE'] - L; wrap = 2 * math.pi * (I['SPOOL'][0] + 0.6)
         rep('FPC cable reaches its U.FL', slack >= 3, f'route {L:.0f} mm, cable {I["FPC_CABLE"]} mm, slack {slack:.0f} mm '
             f'({max(0, slack) / wrap:.1f} turns round the spool)')
     if not empty(M['d_sma']):
-        bx = I['BX0']; x = I['LORA_X'][0]
+        bx = I['BX0']
         a = np.array([bx + I['LORA_UFL'][0], I['BY'] + I['LORA_UFL'][1], I['ZW'] + I['LORA_UFL_H'] - 0.6])   # on top of the Wio
-        b = np.array([a[0], I['BY'] + I['KIT'][1] + 3.0, a[2]])
-        c = np.array([x, I['D_IN'] - 9.0, I['SMA_Z']])
-        L = np.linalg.norm(b - a) + np.linalg.norm(c - b)
-        zone = I['D_IN'] - 9.0 - (I['BY'] + I['KIT'][1] + 3.0)
-        rep('LoRa pigtail reaches its SMA', I['PIGTAIL'] >= L + 3, f'route {L:.0f} mm, pigtail {I["PIGTAIL"]} mm, '
-            f'{I["PIGTAIL"] - L:.0f} mm to coil in the back of the bay ({zone:.0f} mm deep there)')
-        g = min(gap(M['d_sma'], M['a_lid']), gap(M['d_sma'], M['a_cap']))
-        rep('SMA nuts clear of the cap and lid', g >= 0.3, f'{g:.2f} mm')
-    if not empty(M.get('a_lid')):   # the case, not the fit test
-        # 7. cap and lid sit on the body without overlapping it
-        for k in ('a_cap', 'a_lid'):
-            v = vol(inter(M[k], M['a_body'])); rep(f'{k[2:]} clear of the body', v < 0.01, f'overlap {v:.3f} mm3')
-        v = vol(inter(M['a_cap'], M['a_lid'])); rep('lid and cap clear when shut', v < 0.01, f'overlap {v:.3f} mm3')
-        # 8. latch: slide the lid on from open; the arm may only meet the post, and only as far as it can flex
-        worst, where = 0.0, None
-        for dy in np.arange(14.0, 0.0, -0.25):
-            l2 = M['a_lid'].copy(); l2.apply_translation([0, dy, 0])
-            vb = vol(inter(l2, M['a_body']))
-            x = inter(l2, M['a_cap'])
-            if vb > 0.01: worst, where = 99, f'lid hits the body at {dy:.2f} mm open'; break
-            if not empty(x) and vol(x) > 0.001:
-                dx = x.bounds[1][0] - x.bounds[0][0]
-                if dx > worst: worst, where = dx, f'{dy:.2f} mm open'
-        room = I['LT_SLOT'] - 0.2
-        rep('lid slides home over the latch', worst <= room and worst >= I['LT_HOOK_DEPTH'] - 0.3,
-            f'arm pushed out {worst:.2f} mm (room {room:.2f}) at {where}')
-        l2 = M['a_lid'].copy(); l2.apply_translation([0, 0.5, 0])
-        rep('latch holds the lid shut', vol(inter(l2, M['a_cap'])) > 0.05, f'pulled back 0.5 mm: hook meets post, {vol(inter(l2, M["a_cap"])):.2f} mm3')
+        s = np.array([I['LORA_X'][0], I['ANT_Y'], I['Z_LU'] - 9.0])                                         # the bulkhead's inner end
+        L0, L1 = np.linalg.norm(s - a), np.linalg.norm(opened(s, A) - a)
+        rep('LoRa pigtail reaches its SMA, lid shut and open', I['PIGTAIL'] >= 1.3 * L1 + 10,
+            f'{L0:.0f} mm straight across shut, {L1:.0f} mm open; pigtail {I["PIGTAIL"]} mm')
+        g = min(gap(M['d_sma'], body), gap(M['d_sma'], parts), gap(M['d_sma'], boards))
+        rep('antenna bulkheads clear of the body and the kit', g >= 0.5, f'{g:.2f} mm')
+    if not fit:
+        # 6. lid: sits on the body shut, swings open on its hinge to the stop; only the sprung tabs' bumps may
+        # meet the body on the way, and only as far as the tabs can flex
+        v = vol(inter(lid, body)); rep('lid clear of the body when shut', v < 0.01, f'overlap {v:.3f} mm3')
+        dx = [(x0 - 0.5, x1 + 0.5) for x0, x1 in I['DET_XS']]
+        def at(a):
+            l2 = lid.copy(); l2.apply_transform(trimesh.transformations.rotation_matrix(-math.radians(a), [1, 0, 0], [0, HA[0], HA[1]])); return l2
+        def sort(a):   # overlap with the body, a degrees open: (at the tabs: how far into the wall, elsewhere: the pieces)
+            tabs, other = 0.0, []
+            for q in pieces(inter(at(a), body)):
+                (x0, y0, z0), (x1, y1, z1) = q.bounds
+                if any(x0 >= d0 and x1 <= d1 for d0, d1 in dx) and y1 < -I['WALL'] + 1.0: tabs = max(tabs, y1 + I['WALL'])
+                else: other.append(q)
+            return tabs, other
+        worst, bad, stop = 0.0, None, None
+        for a in np.arange(0.25, I['HINGE_OPEN'] + 10, 0.5):
+            t, o = sort(a)
+            worst = max(worst, t)
+            if o:
+                y = max(q.bounds[1][1] for q in o)
+                if y > I['Y_BACK'] and a > I['HINGE_OPEN'] - 2: stop = a; break     # on the cheeks: the stop
+                bad = f'lid hits the body {a:.1f} deg open, at y {y:.1f}'; break
+        flex = worst; strain = 1.5 * I['DET'][1] * flex / I['DET'][4] ** 2
+        rep('lid swings open clear of the body', bad is None and stop is not None, bad or f'stops at {stop:.1f} deg on the hinge cheeks')
+        rep('lid tabs flex over the front wall', strain <= STRAIN_MAX, f'tabs pushed out {flex:.2f} mm, strain {strain*100:.1f} %')
+        t, _ = sort(1.0)
+        rep('lid tabs hold it shut', t > 0.2, f'lifted 1 deg (front up {math.radians(1) * (HA[0] + I["WALL"]):.1f} mm): bumps {t:.2f} mm into the wall')
+        hm = I['HINGE_MOUTH'] * I['HINGE'][0]
+        rep('hinge knuckles clip onto their pins', 0.6 * I['HINGE'][0] <= hm <= I['HINGE'][0] - 0.4,
+            f'mouth {hm:.1f} mm on a {I["HINGE"][0]} mm pin; it faces down and back when shut, down and forward when open')
     if not empty(M.get('a_plate')):
-        # 9. base plate: it slides on from the back in the side grooves. Only the snap tab's bump may meet
-        # the body on the way, and only by its height (the tab flexes down that far)
-        pl, body = M['a_plate'], M['a_body']
-        sx, sw, (_, sl, st, _, bump) = I['SNAP_X'], I['SNAP_W'], I['SNAP']
+        # 7. base plate: it slides on from the back in the side grooves. Only the catch's tooth may meet the body
+        # on the way, and only by as much as its tongue bends
+        pl = M['a_plate']
+        cx, (cw, cl, proud, rmn, _) = I['CATCH_X'], I['CATCH']
+        defl = proud + rmn
         worst, bad = 0.0, None
         for dy in np.arange(I['Y_BACK'] + I['WALL'] + 1.0, 0.0, -0.25):
             p2 = pl.copy(); p2.apply_translation([0, dy, 0])
-            x = inter(p2, body)
-            if empty(x) or vol(x) < 0.001: continue
-            x = [q for q in x.split(only_watertight=False) if abs(q.volume) > 1e-4]   # drop zero-volume slivers where faces touch
+            x = pieces(inter(p2, body))
+            if not x: continue
             (x0, _, z0), (x1, _, z1) = np.min([q.bounds[0] for q in x], 0), np.max([q.bounds[1] for q in x], 0)
-            if x0 < sx - sw/2 - 0.05 or x1 > sx + sw/2 + 0.05 or z1 - z0 > bump + 0.05:
+            if x0 < cx - cw/2 - 0.05 or x1 > cx + cw/2 + 0.05 or z1 - z0 > defl + 0.05:
                 bad = f'plate meets the body {dy:.2f} mm out, x {x0:.1f}..{x1:.1f}, z {z0:.2f}..{z1:.2f}'; break
             worst = max(worst, z1 - z0)
-        L = I['SNAP_Y'][0] - (I['Y_BACK'] - sl); strain = 1.5 * st * bump / L ** 2
-        rep('base plate slides on in its grooves', bad is None and abs(worst - bump) < 0.05 and strain <= STRAIN_MAX,
-            bad or f'only the bump rides the underside, tab flexes {worst:.2f} mm, strain {strain*100:.1f} %')
-        v = vol(inter(pl, body)); rep('base plate clear of the body when home', v < 0.01, f'overlap {v:.3f} mm3 (the bump in its pocket)')
+        L = (I['D_IN'] - 0.3) - I['CT'][1]; strain = 1.5 * 1.2 * defl / L ** 2
+        rep('base plate slides on in its grooves', bad is None and abs(worst - defl) < 0.05 and strain <= STRAIN_MAX,
+            bad or f'only the catch tooth rides the body, its tongue bends {worst:.2f} mm, strain {strain*100:.1f} %')
+        v = vol(inter(pl, body)); rep('base plate clear of the body when home', v < 0.01, f'overlap {v:.3f} mm3 (the tooth up through its slot)')
         p2 = pl.copy(); p2.apply_translation([0, 0.5, 0]); v = vol(inter(p2, body))
-        rep('snap holds the plate on', v > 0.05, f'pulled back 0.5 mm: bump meets its pocket, {v:.2f} mm3')
+        rep('catch holds the plate on', v > 0.05, f'pulled back 0.5 mm: the tooth meets the slot, {v:.2f} mm3; '
+            f'to free it, press it {rmn:.1f} mm below the floor (it stands {proud:.1f} mm proud)')
         p2 = pl.copy(); p2.apply_translation([0, -0.5, 0]); v = vol(inter(p2, body))
-        rep('grooves stop the plate at the front', v > 0.05, f'pushed 0.5 mm on: lips meet the grooves\' ends, {v:.2f} mm3')
-    # 10. thinnest webs
-    for k, nm in (('s_front', 'front wall (inner half)'), ('s_cap', 'cap (tab level)')):
+        rep('grooves stop the plate at the front', v > 0.05, f"pushed 0.5 mm on: lips meet the grooves' ends, {v:.2f} mm3")
+    # 8. thinnest webs
+    for k, nm in (('s_front', 'front wall (inner half)'), ('s_lid', 'lid (plunger tab level)')):
         w = webs(D[k])
         if w: rep(f'thinnest web in the {nm}', w[0] >= WEB_MIN, f'{w[0]:.2f} mm, {w[1]}')
     print(f"  {'ALL OK' if all(res) else 'PROBLEMS'} ({sum(res)}/{len(res)})")
@@ -272,5 +290,6 @@ if __name__ == '__main__':
     ok = True
     for n in bays:
         defs = [f'BAYS={n}'] + (['FIT=true'] if a.fit else []) + a.D
-        ok &= run(f'{"fit" if a.fit else "case"}-{n}bay', defs, a.fit)
+        extra = ''.join('-' + re.sub(r'[^A-Za-z0-9.]+', '', d) for d in a.D)   # its own build folder, so runs can go side by side
+        ok &= run(f'{"fit" if a.fit else "case"}-{n}bay{extra}', defs, a.fit)
     sys.exit(0 if ok else 1)
