@@ -109,7 +109,12 @@ BOARD_YC = (OLD_BOARD[0][1] + OLD_BOARD[2][1])/2;
 BOARD_Y0 = BOARD_YC - BOARD[1]/2;
 HOLES = [for (sy = [-1, 1], sx = [-1, 1]) [XC + sx*BOARD_HOLES[0]/2, BOARD_YC + sy*BOARD_HOLES[1]/2]];
 SO_D  = 4.4;                        // standoff diameter (clear of the raised outline, which is MK_W inside the edge)
-PIN_D = BOARD_HOLE_D - 0.2;         // locating pins in the two mounting holes by the latch
+PIN_D = BOARD_HOLE_D - 0.4;         // pins in the two top mounting holes: slack, so the guides and stops take sideways loads first
+                                    //   (a tighter pin snapped on the first test)
+GUIDE_GAP    = 0.15;                // side guides to the board's edges
+GUIDE_UP     = 0.6;                 // they stand this far above the board, chamfered to lead it in
+BOARD_RELIEF = 0.5;                 // the shell's side walls are this much thinner beside the board, so the guides can be 1.2 thick
+RELIEF_Y     = [BOARD_YC - BOARD[1]/2 - 2.5, BOARD_YC + BOARD[1]/2 + 2.5];
 // lid lock (PLAN 5)
 BLOCK_GAP = 0.3;                    // latch blocker: the front's rib to the end of the latch's pull tab
 BLOCK_T   = 2.4;                    // rib thickness
@@ -141,7 +146,6 @@ AD_CLR = 0.2; AD_WALL = 1.0; AD_H = 1.2;   // ribbon adapter's seat: clearance, 
 AD_PAD = [12, 4, 0.5];              // post on the tray that keeps the adapter in its seat: size, and its gap to the adapter (the ribbon passes there)
 
 // fit-test coupon (PLAN 7 step 4)
-FIT_TRAY_Y = 16.0;                  // tray plate: everything above this y
 FIT_CORNER = [17.0, 72.0];          // shell and front corner (top left): from the left edge to this x, from this y to the top
 FIT_FRONT  = 44.0;                  // front, panel side: from the left edge to this x, full length
 
@@ -328,24 +332,39 @@ module bay_test(b) difference() {
 // Board as it sits in the case, seen from the front: battery and solar sockets along the bottom edge,
 // USB-C, switch and reset down the left edge, E-INK connector up the right edge, OLED connector near
 // the top. There's 1 mm between it and each side wall, so nothing can hold its long edges.
-//   bottom edge: one long hook between the solar and Grove sockets
-//   top edge: one latch, right of the OLED connector; its tongue runs left and its pull tab points at the top wall
-//   pins in the two top mounting holes do the stops' job
-// The frame's origin is BAY_GAP above the board's corner: the board sits pushed down against the hook's
-// wall, and that's where PLAN 2 puts it.
-BAY_O = [XC - BOARD[0]/2, BOARD_Y0 + BAY_GAP];
+// The board drops straight in and two latches snap over it, one on each of its short edges:
+//   top edge: latch right of the OLED connector; its tongue runs left and its pull tab points at the top wall
+//   bottom edge: latch between the solar and Grove sockets; its tongue runs right and its pull tab points at the dock end
+// Each latch needs 22 mm of tongue and 10 mm for its pull tab, so two won't go side by side on one 48 mm edge
+// (and the top corners are taken by the case screws); one on each edge they both fit whole.
+//   stops near all four corners, on the top and bottom edges, set the board's place along the case
+//   guides, two on each long edge, set it across the case (the walls beside the board are relieved to make room)
+//   pins in the two top mounting holes are only a rough guide now
+// The frame is the board with BAY_GAP added top and bottom: with a latch on both edges that puts each latch
+// -BAY_PRE clear of the board, as on the Tahoe sled.
+BAY_SZ = [BOARD[0], BOARD[1] + 2*BAY_GAP];
+BAY_O  = [XC - BOARD[0]/2, BOARD_Y0 - BAY_GAP];
 HU = (BOARD[0] - BOARD_HOLES[0])/2;
-HV = (BOARD[1] - BOARD_HOLES[1])/2 - BAY_GAP;
-LATCH = ["T", 34, 39, -1];
-BAY_EINK = [BOARD, SO_H,
+HV = (BOARD[1] - BOARD_HOLES[1])/2 + BAY_GAP;
+LATCH  = ["T", 34, 39, -1];
+LATCH2 = ["B", 17, 22, 1];
+STOPS  = [["B", 0.6, 3.2], ["B", 44.5, 47.5], ["T", 1.5, 6.5], ["T", 41.5, 46.5]];   // [edge, t0, t1]: clear of the sockets and the latches' slots
+GUIDES = [["L", 2.0, 6.5], ["L", 8.0, 12.5],       // [side, v0, v1] from the board's bottom edge. Left: both below the USB-C socket,
+          ["R", 2.5, 8.5], ["R", 40.0, 48.0]];     //   the only stretch of that edge with nothing hanging over it. Right: nothing overhangs
+BAY_EINK = [BAY_SZ, SO_H,
   [[HU, HV, SO_D], [BOARD[0] - HU, HV, SO_D],
    [HU, HV + BOARD_HOLES[1], SO_D - 1.1, PIN_D], [BOARD[0] - HU, HV + BOARD_HOLES[1], SO_D - 1.1, PIN_D]],
-  [["B", 15, 29]],
-  LATCH,
-  [],                                    // no stops: the pins and the shell's walls locate the board sideways
-  [["WIO L1", 24, 7.5, 3.5, 0, 1]]];
-PAD_T = bay_pad(LATCH[1], LATCH[2], LATCH[3]);                 // the pull tab's span along the edge ...
-PAD_N = -BAY_GAP - BAY_PRE + BAY_PW + BAY_PAD_L;               // ... and how far out from the board's edge it ends
+  [],                                    // no hooks: a latch on each edge instead
+  LATCH,                                 // the block takes one latch; the second is added beside it in tray_eink()
+  [],                                    // the block's stops stand BAY_GAP off the frame; ours are set against the board itself, below
+  [["WIO L1", 24, 9, 3.5, 0, 1]]];
+BAY_EINK2 = [BAY_SZ, SO_H, [], [], LATCH2, [], BAY_EINK[6]];
+PAD_T = bay_pad(LATCH[1], LATCH[2], LATCH[3]);                 // the top latch's pull tab: its span along the edge ...
+PAD_N = -BAY_GAP - BAY_PRE + BAY_PW + BAY_PAD_L;               // ... and how far out from the frame's edge it ends
+module side_guides() for (g = GUIDES) let(sd = g[0] == "L" ? -1 : 1, xb = XC + sd*(BOARD[0]/2 + GUIDE_GAP),
+                                          xe = XC + sd*(W/2 - WALL + BOARD_RELIEF - TRAY_CLR), h = SO_H + PCB_T + GUIDE_UP)
+  translate([0, BOARD_Y0 + g[2], 0]) rotate([90, 0, 0]) linear_extrude(height = g[2] - g[1])   // tray's front face at z = 0
+    polygon([[xe, -EPS], [xb, -EPS], [xb, h - GUIDE_UP], [xb + sd*GUIDE_UP, h], [xe, h]]);
 module bay_place() translate([BAY_O[0], BAY_O[1], Z_TF]) children();
 
 // =============================== SHELL (shared) ===============================
@@ -407,12 +426,18 @@ module shell(bosses = SCREWS, holes = true) {
     box(POGO_C[0] - POGO_WIN[0]/2, POGO_C[0] + POGO_WIN[0]/2, -1, WALL + 1,
         POGO_C[1] - POGO_WIN[1]/2, POGO_C[1] + POGO_WIN[1]/2);
     if (STRAP) strap_groove();
+    for (m = [0, 1]) translate([m*(X0 + X1), 0, 0]) mirror([m, 0, 0])                       // thinner walls beside the board, from the tray up
+      box(X0 + WALL - BOARD_RELIEF, X0 + WALL + 0.01, RELIEF_Y[0], RELIEF_Y[1], Z_TB - 0.3, RIM_Z + 1);
   }
   if (STRAP) strap_bars();
 }
 
 // =============================== TRAY (E-ink) ===============================
-module tray_outline2d() rrect(X0 + WALL + TRAY_CLR, X1 - WALL - TRAY_CLR, WALL + TRAY_CLR, BODY_L - WALL - TRAY_CLR, 1.2);
+module tray_outline2d() {
+  rrect(X0 + WALL + TRAY_CLR, X1 - WALL - TRAY_CLR, WALL + TRAY_CLR, BODY_L - WALL - TRAY_CLR, 1.2);
+  translate([X0 + WALL - BOARD_RELIEF + TRAY_CLR, RELIEF_Y[0] + 0.3])                       // wider beside the board, into the walls' relief
+    square([W - 2*(WALL - BOARD_RELIEF + TRAY_CLR), RELIEF_Y[1] - RELIEF_Y[0] - 0.6]);
+}
 module tray2d() difference() {
   tray_outline2d();
   for (p = SCREWS) translate(p) circle(d = SCREW_CLR_D, $fn = 32);
@@ -423,9 +448,22 @@ module tray_eink() translate([0, 0, Z_TF]) difference() {   // built with its fr
   union() {
     slab(-TRAY_T, TRAY_T) tray2d();
     box(AD_C[0] - AD_PAD[0]/2, AD_C[0] + AD_PAD[0]/2, AD_C[1] - AD_PAD[1]/2, AD_C[1] + AD_PAD[1]/2, -EPS, Z_SKIN - ADAPTER[2] - AD_PAD[2] - Z_TF);   // keeps the ribbon adapter in its seat
-    intersection() { translate(BAY_O) bay_add(BAY_EINK); slab(-1, 14) tray_outline2d(); }
+    intersection() {
+      union() {
+        translate(BAY_O) {
+          difference() {   // the block keeps its outline marks off its own latch; keep them off the second one too
+            bay_add(BAY_EINK);
+            translate([0, 0, -0.02]) linear_extrude(height = MK_H + 0.2) bay_tongue2d(BAY_EINK2);
+          }
+          multmatrix(bay_ef(LATCH2[0], BAY_SZ)) { bay_pillar(LATCH2[1], LATCH2[2], SO_H); bay_grip(LATCH2[1], LATCH2[2], LATCH2[3]); }
+          for (k = STOPS) multmatrix(bay_ef(k[0], BAY_SZ)) translate([0, -BAY_GAP, 0]) bay_stop(k[1], k[2], SO_H);   // BAY_GAP from the board's own edge
+        }
+        side_guides();
+      }
+      slab(-1, 14) tray_outline2d();
+    }
   }
-  translate(BAY_O) bay_cut(BAY_EINK);
+  translate(BAY_O) { bay_cut(BAY_EINK); bay_cut(BAY_EINK2); }
   translate([XC - BOARD[0]/2 + BAT_NOTCH[0], BOARD_Y0 + BAT_NOTCH[2], -EPS]) cube([BAT_NOTCH[1] - BAT_NOTCH[0], BAT_NOTCH[3] - BAT_NOTCH[2], MK_H + 1]);   // no outline across the battery notch
   for (q = UNDER) let(d = q[5] + UNDER_CLR - SO_H) if (d > 0)   // pockets under the tall parts on the board's underside (right through, if little would be left)
     translate([XC - BOARD[0]/2 + q[1], BOARD_Y0 + q[3], d > TRAY_T - 0.5 ? -TRAY_T - 1 : -d]) cube([q[2] - q[1], q[4] - q[3], TRAY_T + 2]);
@@ -437,8 +475,9 @@ module front_env() hull() {   // the plate's outside: sits on the rim, outer edg
   slab(Z_FRONT - EPS) inner2d(FRONT_EDGE);
 }
 module win2d(d) rrect(WIN_C[0] - WIN[0]/2 - d, WIN_C[0] + WIN[0]/2 + d, WIN_C[1] - WIN[1]/2 - d, WIN_C[1] + WIN[1]/2 + d, 1.0 + d);
-// latch blocker: a rib that drops in just beyond the end of the latch's pull tab, so the latch can't be pulled back
-module latch_blocker() bay_place() multmatrix(bay_ef(LATCH[0], BOARD))
+// latch blocker: a rib that drops in just beyond the end of the top latch's pull tab, so that latch can't be pulled back.
+// (The bottom latch's pull tab ends under the panel, where no rib can reach; the hold-down pads cover it.)
+module latch_blocker() bay_place() multmatrix(bay_ef(LATCH[0], BAY_SZ))
   translate([PAD_T[0] + 0.3, PAD_N + BLOCK_GAP, BLOCK_Z0]) cube([PAD_T[1] - PAD_T[0] - 0.6, BLOCK_T, Z_SKIN - Z_TF - BLOCK_Z0 + EPS]);
 module pads() for (p = PADS)
   translate([p[0], p[1], Z_BT + PAD_GAP]) cylinder(d = p[2], h = Z_SKIN - Z_BT - PAD_GAP + EPS, $fn = 24);
@@ -554,17 +593,14 @@ module strap_dummy() color([0.15, 0.15, 0.15]) if (STRAP) {
 
 // =============================== FIT TEST (PLAN 7 step 4) ===============================
 // Second coupon. Three pieces, each cut from the real part, so what fits here fits there:
-//   tray   the whole board bay on a solid plate (lightened under the board, pocketed under the buzzer): snap the board in
+//   tray   the whole tray: both latches, stops, side guides, pockets, the strap's window: snap the board in
 //   boss   the shell's top-left corner, full height, with its insert boss: can the iron get in?
 //   corner the front's top-left corner over that boss: screw, counterbore, tongue, a latch blocker
 //   strap  a strip of the shell's back with the strap's groove and bars: thread your strap through
 // They stack: boss, tray, corner, one M3 screw.
 //   front  the front's panel side: pocket, window, the door's rail, turn-button posts, the ribbon adapter's seat
 //   door   the cover behind the panel, and three turn buttons (two and a spare)
-module fit_tray() difference() {
-  intersection() { tray_eink(); box(0, 60, FIT_TRAY_Y, 100, Z_TB - 1, Z_TF + 14); }
-  box(XC - 14, XC + 14, BOARD_Y0 + 14, BOARD_Y0 + BOARD[1] - 10, Z_TB - 1, Z_TF + 1);   // less plastic
-}
+module fit_tray() tray_eink();   // the whole tray, as it will be
 module fit_boss() intersection() { shell([SCREWS[2]]); box(X0 - 1, FIT_CORNER[0], FIT_CORNER[1], BODY_L + 1, -HUMP - 1, RIM_Z + 1); }
 module fit_corner() intersection() { front_eink(); box(X0 - 1, FIT_CORNER[0], FIT_CORNER[1], BODY_L + 1, Z_TF - 1, Z_FRONT + 1); }
 module fit_front() intersection() {   // takes in the corner piece, so that isn't printed twice
@@ -640,7 +676,7 @@ echo(str("wtl-chk: {",
   ", \"HUMP\": ", HUMP, ", \"DOCK_KEEP\": ", DOCK_KEEP, ", \"DOCK_POCKET\": ", DOCK_POCKET, ", \"DOCK_SLOT\": ", DOCK_SLOT,
   ", \"POGO_C\": ", POGO_C, ", \"POGO_WIN\": ", POGO_WIN,
   ", \"BAY_O\": ", BAY_O, ", \"BOARD\": ", BOARD, ", \"BOARD_Y0\": ", BOARD_Y0, ", \"PCB_T\": ", PCB_T, ", \"SO_H\": ", SO_H,
-  ", \"LATCH\": ", LATCH, ", \"PAD_T\": ", PAD_T, ", \"PAD_N\": ", PAD_N, ", \"BAY_TSLOT\": ", BAY_TSLOT, ", \"HOOKS\": ", BAY_EINK[3], ", \"IRON_D\": ", IRON_D, ", \"BAY_GAP\": ", BAY_GAP, ", \"BAY_PRE\": ", BAY_PRE,
+  ", \"LATCH\": ", LATCH, ", \"PAD_T\": ", PAD_T, ", \"PAD_N\": ", PAD_N, ", \"BAY_TSLOT\": ", BAY_TSLOT, ", \"LATCH2\": ", LATCH2, ", \"BAY_SZ\": ", BAY_SZ, ", \"STOPS\": ", STOPS, ", \"GUIDES\": ", GUIDES, ", \"GUIDE\": ", [GUIDE_GAP, W/2 - WALL + BOARD_RELIEF - TRAY_CLR - BOARD[0]/2 - GUIDE_GAP, (BOARD_HOLE_D - PIN_D)/2], ", \"IRON_D\": ", IRON_D, ", \"BAY_GAP\": ", BAY_GAP, ", \"BAY_PRE\": ", BAY_PRE,
   ", \"BAY_PW\": ", BAY_PW, ", \"BAY_TL\": ", BAY_TL, ", \"BAY_LIP_T\": ", BAY_LIP_T, ", \"BAY_LIP\": ", BAY_LIP, ", \"BAY_SLOT_H\": ", BAY_SLOT_H,
   ", \"BLOCK_GAP\": ", BLOCK_GAP, ", \"PAD_GAP\": ", PAD_GAP, ", \"PADS\": ", PADS,
   ", \"INSERT_OD\": ", INSERT_OD, ", \"INSERT_HOLE_D\": ", INSERT_HOLE_D, ", \"INSERT_L\": ", INSERT_L, ", \"INSERT_DEPTH\": ", INSERT_DEPTH,

@@ -25,9 +25,11 @@ B = {
              under=[(21, 31, 16, 26, 0.01, 3.5), (6.0, 11.0, 1.3, 6.5, 1.0, 6.99), (6.0, 11.0, 23.5, 28.7, 1.0, 6.99)],
              holes=[(35, 15, 2.7), (4, 4, 2.7), (4, 26, 2.7)]),
  'bq':  dict(W=31.75, H=25.4, so=7, hook='B', latch=('T', 25, 28, -1), at=((-15.9, 64), 0),
+             holes=[(2.54, 2.54, 2.5), (29.21, 2.54, 2.5), (2.54, 22.86, 2.5), (29.21, 22.86, 2.5)],
              comp=[(11.4, 20.3, 18.65, 26.0, 0, 3.2), (7.43, 15.43, 0, 6, 0, 4.5), (16.32, 24.32, 0, 6, 0, 4.5)]),
- 'mb':  dict(W=11.43, H=17.78, so=7, hook='L', latch=('R', 7, 10, -1), at=((12.5, 107), 0), comp=[(1.18, 6.18, 6.26, 11.26, 0, 4.5)]),
- 'ina': dict(W=20.4, H=25.6, so=4, hook='B', latch=('T', 3, 6, 1), at=((1, 101), 90), comp=[]),
+ 'mb':  dict(W=11.43, H=17.78, so=7, hook='L', latch=('R', 7, 10, -1), at=((12.5, 107), 0), comp=[(1.18, 6.18, 6.26, 11.26, 0, 4.5)], holes=[(2.54, 15.24, 2.5)]),
+ 'ina': dict(W=20.4, H=25.6, so=4, hook='B', latch=('T', 3, 6, 1), at=((1, 101), 90), comp=[], tl=17,
+             holes=[(2.54, 2.54, 2.5), (17.86, 2.54, 2.5), (2.54, 23.06, 2.5), (17.86, 23.06, 2.5)]),
 }
 sled = trimesh.load('stl/sled.stl')
 print('sled bodies', len(sled.split(only_watertight=False)), 'watertight', sled.is_watertight)
@@ -49,7 +51,7 @@ for name, c in B.items():
     rest = trimesh.boolean.difference([sled, pil], check_volume=False)
     clash = sum(inter(rest, x) for x in parts)
     home = inter(sled, T(board))
-    tr = (t0, t0 + TL) if d > 0 else (t1 - TL, t1)
+    tl = c.get('tl', TL); tr = (t0, t0 + tl) if d > 0 else (t1 - tl, t1)
     rc = box(tr[1] - 1.5 if d > 0 else tr[0] + 0.5, tr[1] - 0.5 if d > 0 else tr[0] + 1.5, -p - 0.05, -p + PW + 0.05, -SL_T - 1, 0.5); rc.apply_transform(S @ E)
     freed = trimesh.boolean.difference([sled, rc], check_volume=False).split(only_watertight=False)
     vols = sorted(abs(b.volume) for b in freed)

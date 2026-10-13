@@ -213,12 +213,12 @@ def run(tag, defs, fit):
     if not empty(M['d_sma']):
         bx = I['BX0']
         a = np.array([bx + I['LORA_UFL'][0], I['BY'] + I['LORA_UFL'][1], I['ZW'] + I['LORA_UFL_H'] - 0.6])   # on top of the Wio
-        s = np.array([I['LORA_X'][0], I['ANT_Y'], I['Z_LU'] - 9.0])                                         # the bulkhead's inner end
+        s = np.array([I['LORA_X'][0], I['ANT_Y'], I['Z_LU'] - I['SMA_DEPTH']])                              # the bulkhead's inner end
         L0, L1 = np.linalg.norm(s - a), np.linalg.norm(opened(s, A) - a)
         rep('LoRa pigtail reaches its SMA, lid shut and open', I['PIGTAIL'] >= 1.3 * L1 + 10,
             f'{L0:.0f} mm straight across shut, {L1:.0f} mm open; pigtail {I["PIGTAIL"]} mm')
         g = min(gap(M['d_sma'], body), gap(M['d_sma'], parts), gap(M['d_sma'], boards))
-        rep('antenna bulkheads clear of the body and the kit', g >= 0.5, f'{g:.2f} mm')
+        rep('antenna bulkheads, and room for their cables to bend, clear of the body and the kit', g >= 0.5, f'{g:.2f} mm')
     if not fit:
         # 6. lid: sits on the body shut, swings open on its hinge to the stop; only the sprung tabs' bumps may
         # meet the body on the way, and only as far as the tabs can flex

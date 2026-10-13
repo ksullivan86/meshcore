@@ -122,7 +122,7 @@ Each nut should fall in flat and sit a little below the top of its pocket. Push 
 
 <img src="../images/step-fit-test.png" alt="The fit-test bar with inserts pressed into the 4.1, 4.3 and 4.5 mm holes and the 3.0, 3.1 and 3.2 mm holes, and a lock nut in the nut pocket">
 
-**Thread test rings.** These are the joint, cut off short, with the same lock tabs as the enclosure. Their nut pocket doesn't need a nut, so skip the pause. Grease the O-ring lightly and roll it into the groove at the foot of the male ring's spigot. Line up the female ring's tab with the nub on the male ring, set it on and push down. It only drops in at that one angle. Turn it clockwise (seen from above), about a quarter turn. Near the end the latch arm rides up over its post, then clicks in behind it, and the ring stops with the two tabs lined up and the O-ring out of sight in the bore.
+**Thread test rings.** These are the joint, cut off short, with the same lock tabs as the enclosure. Their nut pocket doesn't need a nut, so skip the pause. Grease the O-ring lightly and roll it into the groove at the foot of the male ring's spigot. The female ring goes on with the end that was on the print bed facing down (the end with the chamfered edge and the smooth band inside); upside down it won't go on at any angle. Set it on with its tab over the nub on the male ring, or anywhere up to about 60° counterclockwise of it, and press down lightly while you turn it clockwise (seen from above). It rests on the thread until the ridges line up, then drops in and screws down. That's about a quarter turn from the nub. On the real A base, which has no nub, the start mark is an arrow cut into the flat top of the rim, with a groove down the side where a grip rib is missing. Near the end the latch arm rides up over its post, then clicks in behind it, and the ring stops with the two tabs lined up and the O-ring out of sight in the bore.
 
 <img src="../images/step-thread-test.png" alt="The thread test rings in five steps: O-ring into the groove, the female ring's tab over the male ring's nub, pushed down, turned clockwise, and clicked shut with the tabs lined up">
 
@@ -259,7 +259,7 @@ Do this now, with no electronics inside, so a leak only wets a paper towel.
 
 ## 10. Build up the sled
 
-Every board snaps into its own bay on the front of the sled, with no tools, screws or inserts. A bay is a few round standoffs the board sits on, two fixed hooks along one edge, a latch on the opposite edge and two small stops on the other edges. Each bay is outlined and named on the sled (RAK19003, CHARGER, BOOST, INA219), and the charger's says USB-C at the end its USB-C socket goes.
+Every board snaps into its own bay on the front of the sled, with no tools, screws or inserts. A bay is a few round standoffs the board sits on, two fixed hooks along one edge, a latch on the opposite edge, and stops at both ends of the other two edges so the board can't slide or twist. On the RAK19003, the charger and the INA219, a small pin on a standoff also drops into one of the board's holes. Each bay is outlined and named on the sled (RAK19003, CHARGER, BOOST, INA219), and the charger's says USB-C at the end its USB-C socket goes.
 
 **Fitting a board:** tilt it, slide the edge with the hooks under them, then press the other edge down until the latch clicks over it. **Taking it out:** pull the latch's pull tab (the flat tab outside the latch, with the low grip at its end) or the ear on the latch's outer face away from the board, and lift that edge. Never push or pull the top of the latch itself, which can snap off.
 
@@ -267,9 +267,9 @@ Every board snaps into its own bay on the front of the sled, with no tools, scre
 2. **Sensor (optional).** If you have a RAK1901, plug it into slot C or D on the underside of the RAK19003 and screw it down before the board goes on the sled.
 3. **Boards.**
    - **RAK19003** (with the RAK4631 plugged in on top), at the bottom: the USB-C edge under the hooks on the left, the latch on the right. The pin on the right-hand standoff goes into the half-hole in the board's edge.
-   - **Charger**, over the strap: the edge with the two JST sockets under the hooks at the bottom, the latch at the top right, beside the USB-C.
+   - **Charger**, over the strap: the edge with the two JST sockets under the hooks at the bottom, the latch at the top right, beside the USB-C. The pin on the top-left standoff goes into the board's top-left hole.
    - **MiniBoost**, top right: pins at the bottom, the left edge under the hooks, the latch on the right.
-   - **INA219 (optional)**, top left, turned on its side with its screw terminals at the top: the edge with the STEMMA QT sockets under the hooks on the right, the latch on the left. It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost. Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5. Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
+   - **INA219 (optional)**, top left, turned on its side with its screw terminals at the top: the edge with the STEMMA QT sockets under the hooks on the right, the latch on the left. The two pins beside the latch go into the board's two corner holes on that side. It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost. Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5. Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
 4. **Protection board.** It goes flat on the back of the sled, low down behind the right half of the RAK19003 (on the left, seen from the back), clear of the cell. Hold it there with two zip ties, each through a pair of the four small slots, one slot above the other, so each tie wraps round the board and across the front under the RAK19003.
 5. **Power path.** The leads are already on from step 4. Plug the LOAD pigtail into the charger's **LOAD** socket and the USB-C cable into the RAK19003. The DC in lead waits for the panel.
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
@@ -321,7 +321,7 @@ Do this indoors, where the air is dry, and carry it out closed. All three versio
 
 1. Drop a small silica gel packet in.
 2. Wipe the O-ring and the bore (C has two of each), give each O-ring a fresh thin film of silicone grease, and check it's sitting straight in its groove.
-3. **A:** stand the base on the edge of the bench so the antenna hangs over. Set the top down over it with the top's nub right above the base's tab, and push down until it drops in. Turn the top clockwise (seen from above), about a quarter turn. Near the end you'll feel the latch arm ride up over its post, and it clicks just before the joint stops with the tabs one above the other.
+3. **A:** stand the base on the edge of the bench so the antenna hangs over. Set the top down over it with the top's nub right above the base's tab (or the top's tab over the base's start arrow, which is the same position), or a little counterclockwise of that, and press down lightly while you turn it clockwise until it drops into the thread. Turn the top clockwise (seen from above), about a quarter turn. Near the end you'll feel the latch arm ride up over its post, and it clicks just before the joint stops with the tabs one above the other.
 4. **B:** set the lid on the can with its tab right above the can's nub. Push down and turn it clockwise (seen from above) until the latch clicks and it stops over the can's tab.
 5. **C:** close the bottom joint first, the same way as A, with the sleeve as the top. Then put the lid on the sleeve the same way as B.
 6. **Lock pin (optional).** Push the pin down through the slot in the upper tab until it clicks into the lower tab. Thread a small zip tie through its ring and the hole next to the latch arm, and close it loosely, so the pin can't get lost when it's out.
@@ -430,7 +430,7 @@ While you're up there, check that the wing nuts (if you have them) are still tig
 
 ## 17. Troubleshooting
 
-**The thread won't start.** It only goes together at one angle. Line the moving part's tab up with the nub on the fixed part and push before you turn.
+**The thread won't start.** It only goes together at one angle and one way up. Check the upper part (or female ring) is the right way up, set its tab at the nub or start arrow, or a little counterclockwise of it, then press down lightly and turn clockwise. It rides on the thread until the ridges line up, then drops in. Don't force it down first.
 
 **It's too stiff to turn all the way.** Grease the O-ring and check it's size 153: a 152 is too small and a 154 too big. Check the rim of the upper part for a bulge from the first layers and scrape the inside edge if you find one. The thread test rings are the place to sort this out.
 

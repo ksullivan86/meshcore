@@ -15,8 +15,9 @@
 // debossed label, a pocket for its stock WiFi FPC antenna on the bay's
 // right-hand wall (a thin divider, or the case's side wall for the last
 // bay), and its antenna bulkheads standing straight up out of the lid: an
-// SMA for the LoRa pigtail, labelled LoRa, and with WIFI = "rpsma" an
-// RP-SMA for WiFi, labelled WiFi, instead of the FPC.
+// SMA for the LoRa pigtail, labelled LoRa, over the alley left of the
+// board, and with WIFI = "rpsma" an RP-SMA for WiFi, labelled WiFi, over
+// the right one, instead of the FPC. The FPC's cable spool sits between.
 //
 // Parts (every one prints flat, no supports):
 //   BODY   floor, walls and the bays. Each bay is the Tahoe repeater's
@@ -77,8 +78,9 @@ KIT = [17.8, 21.0];   // the XIAO: across the pin rows (u), USB-C end to the far
 XIAO_T = 1.0;         // its PCB
 USB = [8.94, 3.26, 1.3, 7.35];   // USB-C socket: width, height, overhang past the front edge, length
 USB_U = KIT[0]/2;
-BTN_B = [3.0, 2.2];   // boot button (u, v) on the XIAO's top face, left of the USB-C (seen from the front)
-BTN_R = [14.8, 2.2];  // reset button, right of it
+BTN_B = [3.15, 1.4];  // boot button (u, v) on the XIAO's top face, left of the USB-C (seen from the front), close to the front edge
+BTN_R = [14.25, 1.4]; // reset button, right of it. Placed to agree with the prints: front hooks ending at u 1.9 and
+                      // starting at 15.9 cleared them, but 2.2 and 15.6 landed on them and held the board back
 SW = [2.6, 1.6, 0.8]; // those buttons: size across, along, height
 WIFI_UFL = [14.2, 18.5];  // WiFi U.FL, on the XIAO's top face at its back right
 PIN_PITCH = 2.54; PIN_N = 7; PIN_SPAN = 15.24;   // header: 7 pins a side, rows 15.24 apart
@@ -109,7 +111,8 @@ SMA_NUT = 8.0;        // its nut across flats
 // lid
 RIM = [1.2, 2.0, 0.25];      // locating rim under the lid, just inside the walls: thickness, depth, clearance
 ANT_Y = 36;                  // the antenna bulkheads on the lid, y: behind the boards
-ANT_DX = 9;                  // with WIFI = "rpsma": the LoRa SMA this far left of the bay's centre, the WiFi RP-SMA this far right
+ANT_DX = 9;                  // over the alleys either side of the spool: the LoRa SMA this far left of the bay's centre (its U.FL's side), the WiFi RP-SMA (WIFI = "rpsma") this far right
+SMA_DEPTH = 13;              // a pigtail's bulkhead jack reaches this far under the lid (jack, crimp and heat-shrink); its cable needs room below that to bend
 ANT_LABEL = 3.2;             // their labels
 LIFT = [16, 1.5, 1.6];       // tab in the middle of the lid's front edge, to lift it by: width, reach, thickness
 DET = [6, 1.0, 8, 0.7, 6.5, 0.3];   // sprung tabs at the lid's front corners, outside the front wall: width, thickness, length below the lid; bump reach, bump centre below the lid, gap to the wall
@@ -136,10 +139,10 @@ CATCH = [8, 4.4, 0.8, 0.6, 0.8];   // catch tooth: width, length, how far it sta
 // hooks' walls. A rail along the right edge (the latch's preload pushes the board against it)
 // and a stop at each front corner keep it from sliding sideways.
 STANDOFFS = [[5.2, 3.6, 3], [12.6, 3.6, 3], [5.2, 17.4, 3], [12.6, 17.4, 3]];   // under the XIAO, between the header rows
-HOOKS = [["B", 0.2, 2.2], ["B", 15.6, 17.6]];
+HOOKS = [["B", 0.2, 1.9], ["B", 15.9, 17.6]];   // short of the B and R buttons beside the USB-C (see BTN_B)
 LATCH = ["L", 19.6, 21.2, -1];   // the tongue runs forward along the left edge, in the floor; the finger tab is beside the back-left corner
 STOPS = [["L", 0.0, 1.0], ["R", 0.0, 1.0]];
-RAIL_BACK = 0.3;      // extra room in front of the back rail (in PETG the board rode up onto it)
+RAIL_BACK = 0;        // extra room in front of the back rail (none: the fit test's bay was right)
 // rails: [edge, t0, t1, top above the board's underside, extra room]; no shelf under the board (the header plastic is there)
 RAILS = [["R", 1.4, 19.8, 1.8, 0], ["T", 0.5, 17.3, XIAO_T - 0.1, RAIL_BACK]];   // the right one as tall as a stop (BAY_STOP_UP); the back one stays under the board-to-board connector
 MK_H = 0.6;           // raised marks on the floor: three 0.2 mm layers
@@ -185,7 +188,7 @@ PLATE_T = PLATE_FL + BALLAST_N*WASHER[2] + 0.4;
 PL_X = [-SIDE_W - PL_CLR - FLANGE_T, W_IN + SIDE_W + PL_CLR + FLANGE_T];      // the plate, x range
 FLANGE_H = GROOVE[2] + GROOVE[1] + 0.8;   // lips' height above the plate's top face
 // antennas: [x, label], every bay's
-function lora_x(i) = WIFI == "rpsma" ? xc(i) - ANT_DX : xc(i);
+function lora_x(i) = xc(i) - ANT_DX;
 function wifi_x(i) = xc(i) + ANT_DX;
 function ants() = [for (i = [0 : BAYS - 1]) each concat([[lora_x(i), "LoRa"]], WIFI == "rpsma" ? [[wifi_x(i), "WiFi"]] : [])];
 function pin_uv() = [for (s = [-1, 1]) for (k = [0 : PIN_N - 1])
@@ -566,9 +569,11 @@ module plug_dummy(i) color([0.1, 0.1, 0.1]) let(yf = USB_FACE - BOOT_REACH) {
   translate([xc(i), yf - 20, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = 20) rrect(11.5, 6.5, 2);
   translate([xc(i), yf, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = 6.2) rrect(8.25, 2.4, 1.1);
 }
-// the bulkheads in the lid: thread and jack body (inside and out), the nut under the lid
+// the bulkheads in the lid: thread, jack and crimp (inside and out), the nut under the lid, and room under
+// the jack for the pigtail's cable to bend away
 module sma_dummy() color("Gold") for (a = ants()) translate([a[0], ANT_Y, 0]) {
-  translate([0, 0, Z_LU - 9]) cylinder(d = 6.35, h = 9 + LID_T + 6, $fn = 32);
+  translate([0, 0, Z_LU - SMA_DEPTH]) cylinder(d = 6.6, h = SMA_DEPTH + LID_T + 6, $fn = 32);
+  translate([0, 0, Z_LU - SMA_DEPTH - 5]) cylinder(d = 4, h = 5.01, $fn = 24);
   translate([0, 0, Z_LU - 2.5]) cylinder(d = SMA_NUT/cos(30), h = 2.49, $fn = 6);
 }
 
@@ -663,7 +668,7 @@ echo(str("xnc-chk: {",
   ", \"USB_U\": ", USB_U, ", \"FPC\": ", FPC, ", \"FPC_Z0\": ", FPC_Z0, ", \"FPC_Y\": ", FPC_Y, ", \"FPC_CABLE\": ", FPC_CABLE,
   ", \"FPC_X0\": ", fpc_wall_x(0), ", \"PIGTAIL\": ", PIGTAIL, ", \"WIFI_UFL\": ", WIFI_UFL, ", \"LORA_UFL\": ", LORA_UFL,
   ", \"LORA_UFL_H\": ", LORA_UFL_H, ", \"SPOOL\": ", SPOOL, ", \"SPOOL_P\": ", SPOOL_P,
-  ", \"LORA_X\": ", [for (i = [0 : BAYS - 1]) lora_x(i)], ", \"ANT_Y\": ", ANT_Y, ", \"PLUNGERS\": ", [for (p = plungers()) [p[0][0], p[0][1], p[3]]],
+  ", \"LORA_X\": ", [for (i = [0 : BAYS - 1]) lora_x(i)], ", \"ANT_Y\": ", ANT_Y, ", \"SMA_DEPTH\": ", SMA_DEPTH, ", \"PLUNGERS\": ", [for (p = plungers()) [p[0][0], p[0][1], p[3]]],
   ", \"NUB_GAP\": ", NUB_GAP, ", \"TAB_L\": ", TAB_L, ", \"TAB_T\": ", TAB_T, ", \"WIFI\": \"", WIFI, "\"",
   ", \"HA\": ", HA, ", \"HINGE\": ", HINGE, ", \"H_R\": ", H_R, ", \"HINGE_OPEN\": ", HINGE_OPEN, ", \"HINGE_MOUTH\": ", HINGE_MOUTH,
   ", \"DET_XS\": ", DET_XS, ", \"DET\": ", DET, ", \"DET_Z\": ", DET_Z,
