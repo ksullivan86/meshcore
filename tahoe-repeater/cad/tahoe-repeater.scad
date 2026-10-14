@@ -60,7 +60,7 @@ POSE    = "print";    // [print, assembled]
 
 /* [Panel mount: measure yours] */
 // center to center between two of the mount's three holes
-MOUNT_HOLE_SPACING = 36;
+MOUNT_HOLE_SPACING = 35.1;
 // the three holes, measured round from 3 o'clock; 90 = top
 MOUNT_HOLE_ANG = [90, 210, 330];
 // pocket that centres the mount's round base
@@ -101,7 +101,8 @@ TURN    = TH_H / TH_LEAD * 360;   // 90 deg from drop-in to closed
 OR_ID = 88.57;
 OR_CS = 2.62;
 R_G   = 45.2;         // groove floor
-R_B   = 47.2;         // bore in the upper part
+R_B   = 47.4;         // bore in the upper part: 15 % squeeze as drawn, about 20 % as printed (47.2 jammed in a test print)
+BORE_LEAD = [0.9, 20]; // O-ring lead-in at the bore's mouth: 0.9 mm deep at 20 deg from the axis (was 45 deg, too steep)
 R_S   = 46.95;        // spigot lip beside the groove
 G0    = 2.0;          // groove from z 2.0 ...
 GW    = 3.6;          // ... to 5.6
@@ -397,7 +398,7 @@ module female_cut() {
   translate([0, 0, -1]) cylinder(r = R_B, h = G1 + 1, $fn = FN);
   translate([0, 0, G1 - 0.001])
     cylinder(r1 = R_B, r2 = TH_RM + TH_CLR - TH_E, h = R_B - (TH_RM + TH_CLR - TH_E), $fn = FN);
-  translate([0, 0, -0.01]) cylinder(r1 = R_B + TH_CH, r2 = R_B, h = TH_CH + 0.01, $fn = FN);
+  translate([0, 0, -0.01]) cylinder(r1 = R_B + BORE_LEAD[0], r2 = R_B, h = BORE_LEAD[0]/tan(BORE_LEAD[1]) + 0.01, $fn = FN);
 }
 module drip_lip() rotate_extrude($fn = FN)
   polygon([[R_OUT - 1, 0], [R_OUT + LIP, 0], [R_OUT + LIP, LIP_E], [R_OUT - 1, LIP_E + LIP + 1]]);

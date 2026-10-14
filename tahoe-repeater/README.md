@@ -20,7 +20,7 @@ I designed it for Lake Tahoe: 6,200 ft, snow on the roof for months at a time, a
 </table>
 
 > [!IMPORTANT]
-> **Check your panel mount before you print the bracket.** The brackets are drawn for a round mount whose three holes are 36 mm apart, center to center. Every file includes a small mount test disc that takes 17 minutes to print. Drop your mount into it and see if the holes line up. If they don't, change one number in the source and export the bracket again. [Changing the design](docs/customizing.md#the-panel-mounts-holes) shows how, including how to measure without calipers.
+> **Check your panel mount before you print the bracket.** The brackets are drawn for a round mount whose three holes are 35.1 mm apart, center to center. Every file includes a small mount test disc that takes 17 minutes to print. Drop your mount into it and see if the holes line up. If they don't, change one number in the source and export the bracket again. [Changing the design](docs/customizing.md#the-panel-mounts-holes) shows how, including how to measure without calipers.
 
 ## Pick a file
 

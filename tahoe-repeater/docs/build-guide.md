@@ -32,7 +32,7 @@ Everything here applies to all three versions. Where they differ, it says so. **
 ## 1. Before you start
 
 1. **Pick your file.** The [README](../README.md#pick-a-file) explains the nine. If you're at altitude or in snow country, build A.
-2. **Measure your panel mount.** Take the round mount off the panel and measure between the centers of two of its three screw holes, with calipers if you have them ([no calipers?](customizing.md#the-panel-mounts-holes)). The brackets are drawn for 36 mm. If yours is different, follow [Changing the design](customizing.md) to export a bracket that matches. Either way, print the mount test disc and check it (section 3) before you print the bracket. While you have the mount out, measure how thick its base is at the holes. With a washer under each head, M3 × 16 screws suit a base up to 5 mm thick, and M3 × 20 from 5.5 to 9 mm.
+2. **Measure your panel mount.** Take the round mount off the panel and measure between the centers of two of its three screw holes, with calipers if you have them ([no calipers?](customizing.md#the-panel-mounts-holes)). The brackets are drawn for 35.1 mm. If yours is different, follow [Changing the design](customizing.md) to export a bracket that matches. Either way, print the mount test disc and check it (section 3) before you print the bracket. While you have the mount out, measure how thick its base is at the holes. With a washer under each head, M3 × 16 screws suit a base up to 5 mm thick, and M3 × 20 from 5.5 to 9 mm.
 
    <img src="../images/step-measure.png" alt="The panel mount's round base from underneath, with 36 mm between two hole centres, and a cut through the base showing the thickness that sets the screw length">
 
@@ -177,7 +177,7 @@ The Adafruit bq25185 has jumpers on both sides. The three you cut are on the fro
 
 1. **Front: cut the VS jumper.** Run a sharp craft knife through the thin trace between its two pads.
 2. **Back: bridge the 3.65V jumper** with a blob of solder across its two halves. With the VS jumper cut, that sets the charge voltage for LiFePO4. Left as it comes, the charger charges to 4.2 V, which is for lithium-ion and will damage this cell.
-3. **Front: cut the TH jumper** the same way, and solder the thermistor between the TH hole and any − hole in the right-hand row. All the − holes are ground; BATT − is handy. Either lead can go to either. With the thermistor on the cell, the charger won't charge when it's too cold or too hot. Its leads are 1 m long, so shorten them to reach the cell with a little slack.
+3. **Front: cut the TH jumper** the same way, and solder the thermistor between the TH hole and any − hole in the right-hand row. All the − holes are ground; BATT − is handy. Either lead can go to either; a thermistor has no + or −. With the thermistor on the cell, the charger won't charge when it's too cold or too hot. **Once TH is cut, the red FAULT light stays on until the thermistor is soldered in.** That's expected, not a problem. Its leads are 1 m long: leave them long for now, and shorten them once the cell is strapped to the sled (step 10), to reach the side of the cell with 3 to 5 cm of slack (about 15 to 20 cm in all).
 4. **Leave IS alone,** and leave the 250mA and 1 Amp jumpers on the back open. The default 500 mA suits this cell and panel.
 
 <img src="../images/step-charger.png" alt="The bq25185 drawn from its board file: front with the TH and VS jumpers cut and IS left closed, back with the 3.65V jumper bridged, and the thermistor between TH and BATT minus">

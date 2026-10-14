@@ -201,22 +201,31 @@ def run(tag, defs, fit):
         return np.array([p[0], *(HA + [d[0] * math.cos(a) + d[1] * math.sin(a), -d[0] * math.sin(a) + d[1] * math.cos(a)])])
     if not empty(M['d_fpc']):
         rep('FPC sits in its pocket', vol(inter(M['d_fpc'], body)) < 0.01, f'overlap {vol(inter(M["d_fpc"], body)):.3f} mm3')
+        if not empty(M['d_sma']):
+            g = gap(M['d_sma'], M['d_fpc']); rep('LoRa bulkheads well clear of the FPCs', g >= 6.0, f'{g:.1f} mm')
         bx = I['BX0']
         a = np.array([bx + I['WIFI_UFL'][0], I['BY'] + I['WIFI_UFL'][1], I['ZX'] + 1.2])      # the XIAO's U.FL, under the Wio
         b = np.array([a[0], I['BY'] + I['KIT'][1] + 3.0, a[2]])                                 # out from under its back edge, over the rail
         c = np.array([bx + I['SPOOL_P'][0], I['BY'] + I['SPOOL_P'][1], I['ZB'] - 3.0])          # down to the spool
-        e = np.array([I['FPC_X0'], I['FPC_Y'] + I['FPC'][0] / 2, I['FPC_Z0'] + I['FPC'][1]])    # to the FPC's top edge
+        e = np.array([I['FPC_X0'], I['D_IN'], I['FPC_Z0'] + I['FPC'][1]])                       # to the FPC's top edge, on the back wall
         L = sum(np.linalg.norm(q - p) for p, q in ((a, b), (b, c), (c, e)))
         slack = I['FPC_CABLE'] - L; wrap = 2 * math.pi * (I['SPOOL'][0] + 0.6)
         rep('FPC cable reaches its U.FL', slack >= 3, f'route {L:.0f} mm, cable {I["FPC_CABLE"]} mm, slack {slack:.0f} mm '
             f'({max(0, slack) / wrap:.1f} turns round the spool)')
     if not empty(M['d_sma']):
-        bx = I['BX0']
-        a = np.array([bx + I['LORA_UFL'][0], I['BY'] + I['LORA_UFL'][1], I['ZW'] + I['LORA_UFL_H'] - 0.6])   # on top of the Wio
-        s = np.array([I['LORA_X'][0], I['ANT_Y'], I['Z_LU'] - I['SMA_DEPTH']])                              # the bulkhead's inner end
-        L0, L1 = np.linalg.norm(s - a), np.linalg.norm(opened(s, A) - a)
-        rep('LoRa pigtail reaches its SMA, lid shut and open', I['PIGTAIL'] >= 1.3 * L1 + 10,
-            f'{L0:.0f} mm straight across shut, {L1:.0f} mm open; pigtail {I["PIGTAIL"]} mm')
+        # every pigtail reaches its bulkhead, lid shut and open (a cable runs about 1.3 times the straight line)
+        for i in range(I['BAYS']):
+            bx = I['BX0'] + i * I['P']
+            runs = [('LoRa', [bx + I['LORA_UFL'][0], I['BY'] + I['LORA_UFL'][1], I['ZW'] + I['LORA_UFL_H'] - 0.6], I['LORA_X'][i])]
+            if I['WIFI_X']: runs.append(('WiFi', [bx + I['WIFI_UFL'][0], I['BY'] + I['WIFI_UFL'][1], I['ZX'] + 1.2], I['WIFI_X'][i]))
+            for nm, a, x in runs:
+                a = np.array(a); s = np.array([x, I['ANT_Y'], I['Z_LU'] - I['SMA_DEPTH']])
+                L0, L1 = np.linalg.norm(s - a), np.linalg.norm(opened(s, A) - a)
+                rep(f'bay {i + 1} {nm} pigtail reaches its bulkhead, lid shut and open', I['PIGTAIL'] >= 1.3 * L1 + 10,
+                    f'{L0:.0f} mm straight across shut, {L1:.0f} mm open; pigtail {I["PIGTAIL"]} mm')
+        if I['BAYS'] > 1:
+            xs = sorted(I['LORA_X']); d = min(b - a for a, b in zip(xs, xs[1:]))
+            rep('LoRa antennas spread out', d >= 0.8 * I['P'], f'{", ".join(f"{x:.1f}" for x in I["LORA_X"])} across a {I["P"] * I["BAYS"]} mm lid: {d:.0f} mm apart at the closest')
         g = min(gap(M['d_sma'], body), gap(M['d_sma'], parts), gap(M['d_sma'], boards))
         rep('antenna bulkheads, and room for their cables to bend, clear of the body and the kit', g >= 0.5, f'{g:.2f} mm')
     if not fit:

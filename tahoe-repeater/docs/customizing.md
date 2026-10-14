@@ -23,9 +23,9 @@ The files in [`stl/`](../stl) were laid out by a script, so `kit` gives you the 
 
 ## The panel mount's holes
 
-This is the one most people will need. The brackets are drawn for a round mount with three holes, 36 mm apart center to center, evenly spaced, with one at 12 o'clock.
+This is the one most people will need. The brackets are drawn for a round mount with three holes, 35.1 mm apart center to center, evenly spaced, with one at 12 o'clock.
 
-To measure yours, take the mount off the panel and measure between the centers of two holes with calipers. Or measure edge to edge and add one hole's width.
+To measure yours, take the mount off the panel and measure between the centers of two holes with calipers. The easy way is to put the calipers' inside jaws into two holes and spread them until they touch the far wall of each, which is outer edge to outer edge, then take off one hole's width. (Inner edge to inner edge, plus one hole's width, works too.) Do all three pairs; if they agree within about 0.3 mm, the holes are evenly spaced.
 
 **No calipers?** Lay the mount face down on a sheet of paper with a ruler flat beside it, and take a photo from straight above. Stand back and zoom in rather than holding the phone close, so the picture isn't distorted. On a computer, measure from the center of one hole to the center of another in pixels, measure a known length on the ruler in pixels, and scale. That gets you within about half a millimetre, and the mount test disc will tell you if that's close enough. Phone measuring apps, even the ones that use the LiDAR on newer iPhones, aren't nearly accurate enough for this.
 
@@ -33,7 +33,7 @@ Then set:
 
 | Setting | Default | What it is |
 |---|---|---|
-| `MOUNT_HOLE_SPACING` | 36 | Center to center between two of the three holes, in mm. |
+| `MOUNT_HOLE_SPACING` | 35.1 | Center to center between two of the three holes, in mm. |
 | `MOUNT_HOLE_ANG` | `[90, 210, 330]` | Where the holes sit, in degrees counterclockwise from 3 o'clock, seen from the front. 90 is 12 o'clock. If yours aren't evenly spaced, measure the angles and put them here. The tree-screw mount's long screw always uses the hole at 90, so keep one there. |
 | `MOUNT_D` | 55.6 | The pocket the mount's round base sits in. Make it about 0.5 mm bigger than the base. |
 

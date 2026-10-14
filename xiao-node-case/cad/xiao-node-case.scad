@@ -13,11 +13,11 @@
 //
 // Each kit has its own bay: a USB-C opening in the front wall with a
 // debossed label, a pocket for its stock WiFi FPC antenna on the bay's
-// right-hand wall (a thin divider, or the case's side wall for the last
-// bay), and its antenna bulkheads standing straight up out of the lid: an
-// SMA for the LoRa pigtail, labelled LoRa, over the alley left of the
-// board, and with WIFI = "rpsma" an RP-SMA for WiFi, labelled WiFi, over
-// the right one, instead of the FPC. The FPC's cable spool sits between.
+// back wall, a spool for the FPC's cable behind the board, and an SMA
+// bulkhead for its LoRa pigtail standing straight up out of the lid,
+// labelled LoRa. The LoRa antennas are spread as far apart as the lid
+// allows. With WIFI = "rpsma", an RP-SMA bulkhead on the lid for WiFi,
+// labelled WiFi, instead of the FPC.
 //
 // Parts (every one prints flat, no supports):
 //   BODY   floor, walls and the bays. Each bay is the Tahoe repeater's
@@ -56,7 +56,7 @@
 PART = "assembly";   // [assembly, kit, fit_test, body, lid, plate, section, bay_view]
 BAYS = 2;            // [1, 2, 3]
 LABELS = ["HA", "OBS", "RELAY"];   // debossed under each USB-C opening, left to right
-WIFI = "fpc";        // [fpc, rpsma]  stock FPC antenna on the bay's right wall, or an RP-SMA bulkhead on the lid per kit
+WIFI = "fpc";        // [fpc, rpsma]  stock FPC antenna on the bay's back wall, or an RP-SMA bulkhead on the lid per kit
 
 /* [Measured on the kit] */
 STACK_H = 9.32;       // the two boards: the XIAO's underside to the top of the Wio's LoRa module
@@ -101,7 +101,7 @@ BOOT_REACH = 0.45;    // a USB-C plug's boot stops about this far short of the s
 WIO_RELIEF = 1.0;     // the front wall is this much thinner where the Wio board's front edge swings while the kit tilts in
 WALL_ABOVE = 1.6;     // front wall above the openings
 LID_CLR = 0.6;        // lid above the stack's tallest part
-DIV_T = 2.0;          // divider between bays, carrying the FPC
+DIV_T = 2.0;          // divider between bays
 FPC_Z0 = 0.8;         // FPC pocket starts this far above the floor
 FPC_REC = 0.5;        // pocket depth into the wall (the FPC is about 0.2 thick)
 LABEL_D = 0.6; LABEL_SIZE = 4.5;
@@ -110,8 +110,8 @@ SMA_HOLE = 6.7;       // SMA / RP-SMA bulkhead, 1/4"-36 thread
 SMA_NUT = 8.0;        // its nut across flats
 // lid
 RIM = [1.2, 2.0, 0.25];      // locating rim under the lid, just inside the walls: thickness, depth, clearance
-ANT_Y = 36;                  // the antenna bulkheads on the lid, y: behind the boards
-ANT_DX = 9;                  // over the alleys either side of the spool: the LoRa SMA this far left of the bay's centre (its U.FL's side), the WiFi RP-SMA (WIFI = "rpsma") this far right
+ANT_Y = 32;                  // the antenna bulkheads on the lid, y: behind the boards, well in front of the FPCs on the back walls
+ANT_DX = 9;                  // one bay: its LoRa SMA this far left of its centre, over the alley on its U.FL's side
 SMA_DEPTH = 13;              // a pigtail's bulkhead jack reaches this far under the lid (jack, crimp and heat-shrink); its cable needs room below that to bend
 ANT_LABEL = 3.2;             // their labels
 LIFT = [16, 1.5, 1.6];       // tab in the middle of the lid's front edge, to lift it by: width, reach, thickness
@@ -188,15 +188,27 @@ PLATE_T = PLATE_FL + BALLAST_N*WASHER[2] + 0.4;
 PL_X = [-SIDE_W - PL_CLR - FLANGE_T, W_IN + SIDE_W + PL_CLR + FLANGE_T];      // the plate, x range
 FLANGE_H = GROOVE[2] + GROOVE[1] + 0.8;   // lips' height above the plate's top face
 // antennas: [x, label], every bay's
-function lora_x(i) = xc(i) - ANT_DX;
-function wifi_x(i) = xc(i) + ANT_DX;
+// The LoRa antennas go as far apart as the lid allows, so the radios don't swamp each other: at its
+// ends, with a middle one between, moved aside if it lands over a cable spool. With RP-SMA WiFi, the WiFi ones go in the gaps between them.
+ANT_X0 = RIM[2] + RIM[0] + SMA_NUT/cos(30)/2 + 0.5;   // nearest a bulkhead can be to a side wall: its nut clears the lid's rim
+SMA_R = 3.3;                                          // the jack's radius under the lid
+function spool_x(i) = bxy(i, SPOOL_P)[0];
+function spread(a, b, n) = [for (k = [0 : n - 1]) n == 1 ? a : a + k*(b - a)/(n - 1)];
+function clear_spools(x, j = 0) = j >= BAYS ? x : let(s = spool_x(j), d = SPOOL[1] + SMA_R + 1.0)
+  clear_spools(abs(x - s) < d ? (x < s ? s - d : s + d) : x, j + 1);   // to the nearer side
+function lora_xs() = WIFI == "rpsma" ? (BAYS == 1 ? [ANT_X0] : spread(ANT_X0, W_IN - ANT_X0, BAYS))
+  : BAYS == 1 ? [xc(0) - ANT_DX]
+  : [for (x = spread(ANT_X0, W_IN - ANT_X0, BAYS)) clear_spools(x)];
+function wifi_xs() = let(l = lora_xs(), t = BAYS > 1 ? (l[1] - l[0])/3 : 0)
+  BAYS == 1 ? [W_IN - ANT_X0] : BAYS == 2 ? [l[0] + t, l[0] + 2*t] : [l[0] + t, l[0] + 2*t, (l[1] + l[2])/2];   // each in or near its own bay
+function lora_x(i) = lora_xs()[i];
+function wifi_x(i) = wifi_xs()[i];
 function ants() = [for (i = [0 : BAYS - 1]) each concat([[lora_x(i), "LoRa"]], WIFI == "rpsma" ? [[wifi_x(i), "WiFi"]] : [])];
 function pin_uv() = [for (s = [-1, 1]) for (k = [0 : PIN_N - 1])
   [KIT[0]/2 + s*PIN_SPAN/2, KIT[1]/2 - (PIN_N - 1)*PIN_PITCH/2 + k*PIN_PITCH]];
 function hdr_v() = [KIT[1]/2 - PIN_SPAN/2 - HDR[0]/2, KIT[1]/2 + PIN_SPAN/2 + HDR[0]/2];
 function plungers() = [[WIO_BTN, -1, "U", WIO_TOP + WIO_SW[2]]];   // (u, v), which way the tab's root goes, letter, button top (h)
-function fpc_wall_x(i) = i == BAYS - 1 ? W_IN : (i + 1)*P - DIV_T/2;   // the bay's right wall, its inside face
-FPC_Y = (D_IN - FPC[0])/2;
+function fpc_x(i) = (i*P + (i > 0 ? DIV_T/2 : 0) + (i + 1)*P - (i < BAYS - 1 ? DIV_T/2 : 0))/2;   // the FPC's centre on the bay's back wall, x
 // hinge: the axis runs along x behind the back face, its knuckles' tops flush with the lid's
 H_R = HINGE[0]/2 + HINGE[1] + HINGE[2];   // knuckle's outer radius
 HA = [Y_BACK + H_R + 0.4, Z_TOP - H_R];   // the axis, (y, z)
@@ -209,7 +221,7 @@ assert(BAYS >= 1 && BAYS <= 3, "BAYS is 1, 2 or 3");
 assert(GAP >= USB[1] + 0.3, "the boards are too close together for the XIAO's USB-C socket: check STACK_H");
 assert(len(LABELS) >= BAYS, "one label per bay");
 assert(WIFI != "fpc" || DIV_H <= Z_LU - 0.4, "FPC too tall for the case");
-assert(WIFI != "fpc" || FPC[0] + 2 <= D_IN, "FPC too long for the bay wall");
+assert(WIFI != "fpc" || FPC[0] + 1 <= P - DIV_T, "FPC too long for the bay's back wall");
 assert(HINGE_MOUTH*HINGE[0] < HINGE[0] - 0.4, "the hinge clip's mouth is too wide to hold its pin");
 assert(DET[3] > DET[5] + 0.2, "the lid's tabs' bumps don't reach into the front wall");
 assert(DET[4] + DET[3] < DET[2], "the lid's tab bump is past the tab's end");
@@ -373,7 +385,7 @@ module kit_bay_add(i, fit = false) {
       translate([0, 0, ZB - 1.2 - (SPOOL[1] - SPOOL[0])]) cylinder(r1 = SPOOL[0], r2 = SPOOL[1], h = SPOOL[1] - SPOOL[0] + 0.01, $fn = FN);
       translate([0, 0, ZB - 1.2]) cylinder(r = SPOOL[1], h = 0.8, $fn = FN);
     }
-    // the divider to the next bay, which carries this bay's FPC
+    // the divider to the next bay
     if (i < BAYS - 1) box((i + 1)*P - DIV_T/2, (i + 1)*P + DIV_T/2, -0.01, D_IN + 0.01, -0.01, DIV_H);
   }
 }
@@ -401,8 +413,8 @@ module body_cuts(fit) {
     // relief in the front wall's inside face for the Wio board's front edge as the kit tilts in
     let(a = bay_pt(i, [-0.6, 0, max(WIO_TOP - WIO[2] - 0.6, XIAO_T + USB[1]/2 + USB_HOLE[1]/2 + 0.85)]), b = bay_pt(i, [KIT[0] + 0.6, 0, 0]))
       box(a[0], b[0], -WIO_RELIEF, 0.01, a[2], Z_LU + 0.01);
-    // FPC pocket on the bay's right wall
-    if (WIFI == "fpc") let(x = fpc_wall_x(i)) box(x - 0.01, x + FPC_REC, FPC_Y - 0.3, FPC_Y + FPC[0] + 0.3, FPC_Z0, FPC_TOP);
+    // FPC pocket on the bay's back wall
+    if (WIFI == "fpc") let(x = fpc_x(i)) box(x - FPC[0]/2 - 0.3, x + FPC[0]/2 + 0.3, D_IN - 0.01, D_IN + FPC_REC, FPC_Z0, FPC_TOP);
   }
   if (!fit) {
     // V-grooves along the bottom of the side walls, for the base plate's lips; open at the back
@@ -563,7 +575,7 @@ module kit_dummy(i, part = "all") translate([BAY_GAP, 0, 0]) bay_frame(i) {   //
   if (part == "all" || part == "pins")   // header pins below the XIAO
     color("Gold") for (p = pin_uv()) translate([p[0] - 0.32, p[1] - 0.32, -PIN_BELOW]) cube([0.64, 0.64, PIN_BELOW - HDR[1] + 0.01]);
 }
-module fpc_dummy(i) color([0.8, 0.55, 0.1]) let(x = fpc_wall_x(i)) box(x + 0.05, x + 0.25, FPC_Y, FPC_Y + FPC[0], FPC_Z0 + 0.2, FPC_Z0 + 0.2 + FPC[1]);
+module fpc_dummy(i) color([0.8, 0.55, 0.1]) let(x = fpc_x(i)) box(x - FPC[0]/2, x + FPC[0]/2, D_IN + 0.05, D_IN + 0.25, FPC_Z0 + 0.2, FPC_Z0 + 0.2 + FPC[1]);
 // a USB-C cable plugged in: the boot (an ordinary 11.5 x 6.5 mm one) and the plug's shell
 module plug_dummy(i) color([0.1, 0.1, 0.1]) let(yf = USB_FACE - BOOT_REACH) {
   translate([xc(i), yf - 20, ZUC]) rotate([-90, 0, 0]) linear_extrude(height = 20) rrect(11.5, 6.5, 2);
@@ -665,10 +677,10 @@ echo(str("xnc: antennas ", jn([for (a = ants()) str(a[1], " at x ", a[0])]), ", 
 echo(str("xnc-chk: {",
   "\"ZB\": ", ZB, ", \"ZX\": ", ZX, ", \"ZW\": ", ZW, ", \"Z_LU\": ", Z_LU, ", \"Z_TOP\": ", Z_TOP, ", \"BY\": ", BY, ", \"BXN\": ", BX(0), ", \"BAY_GAP\": ", BAY_GAP, ", \"BAY_PRE\": ", BAY_PRE, ", \"LATCH\": ", LATCH, ", \"LATCH_LIP\": ", LATCH_LIP, ", \"BAY_TSLOT\": ", BAY_TSLOT, ", \"BAY_TL\": ", BAY_TL, ", \"XIAO_T\": ", XIAO_T,
   ", \"BX0\": ", BX(0) + BAY_GAP, ", \"P\": ", P, ", \"D_IN\": ", D_IN, ", \"WALL\": ", WALL, ", \"KIT\": ", KIT, ", \"RAIL_BACK\": ", RAIL_BACK,
-  ", \"USB_U\": ", USB_U, ", \"FPC\": ", FPC, ", \"FPC_Z0\": ", FPC_Z0, ", \"FPC_Y\": ", FPC_Y, ", \"FPC_CABLE\": ", FPC_CABLE,
-  ", \"FPC_X0\": ", fpc_wall_x(0), ", \"PIGTAIL\": ", PIGTAIL, ", \"WIFI_UFL\": ", WIFI_UFL, ", \"LORA_UFL\": ", LORA_UFL,
+  ", \"USB_U\": ", USB_U, ", \"FPC\": ", FPC, ", \"FPC_Z0\": ", FPC_Z0, ", \"FPC_CABLE\": ", FPC_CABLE,
+  ", \"FPC_X0\": ", fpc_x(0), ", \"PIGTAIL\": ", PIGTAIL, ", \"WIFI_UFL\": ", WIFI_UFL, ", \"LORA_UFL\": ", LORA_UFL,
   ", \"LORA_UFL_H\": ", LORA_UFL_H, ", \"SPOOL\": ", SPOOL, ", \"SPOOL_P\": ", SPOOL_P,
-  ", \"LORA_X\": ", [for (i = [0 : BAYS - 1]) lora_x(i)], ", \"ANT_Y\": ", ANT_Y, ", \"SMA_DEPTH\": ", SMA_DEPTH, ", \"PLUNGERS\": ", [for (p = plungers()) [p[0][0], p[0][1], p[3]]],
+  ", \"LORA_X\": ", [for (i = [0 : BAYS - 1]) lora_x(i)], ", \"WIFI_X\": ", WIFI == "rpsma" ? [for (i = [0 : BAYS - 1]) wifi_x(i)] : [], ", \"ANT_Y\": ", ANT_Y, ", \"SMA_DEPTH\": ", SMA_DEPTH, ", \"PLUNGERS\": ", [for (p = plungers()) [p[0][0], p[0][1], p[3]]],
   ", \"NUB_GAP\": ", NUB_GAP, ", \"TAB_L\": ", TAB_L, ", \"TAB_T\": ", TAB_T, ", \"WIFI\": \"", WIFI, "\"",
   ", \"HA\": ", HA, ", \"HINGE\": ", HINGE, ", \"H_R\": ", H_R, ", \"HINGE_OPEN\": ", HINGE_OPEN, ", \"HINGE_MOUTH\": ", HINGE_MOUTH,
   ", \"DET_XS\": ", DET_XS, ", \"DET\": ", DET, ", \"DET_Z\": ", DET_Z,
