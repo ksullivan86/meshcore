@@ -34,7 +34,7 @@ Everything here applies to all three versions. Where they differ, it says so. **
 1. **Pick your file.** The [README](../README.md#pick-a-file) explains the nine. If you're at altitude or in snow country, build A.
 2. **Measure your panel mount.** Take the round mount off the panel and measure between the centers of two of its three screw holes, with calipers if you have them ([no calipers?](customizing.md#the-panel-mounts-holes)). The brackets are drawn for 35.1 mm. If yours is different, follow [Changing the design](customizing.md) to export a bracket that matches. Either way, print the mount test disc and check it (section 3) before you print the bracket. While you have the mount out, measure how thick its base is at the holes. With a washer under each head, M3 × 16 screws suit a base up to 5 mm thick, and M3 × 20 from 5.5 to 9 mm.
 
-   <img src="../images/step-measure.png" alt="The panel mount's round base from underneath, with 36 mm between two hole centres, and a cut through the base showing the thickness that sets the screw length">
+   <img src="../images/step-measure.png" alt="The panel mount's round base from underneath, with 35.1 mm between two hole centres, and a cut through the base showing the thickness that sets the screw length">
 
 3. **Get the parts together.** The [parts list](parts-list.md) is a checklist, and it's also [sorted by store](parts-list.md#shopping-list-by-store) for ordering.
 4. **Respect the cell.** A 15 Ah cell can push well over 100 A into a short. Keep its tabs covered whenever you're not working on them, don't let tools bridge them, and fit the fuse before anything else touches it.
@@ -217,7 +217,7 @@ Do this on the bench, before the cell goes anywhere near the radio.
 3. Within a few minutes, charging should stop and the red FAULT light come on. It starts again once the thermistor warms up past about 6 °C.
 4. If charging never stops, the TH jumper isn't fully cut.
 
-Then unplug the cell from **BATT**. Tape the thermistor flat against the side of the cell and keep its two leads apart. Sleeve the protection board in heat shrink.
+Then unplug the cell from **BATT**. Tape the thermistor flat against the side of the cell and keep its two leads apart. Sleeve the protection board in heat shrink (or wrap it in electrical tape).
 
 <img src="../images/step-cold-test.png" alt="The cold-cutoff test: the charger with the cell on BATT and 5 V on USB-C showing CHRG, then the thermistor chilled in a bag showing FAULT, then the thermistor taped to the cell">
 
@@ -275,11 +275,9 @@ Every board snaps into its own bay on the front of the sled, with no tools, scre
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
 6. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
 
-The two pictures below still show the earlier turn buttons and the old protection board and INA219 places; they're being redrawn for the bays.
+<img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots, the RAK1901 under the RAK19003, the charger tilted into its bay with its JST edge under the hooks and the top edge pressed down onto the latch, all four boards in their bays, pulling a latch's tab outward to lift the RAK19003 out, and the protection board zip-tied flat on the back with the cell already wired to it">
 
-<img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots, the RAK1901 under the RAK19003, the turn buttons onto their posts, the boards onto their standoffs, and the buttons swung shut">
-
-<img src="../images/step-sled-2.png" alt="Building the sled, part 2: the protection board zip-tied at the top left, the INA219 on the back behind the MiniBoost, the DC in lead and thermistor, LOAD to the MiniBoost and the MiniBoost to the RAK by USB-C, and the leads tied down">
+<img src="../images/step-sled-2.png" alt="Building the sled, part 2: the LOAD pigtail into the charger and the USB-C cable from the MiniBoost round the left side into the RAK19003, the DC in lead down the right side and the thermistor round to the cell, the INA219's J6 wires and terminal leads spliced into the cell lead, the cell lead from the protection board round the right edge to below BATT, the leads tied down, and the finished sled with the cell strapped on">
 
 ## 11. Put it all in
 
@@ -313,7 +311,7 @@ Leave it open on the bench with the panel in the sun, and send plenty of traffic
 - The repeater's uptime should never reset when it transmits. If it does, see [Troubleshooting](#17-troubleshooting).
 - After six hours of charging without a break, the charger's safety timer stops it and lights FAULT. Unplugging the input clears it. Outdoors, the dark resets it every night.
 
-<img src="../images/step-bench-test.png" alt="The charge current read on a meter in the cell lead, about 0.5 A in full sun, and the cell voltage settling at 3.65 V or less">
+<img src="../images/step-bench-test.png" alt="The charge current read on a meter in series with the red wire of a JST-PH extension, COM to the cell side and 10A to the BATT side, about 0.5 A in full sun, and the cell voltage settling at 3.65 V or less">
 
 ## 14. Close it up
 

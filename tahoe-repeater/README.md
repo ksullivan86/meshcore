@@ -172,11 +172,11 @@ The latch, pin and screw all line up where the joint lands when it's hand-tight.
 
 ## Inside
 
-<img src="images/sled.png" alt="The sled pulled up out of the base by its handle, and the turn buttons on the charger board, two shut and two swung open">
+<img src="images/sled.png" alt="The sled pulled up out of the base by its handle with the cell strapped on, and a close-up of the charger in its bay: two hooks on the bottom edge, stops on the sides, a pin in one hole and the latch at the top right">
 
 The sled clicks into two sockets in the floor on two sprung prongs. To take it out, unplug the panel lead at the charger and pull the sled straight up by its handle. The cell comes with it, strapped on, because its leads run to the protection board on the sled. With the 20 cm antenna lead from the parts list, you can set the sled down beside the box without unplugging the antenna.
 
-Each board snaps into its own bay. It sits on standoffs, one edge slides under two fixed hooks, and a latch clicks over the other edge. Pull the latch's tab outward and the board lifts out. The protection board is zip-tied flat on the back of the sled. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it. (The picture still shows the earlier turn buttons; it's being redrawn.)
+Each board snaps into its own bay. It sits on standoffs, one edge slides under two fixed hooks, and a latch clicks over the other edge. Pull the latch's tab outward and the board lifts out. The protection board is zip-tied flat on the back of the sled. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it.
 
 ## Straps
 
