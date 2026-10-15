@@ -176,7 +176,7 @@ The latch, pin and screw all line up where the joint lands when it's hand-tight.
 
 The sled clicks into two sockets in the floor on two sprung prongs. To take it out, unplug the panel lead at the charger and pull the sled straight up by its handle. The cell comes with it, strapped on, because its leads run to the protection board on the sled. With the 20 cm antenna lead from the parts list, you can set the sled down beside the box without unplugging the antenna.
 
-Each board snaps into its own bay. It sits on standoffs, one edge slides under two fixed hooks, and a latch clicks over the other edge. Pull the latch's tab outward and the board lifts out. The protection board is zip-tied flat on the back of the sled. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it.
+Each board snaps into its own bay. It sits on standoffs, one edge slides under two fixed hooks, and a latch clicks over the other edge. Pull the latch's tab outward and the board lifts out. Each board sits next to the boards it's wired to: the charger along the top, the INA219 under it, the MiniBoost right beside the RAK19003's USB-C. The longer leads go through slots beside their pads and run behind the sled, and the wiring is drawn on the sled itself: every slot is named and every route behind is an engraved, labelled channel. The protection board is zip-tied flat on the back. The sled's feet also still take two M3 screws into the floor, if you want it held down harder than the prongs hold it.
 
 ## Straps
 

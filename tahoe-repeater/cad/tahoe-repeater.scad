@@ -197,23 +197,25 @@ CUP_H   = 12;
 SL_X  = 40;           // half width: 80 mm, so every latch's pull tab has room (was 30)
 SL_T  = 3;
 SL_Z0 = 3;
-SL_Z1 = 128;
+SL_CH = 14;           // top corners cut off this far (see plate2d)
+SL_Z1 = 134;          // 6 mm taller (was 128), so the charger fits along the top with the INA219 under it
 SL_FOOT = [26, -4.5]; // screw feet (optional)
 SO_D = 6;
 SO_H = 7;             // room for a RAK1901 sensor under the RAK19003
 PCB_T = 1.6;
 M2_HOLE_DEPTH = SO_H + SL_T - 0.8;
 // board corners on the sled (x, z), sizes and holes in each board's own frame
-BQ0  = [-15.9, 64];   // Adafruit bq25185 #6091
+BQ0  = [-16, 94];     // Adafruit bq25185 #6091, along the top (was in the middle at -15.9, 64)
 BQ_SIZE = [31.75, 25.4];
 BQ_HOLES = [[2.54, 2.54], [29.21, 2.54], [2.54, 22.86], [29.21, 22.86]];
-MB0  = [12.5, 107];   // Adafruit MiniBoost #4654, top right
+MB0  = [-35, 61];     // Adafruit MiniBoost #4654, left, just above the RAK19003's USB-C (was top right)
 MB_SIZE = [11.43, 17.78];
 MB_HOLE = [2.54, 15.24];
 MB_REST = [8.9, 9.0];
 RAK0 = [-17, 20];     // RAK19003, USB-C edge on the left
 RAK_SIZE = [35, 30];
-INA0 = [1, 101];      // Adafruit INA219 #904, top left, turned 90 degrees: its hooks face right, its latch left
+INA0 = [32, 68];      // Adafruit INA219 #904, right, under the charger, turned 90 degrees: its hooks face right, its latch left,
+                      // its header at the bottom (toward J6 on the RAK19003) and its screw terminals at the top (toward BATT)
 RAK_HOLES = [[4, 4], [4, 26], [35, 15]];   // two 2.7 mm holes, and a half-hole in the far edge
 RAK_SO_D = [5.5, 5.5, 6];
 RAK_USB = 18.3;       // USB-C centre, up from the bottom edge
@@ -236,7 +238,7 @@ HD_W = 24; HD_H = 13; HD_BAR = 4;
 // cell strap: one 1/2 in hook-and-loop strap round the cell's middle. It crosses the
 // sled's front behind the charger, in the one band that's clear of standoffs and posts.
 CS_X = 27.5; CS_LEN = 14; CS_W = 2.6;
-CS_Z = [69.7];
+CS_Z = [BQ0[1] + 5.7]; // under the charger, between its standoffs and stops
 RAK_CORE = [12, 32];  // the RAK4631 core covers the base from here to here (u), full height
 // markings on the sled's front face, so it's clear which standoffs go with which board:
 // a low raised outline just inside each board's footprint and its name, and on the charger
@@ -704,9 +706,45 @@ module sleeve_c() difference() {
 
 // ================================ SLED ================================
 // wiring zip-tie slots, and four for the protection board, zip-tied flat on the back beside the cell
-ZIP = [[-24, 62], [26, 62], [26, 88]];
+ZIP = [[30.5, 55], [37.5, 55], [30.5, 80], [37.5, 80]];   // two small ties round the leads in the right-hand channel at the back
 PB_ZIP = [[12, 22.5], [24, 22.5], [12, 38.5], [24, 38.5]];   // two ties, each through a pair one above the other
 PB_BACK = [7, 23.5, 22, 14];                                  // where the protection board sits on the back: x, z, width, height
+// leads go to the back through these slots, right beside the pad or socket they serve: [x, z, w, h]
+WIRE_SLOTS = [[30, 92, 6, 3],          // cell lead: from the protection board round to BATT and the INA219
+              [22.5, 106.7, 4, 6],     // DC in, from the charger's right-hand pads ...
+              [35, 14, 6, 3],          // ... and back out to the front by the cable gland
+              [-22.5, 106.7, 4, 6]];   // thermistor, from TH round to the side of the cell
+// the wiring drawn on the sled itself: shallow channels along each lead's route, and short labels.
+// [[points (x, z)], width]. Back routes are drawn as seen from the front; their labels are mirrored to read from behind.
+WG_D = 0.6;           // channel and label depth
+WIRE_BACK = [[[[34, 17], [34, 88], [30.5, 90.5]], 2.6],            // the right-hand channel: DC in down, the cell lead up
+             [[[22.5, 103.7], [34, 96], [34, 88]], 1.6],           // DC in, from its slot into the channel
+             [[[28.8, 31.5], [34, 37]], 1.6],                      // P+ and P- from the protection board into the channel
+             [[[10, 130], [10, 38.5]], 1.6],                       // B+ from the fuse, down beside the cell
+             [[[8.6, 23.0], [3, 12], [-4, 6.5]], 1.6],             // B- from the cell's - tab
+             [[[-22.5, 103.7], [-24, 95]], 1.6]];                  // thermistor, from its slot to the cell
+WIRE_BACK_TXT = [["DC IN \u2193  CELL \u2191", 38.2, 67.5, 2.4, 90],
+                 ["B+  \u2190 FUSE \u2190 CELL +", 12.6, 84, 2.4, 90],
+                 ["B\u2212", 4.5, 18.5, 2.4, 0],
+                 ["PROTECTION BOARD", 18, 43, 2.2, 0],
+                 ["B+ B\u2212", 13, 19.5, 1.8, 0], ["P+ P\u2212", 25, 19.5, 1.8, 0],
+                 ["TH \u2192 CELL", -19.5, 99, 2.2, 90],
+                 ["DC IN", 18.6, 106.7, 2.2, 90]];
+WIRE_FRONT = [[[[-29.4, 59.3], [-29.4, 54], [-38.4, 50.5], [-38.4, 46.2]], 1.6]];   // 5V and GND from the MiniBoost to the RAK19003's USB-C
+WIRE_FRONT_TXT = [["5V", -35.5, 55.6, 2.2, 0], ["CELL", 30, 96.6, 2.2, 0], ["DC", 22.5, 101.3, 2.0, 0], ["TH", -22.5, 101.3, 2.0, 0]];
+module wire_path2d(p, w) for (i = [0 : len(p) - 2]) hull() { translate(p[i]) circle(d = w, $fn = 16); translate(p[i + 1]) circle(d = w, $fn = 16); }
+module wire_txt2d(t, mirror_x = false) translate([t[1], t[2]]) mirror([mirror_x ? 1 : 0, 0]) rotate(t[4])
+  text(t[0], size = t[3], font = MK_FONT, halign = "center", valign = "center");
+// everything a channel or label on the front must stay clear of: each bay's parts, its latch's slots, and the wire slots
+module bay_keep2d() for (b = sled_bays()) translate(b[1]) rotate(b[2]) offset(r = 0.6) {
+  projection() bay_add(b[0]); projection() bay_cut(b[0]);
+}
+module wire_front2d() difference() {
+  union() { for (r = WIRE_FRONT) wire_path2d(r[0], r[1]); for (t = WIRE_FRONT_TXT) wire_txt2d(t); }
+  bay_keep2d();
+}
+module wire_back2d() union() { for (r = WIRE_BACK) wire_path2d(r[0], r[1]); for (t = WIRE_BACK_TXT) wire_txt2d(t, true); }
+module wire_slots2d() for (w = WIRE_SLOTS) translate([w[0], w[1]]) offset(r = 1) offset(delta = -1) square([w[2], w[3]], center = true);
 // cylinder from the plate's front face forward (toward -y) by h
 module fwd(x, z, d, h, fn = 0) translate([x, 0.01, z]) rotate([90, 0, 0])
   if (fn > 0) cylinder(d = d, h = h + 0.01, $fn = fn); else cylinder(d = d, h = h + 0.01);
@@ -734,6 +772,8 @@ module plate2d() difference() {
     for (e = [-1, 1]) translate([s*PR_X + (e < 0 ? -PR_W/2 - PR_SLOT : PR_W/2), SL_Z0 - 0.01]) square([PR_SLOT, PR_ROOT - SL_Z0]);
     // ... and open the gap between its two tines
     translate([s*PR_X - PR_GAP/2, PR_TIP - 1]) square([PR_GAP, PR_ROOT - PR_TIP + 1]);
+    // the top corners cut off at 45 degrees, so they clear A's sloped roof while the base turns
+    translate([s*SL_X, SL_Z1]) rotate(45) square(SL_CH*sqrt(2), center = true);
   }
 }
 // the markings, in the plate's (x, z) plane
@@ -757,6 +797,9 @@ module sled_assembled() {
     for (b = sled_bays()) multmatrix(sled_bay_m(b[1], b[2])) bay_cut(b[0]);
     for (s = [-1, 1]) translate([s*SL_FOOT[0], SL_FOOT[1], SL_Z0 - 1]) cylinder(d = M3_CLEAR, h = 6);
     for (z = concat(ZIP, PB_ZIP)) translate([z[0] - 2.1, -1, z[1] - 1]) cube([4.2, SL_T + 2, 2]);
+    translate([0, SL_T + 1, 0]) rotate([90, 0, 0]) linear_extrude(height = SL_T + 2) wire_slots2d();          // leads through to the back
+    translate([0, WG_D, 0]) rotate([90, 0, 0]) linear_extrude(height = WG_D + 0.01) wire_front2d();         // the wiring, drawn on the front ...
+    translate([0, SL_T + 0.01, 0]) rotate([90, 0, 0]) linear_extrude(height = WG_D + 0.01) wire_back2d();   // ... and on the back
     for (z0 = CS_Z) for (s = [-1, 1]) translate([s*CS_X - CS_W/2, -1, z0]) cube([CS_W, SL_T + 2, CS_LEN]);   // cell straps
   }
 }

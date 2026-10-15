@@ -164,12 +164,11 @@ Cut and strip every lead first, and label each one with masking tape. Hold each 
 
 | Lead | Length | Wire |
 |---|---|---|
-| Thermistor | about 20 cm | its own leads |
-| DC in, JST-PH male | about 15 cm | 22 to 26 AWG |
+| Thermistor | about 10 cm | its own leads |
+| DC in, JST-PH male | about 17 cm | 22 to 26 AWG |
 | LOAD pigtail to the MiniBoost | about 10 cm | 22 to 26 AWG |
-| USB-C cable | about 12 cm, from the USB-C end | the kit's cable |
-| INA219 to J6 (optional) | 4 × 15 cm | 26 to 28 AWG, ideally red, black, yellow, blue |
-| INA219 VIN+ and VIN− (optional) | 2 × 10 cm | 22 to 26 AWG |
+| USB-C cable | about 6 cm, from the USB-C end | the kit's cable |
+| INA219 to J6 (optional) | 4 × 7 cm | 26 to 28 AWG, ideally red, black, yellow, blue |
 
 ### The charger
 
@@ -177,7 +176,7 @@ The Adafruit bq25185 has jumpers on both sides. The three you cut are on the fro
 
 1. **Front: cut the VS jumper.** Run a sharp craft knife through the thin trace between its two pads.
 2. **Back: bridge the 3.65V jumper** with a blob of solder across its two halves. With the VS jumper cut, that sets the charge voltage for LiFePO4. Left as it comes, the charger charges to 4.2 V, which is for lithium-ion and will damage this cell.
-3. **Front: cut the TH jumper** the same way, and solder the thermistor between the TH hole and any − hole in the right-hand row. All the − holes are ground; BATT − is handy. Either lead can go to either; a thermistor has no + or −. With the thermistor on the cell, the charger won't charge when it's too cold or too hot. **Once TH is cut, the red FAULT light stays on until the thermistor is soldered in.** That's expected, not a problem. Its leads are 1 m long: leave them long for now, and shorten them once the cell is strapped to the sled (step 10), to reach the side of the cell with 3 to 5 cm of slack (about 15 to 20 cm in all).
+3. **Front: cut the TH jumper** the same way, and solder the thermistor between the TH hole and any − hole in the right-hand row. All the − holes are ground; BATT − is handy. Either lead can go to either; a thermistor has no + or −. With the thermistor on the cell, the charger won't charge when it's too cold or too hot. **Once TH is cut, the red FAULT light stays on until the thermistor is soldered in.** That's expected, not a problem. Its leads are 1 m long: leave them long for now, and shorten them once the charger is on the sled (step 10). They go through the slot marked TH beside the charger to the side of the cell: about 10 cm each, with a little slack.
 4. **Leave IS alone,** and leave the 250mA and 1 Amp jumpers on the back open. The default 500 mA suits this cell and panel.
 
 <img src="../images/step-charger.png" alt="The bq25185 drawn from its board file: front with the TH and VS jumpers cut and IS left closed, back with the 3.65V jumper bridged, and the thermistor between TH and BATT minus">
@@ -187,8 +186,8 @@ The Adafruit bq25185 has jumpers on both sides. The three you cut are on the fro
 
 ### The MiniBoost and the RAK19003
 
-7. **USB-C cable.** Cut the USB-A end off the kit's USB-C cable, about 12 cm from the USB-C end. Solder red to the MiniBoost's **5V** and black to its **GND**, next to the LOAD pigtail's black. Tape off the data wires. Leave **EN** empty. Check the names printed by the pins before you solder.
-8. **INA219 (optional).** While the RAK19003 is loose on the bench, solder four wires from **J6** on the RAK19003 (a row of four pads, labelled VDD, GND, SCL, SDA) to the INA219's **VCC, GND, SCL** and **SDA** pins, matching names. Then put a lead in each of its **VIN+** and **VIN−** screw terminals and label them: VIN+ goes to the protection board's P+, VIN− to the battery lead's red wire (step 5).
+7. **USB-C cable.** Cut the USB-A end off the kit's USB-C cable, about 6 cm from the USB-C end. The MiniBoost sits right beside the RAK19003's USB-C. Solder red to the MiniBoost's **5V** and black to its **GND**, next to the LOAD pigtail's black. Tape off the data wires. Leave **EN** empty. Check the names printed by the pins before you solder.
+8. **INA219 (optional).** While the RAK19003 is loose on the bench, solder four wires from **J6** on the RAK19003 (a row of four pads, labelled VDD, GND, SCL, SDA) to the INA219's **VCC, GND, SCL** and **SDA** pins, matching names. Leave its **VIN+** and **VIN−** screw terminals empty for now: the cell lead's red wire gets cut and goes into them in step 10.
 9. **Optional capacitor.** Only needed if the node reboots when it transmits (see [Troubleshooting](#17-troubleshooting)). If you're fitting it, solder the 1000 µF capacitor to a JST-PH 2-pin plug now: its + leg (the longer one) to the red wire.
 10. Put adhesive heat shrink on every joint.
 
@@ -200,11 +199,11 @@ Same station: swap to the big chisel tip and turn the iron up to about 400 °C. 
 
 1. **Best:** have a short nickel strip spot-welded to each tab (a battery or e-bike shop will do it, or use a handheld welder), then solder your leads to the strips, away from the cell.
 2. **Otherwise,** solder the leads straight to the tabs, quick and hot. Use a 60 W or stronger iron with a wide chisel tip at about 400 °C. Tin the tab with one touch of two or three seconds, tin the lead, then join them in a second or two. Let the cell cool between joints. **Never hold the iron on the cell.**
-3. Wire it in this order: cell **+** → 2 A fuse, within 2 cm of the tab → protection board **B+**. Cell **−** → protection board **B−**. Protection board **P+** and **P−** → a JST-PH female lead. The cell will stand positive end up, and the protection board sits low on the back of the sled, behind the RAK19003, so leave the lead from the fuse to **B+** long enough to reach down the cell (about 15 cm), and the **P+** and **P−** lead long enough to reach round to the charger on the front.
+3. Wire it in this order: cell **+** → 2 A fuse, within 2 cm of the tab → protection board **B+**. Cell **−** → protection board **B−**. Protection board **P+** and **P−** → a JST-PH female lead (the cell lead). If you're fitting the INA219, its red wire gets cut and the INA219 goes in the gap, in step 10. The cell will stand positive end up, and the protection board sits low on the back of the sled, behind the RAK19003, so leave the lead from the fuse to **B+** long enough to reach down the cell (about 15 cm). The **P+** and **P−** lead runs up the channel at the back to the slot by the INA219 and on to the charger's BATT socket: make it about 15 cm.
 4. Check the polarity with a meter against the **BATT** marking on the charger before you plug anything in.
 5. Seal the fuse and every splice in adhesive-lined heat shrink.
 
-If you're fitting the INA219, it goes in the red wire between P+ and the JST-PH lead: join P+ to its VIN+ lead and the JST-PH lead's red to its VIN− lead (both from step 4). Without it, P+ goes straight to the JST-PH lead's red.
+**With the INA219, the cell lead's red wire gets cut.** The INA219 measures current through a small resistor between its VIN+ and VIN− screw terminals, so the current has to pass through it. Cut the red wire where it passes the INA219 on the sled (step 10), strip 5 mm off each cut end, and screw the end that comes from **P+** into **VIN+** and the end that goes on to the plug into **VIN−**. The black wire stays whole. Without the INA219, leave the red whole.
 
 <img src="../images/step-harness.png" alt="The cell harness: nickel strip or quick solder joints on the tabs, then the cell plus through a 2 A fuse to B plus, minus to B minus, and P plus and P minus to a JST-PH lead, checked against the plus mark under BATT">
 
@@ -261,23 +260,28 @@ Do this now, with no electronics inside, so a leak only wets a paper towel.
 
 Every board snaps into its own bay on the front of the sled, with no tools, screws or inserts. A bay is a few round standoffs the board sits on, two fixed hooks along one edge, a latch on the opposite edge, and stops at both ends of the other two edges so the board can't slide or twist. On the RAK19003, the charger and the INA219, a small pin on a standoff also drops into one of the board's holes. Each bay is outlined and named on the sled (RAK19003, CHARGER, BOOST, INA219), and the charger's says USB-C at the end its USB-C socket goes.
 
+Each board sits next to the boards it's wired to, and the longer leads go through slots in the plate and run behind it, in a channel either side of the cell. **The wiring is drawn on the sled:** each slot is named on the front (CELL, DC, TH), and the routes behind are engraved channels with their labels (DC IN, CELL, B+ from the fuse, B−, TH to the cell, and the protection board's spot).
+
 **Fitting a board:** tilt it, slide the edge with the hooks under them, then press the other edge down until the latch clicks over it. **Taking it out:** pull the latch's pull tab (the flat tab outside the latch, with the low grip at its end) or the ear on the latch's outer face away from the board, and lift that edge. Never push or pull the top of the latch itself, which can snap off.
 
-1. **Cell strap.** Do this before the charger goes on. Thread the ½ in hook-and-loop strap in through one of the two long slots at the sides of the sled, across the front of the sled where the charger will sit, and out through the other slot. Pull it through until the ends hanging out the back are about the same length. It lies flat against the sled, behind the charger, in the only band across the front that's clear of every bay.
+1. **Cell strap.** Do this before the charger goes on. Thread the ½ in hook-and-loop strap in through one of the two long slots near the top of the sled, across the front where the charger will sit, and out through the other slot. Pull it through until the ends hanging out the back are about the same length. It lies flat against the sled, behind the charger.
 2. **Sensor (optional).** If you have a RAK1901, plug it into slot C or D on the underside of the RAK19003 and screw it down before the board goes on the sled.
 3. **Boards.**
-   - **RAK19003** (with the RAK4631 plugged in on top), at the bottom: the USB-C edge under the hooks on the left, the latch on the right. The pin on the right-hand standoff goes into the half-hole in the board's edge.
-   - **Charger**, over the strap: the edge with the two JST sockets under the hooks at the bottom, the latch at the top right, beside the USB-C. The pin on the top-left standoff goes into the board's top-left hole.
-   - **MiniBoost**, top right: pins at the bottom, the left edge under the hooks, the latch on the right.
-   - **INA219 (optional)**, top left, turned on its side with its screw terminals at the top: the edge with the STEMMA QT sockets under the hooks on the right, the latch on the left. The two pins beside the latch go into the board's two corner holes on that side. It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost. Its wiring is already done: the four wires to J6 and the two terminal leads from step 4, joined into the battery lead in step 5. Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
-4. **Protection board.** It goes flat on the back of the sled, low down behind the right half of the RAK19003 (on the left, seen from the back), clear of the cell. Hold it there with two zip ties, each through a pair of the four small slots, one slot above the other, so each tie wraps round the board and across the front under the RAK19003.
-5. **Power path.** The leads are already on from step 4. Plug the LOAD pigtail into the charger's **LOAD** socket and the USB-C cable into the RAK19003. The DC in lead waits for the panel.
+   - **RAK19003** (with the RAK4631 plugged in on top), at the bottom: the USB-C edge under the hooks on the left, the latch on the right. The pin on the right-hand standoff goes into the half-hole in the board's edge. J6 is at its bottom right.
+   - **Charger**, along the top, over the strap: the edge with the two JST sockets under the hooks at the bottom, the latch at the top right, beside the USB-C. The pin on the top-left standoff goes into the board's top-left hole.
+   - **MiniBoost**, on the left, just above the RAK19003's USB-C plug: pins at the bottom, the left edge under the hooks, the latch on the right.
+   - **INA219 (optional)**, on the right, under the charger, turned on its side with its screw terminals at the top and its header at the bottom: the edge with the STEMMA QT sockets under the hooks on the right, the latch on the left. The two pins beside the latch go into the board's two corner holes on that side. Its four wires from step 4 run down to J6 on the RAK19003, a few centimetres. It reports the cell's real voltage and current, which MeshCore can't otherwise see, because the RAK runs from the boost. Recent MeshCore builds look for an INA219 at startup and add the cell's voltage and current to the node's telemetry. It draws under 1 mA, which costs a few days of no-sun runtime (see [Power budget](#power-budget)).
+4. **Protection board.** It goes flat on the back of the sled, low down behind the right half of the RAK19003 (on the left, seen from the back), clear of the cell, where it's marked PROTECTION BOARD. Hold it there with two zip ties, each through a pair of the four small slots, one slot above the other, so each tie wraps round the board and across the front under the RAK19003.
+5. **Cell lead.** From P+ and P−, run it up the channel on that side at the back (marked CELL) to the slot marked **CELL** on the front, beside the INA219's top corner. Its black goes straight across to the charger's **BATT** socket. **With the INA219, cut its red wire here:** strip 5 mm off both cut ends, screw the end from P+ into **VIN+** and the plug end into **VIN−** (see step 5). Without the INA219, leave the red whole. Leave the plug out of BATT for now.
+6. **DC in.** The JST-PH male lead from the charger's DCIN pads goes through the slot marked **DC** just right of the charger, down the same channel at the back (marked DC IN), and out through the small slot at the bottom right, by the cable gland. The panel's lead plugs into it in step 11.
+7. **Thermistor.** Both its leads go through the slot marked **TH** just left of the charger: the TH lead straight there, and the BATT − lead tucked under the charger from its right-hand pad to its left edge. The thermistor itself stays taped to the cell (step 6): when the cell goes in behind the sled in step 11, turn it so the thermistor is on its left side, seen from the front (marked TH → CELL on the back). Shorten the leads to about 10 cm now if they're still long.
+8. **Power path.** Plug the LOAD pigtail into the charger's **LOAD** socket; its wires run left under the charger's bottom edge and down to the MiniBoost. The short USB-C stub from the MiniBoost plugs into the RAK19003.
    - **Never connect the cell, or any battery, to the RAK's BAT or SOLAR connectors.** The RAK's own charger is for lithium-ion. The optional 1000 µF capacitor in [Troubleshooting](#17-troubleshooting) is the only thing that ever goes on BAT.
-6. Put adhesive heat shrink on every splice, and zip-tie the leads through the sled's small slots. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
+9. Put adhesive heat shrink on every splice, and hold the leads in the right-hand channel at the back with two small zip ties through the two pairs of slots across it. Leave the cell's lead unplugged: it goes into **BATT** last of all, in step 11.
 
-<img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots, the RAK1901 under the RAK19003, the charger tilted into its bay with its JST edge under the hooks and the top edge pressed down onto the latch, all four boards in their bays, pulling a latch's tab outward to lift the RAK19003 out, and the protection board zip-tied flat on the back with the cell already wired to it">
+<img src="../images/step-sled-1.png" alt="Building the sled, part 1: the cell strap through its two slots near the top, the RAK1901 under the RAK19003, the charger tilted into its bay with its JST edge under the hooks and the top edge pressed down onto the latch, all four boards in their bays, pulling a latch's tab outward to lift the RAK19003 out, and the protection board zip-tied flat on the back with the cell already wired to it">
 
-<img src="../images/step-sled-2.png" alt="Building the sled, part 2: the LOAD pigtail into the charger and the USB-C cable from the MiniBoost round the left side into the RAK19003, the DC in lead down the right side and the thermistor round to the cell, the INA219's J6 wires and terminal leads spliced into the cell lead, the cell lead from the protection board round the right edge to below BATT, the leads tied down, and the finished sled with the cell strapped on">
+<img src="../images/step-sled-2.png" alt="Building the sled, part 2: the LOAD pigtail into the charger and a short USB-C stub from the MiniBoost into the RAK19003, the DC in lead and the thermistor through the slots beside the charger, the cell lead through the CELL slot with its red cut into the INA219 and the INA219's four wires down to J6, the channels and labels behind the sled, and the finished sled from the front and the back">
 
 ## 11. Put it all in
 
