@@ -14,6 +14,15 @@ A repeater that lives on a tree: a RAK4631 radio, a 15 Ah LiFePO4 cell and a sma
 <b>Status:</b> ready to build (design revision 9).
 </td>
 </tr>
+<tr>
+<td width="240"><a href="xiao-node-case/"><img src="xiao-node-case/images/hero-2bay.png" width="220" alt="The 2-bay XIAO node case with two antennas on top"></a></td>
+<td valign="top">
+<h3><a href="xiao-node-case/">XIAO node case</a></h3>
+A weighted desk case for one, two or three Seeed XIAO ESP32S3 & Wio-SX1262 nodes, each in its own tool-less bay with its own USB-C port. The LoRa antennas stand up out of a hinged lid, spread as far apart as the case allows. I run a Home Assistant node and a CoreScope observer side by side in the 2-bay.
+<br><br>
+<b>Status:</b> ready to build (design revision 3).
+</td>
+</tr>
 </table>
 
 ### Planned

@@ -1,0 +1,10 @@
+Item,Section,Store,Link,Price (USD),Qty 1-bay,Qty 2-bay,Qty 3-bay,Needed,Notes
+"Seeed XIAO ESP32S3 & Wio-SX1262 kit (102010611)",Per node,Rokland,https://store.rokland.com/products/seeed-studio-xiao-esp32s3-wio-sx1262-kit-for-meshtastic-lora,15.97,1,2,3,yes,Get the band that is legal where you live. Includes the stock WiFi FPC antenna.
+"U.FL (MHF1) to SMA-female bulkhead pigtail, 1.13 mm, 10 cm (5-pack)",Per node,Amazon,https://www.amazon.com/dp/B0GTY4HP34,6.68,1,1,1,yes,One pack covers up to 5 nodes. Must be 1.13 mm cable and SMA (not RP-SMA).
+"LoRa antenna, SMA male",Per node,Any,,,1,2,3,yes,For your band (915 MHz in the US).
+USB-C cable and 5 V supply,Per node,Any,,,1,2,3,yes,
+"U.FL to RP-SMA-female bulkhead pigtail, 1.13 mm, 10 cm",RP-SMA WiFi option,Any,,,1,2,3,no,Only with WIFI = rpsma.
+"2.4 GHz antenna, RP-SMA male",RP-SMA WiFi option,Any,,,1,2,3,no,Only with WIFI = rpsma.
+"M6 fender washer, 6.4 x 18 x 1.6 mm (DIN 9021), 200-pack",Case,boltsandnuts.com,https://boltsandnuts.com/products/m6x18x1-6-grade-a-flat-fender-washers-zinc,13.58,8,16,16,yes,4 per pin.
+PETG filament,Case,Any,,,1,1,1,yes,"At most 45 g (1-bay), 75 g (2-bay), 100 g (3-bay)."
+Kapton tape,Optional,Any,,,1,1,1,no,Over each U.FL if it pops off.
