@@ -2,6 +2,8 @@
 
 This is the whole build, start to finish, in the order I'd do it. Read it through once before you start. Some steps need an earlier one done first, and the battery steps need care.
 
+Every step has pictures drawn from the CAD, and the [wiring diagram](#wiring-diagram) shows every connection in one place.
+
 Most of it applies to both versions. Steps that are only for the **swap** version (cell in a screw-cap barrel) or the **sealed** version (pouch cell inside) say so. A few words that may be new are explained in the [glossary](#glossary) at the end.
 
 - [1. Before you start](#1-before-you-start)
@@ -22,7 +24,12 @@ Most of it applies to both versions. Steps that are only for the **swap** versio
 - [16. Swapping and charging](#16-swapping-and-charging)
 - [17. Opening it later](#17-opening-it-later)
 - [18. Troubleshooting](#18-troubleshooting)
+- [Wiring diagram](#wiring-diagram)
+- [Keeping the battery safe](#keeping-the-battery-safe)
+- [Power budget](#power-budget)
 - [Glossary](#glossary)
+
+<img src="../images/features-swap.png" alt="The swap pod from the front, with its battery sign, screw cap, magnetic charge port and collar bridges, and from the back with its push-in lid half out">
 
 ## 1. Before you start
 
@@ -34,9 +41,11 @@ Most of it applies to both versions. Steps that are only for the **swap** versio
    - Swap version: keep the cell out of the barrel until the final test in step 14. The only exceptions are the quick checks in steps 2, 8 and 10 and the bench test in step 11. Whenever a cell is in and the battery wires aren't soldered to the XIAO yet, tape their bare ends apart.
    - Never put a CR123A or any other cell that isn't rechargeable in the barrel, and never a LiFePO4 ("3.2 V") cell. They're the same size as a 16340, and the pod charges to 4.2 V.
 
+   <img src="../images/step-cells.png" alt="The right cells: a protected button-top 16340, with a CR123A, a LiFePO4 cell and a flat-top cell crossed out, and a 603040 pouch cell with its protection board">
+
 ## 2. Print the fit test
 
-<img src="../images/kit-fit-test-16340.png" width="420" alt="The fit test: a short piece of barrel, a cap, a contact disc and a piece of wall with the magnetic connector's opening">
+<img src="../images/step-fit-test.png" alt="The fit test's four pieces; the cap screwed onto the thread piece; a meter reading the cell's voltage on the contact disc, and nothing with the cell turned over; the connector going into the wall piece; and the size of the metal at the cell's negative end">
 
 Print `fit-test-16340.stl` or `fit-test-18350.stl`, whichever matches your cell. It takes about 40 minutes, and saves you from finding a problem after a two-and-a-half-hour print. It has four pieces, printed the same way up as the real parts:
 
@@ -74,6 +83,8 @@ Nothing needs supports. When the parts are off the plate:
 - Clean any strings out of the barrel's bore, the groove down one side of it, and the two slots in its floor.
 - Run a fingertip round the inside of the pod's lid opening and the cap's bore, and take off any blob with a craft knife. They're sealing surfaces.
 
+<img src="../images/step-plates.png" alt="The swap file split into its four parts as they print, and the sealed file's two parts, with how each one lies on the bed">
+
 ## 4. Dry-fit everything
 
 Do this before any glue goes near it.
@@ -85,6 +96,8 @@ Do this before any glue goes near it.
    - It only fits one way. The groove down the inside of the barrel ends up on the side toward the compartment, and the floor's "+" and "−" marks face into the pocket at the end of the trough.
    - Screw the cap on and off once, then take the barrel out again.
 3. **The boards.** Sit each one in its place, as in [step 12](#12-put-the-electronics-in), without tape: the XIAO kit in its corner posts, the GNSS patch in its square well with the L76K behind it, and the antenna along the wall. The well takes a patch up to 19 mm square. If something doesn't sit flat, or stands past the rim where the lid goes, find out why now.
+
+<img src="../images/step-dry-fit.png" alt="Dry fit, seen from the back: the lid pushing in notch to notch, the barrel dropping into its trough, and the boards sitting in their places">
 
 ## 5. Flash the firmware
 
@@ -107,9 +120,13 @@ Do this before the rest of the wiring, so nothing is hanging off the pod while t
 9. **Swap:** once the epoxy has gone stiff but before it's hard, wrap the lid's skirt in cling film and push the lid in, without its O-ring, to check it goes all the way home without touching the epoxy. Then take it out again.
 10. When the epoxy is hard, peel off the tapes and clean any epoxy off the contacts.
 
+<img src="../images/step-connector.png" alt="Finding plus on the connector with a meter; red and black wires soldered on; the flat half pushed through the end wall onto tape; epoxy round its sides and top with tape on the bore below; the pod standing on its end wall while it sets; and the lid pushed in to check it clears">
+
 ## 7. Fit the contacts in the barrel (swap)
 
 <img src="../images/barrel-parts.png" alt="The barrel and what goes in it, pulled apart: the barrel with its O-ring and nickel strips, the cell, the spring, the washer, the small O-ring and the cap">
+
+<img src="../images/step-contacts.png" alt="The plus strip bent into an L and pushed through the slot inside the ring; the minus strip cut, run down the groove and folded over the end face; both slots sealed with glue; and red and black wires on the two tails">
 
 Both contacts are pure nickel strip, 5 mm wide.
 
@@ -132,7 +149,7 @@ Both contacts are pure nickel strip, 5 mm wide.
 
 ## 8. Fit the cap's washer and spring (swap)
 
-<img src="../images/section-swap.png" alt="Cut through the barrel: the + contact on the floor, the cell, the spring, the washer on its small O-ring, the - strip, the O-ring and the cap">
+<img src="../images/step-cap.png" alt="The small O-ring pressed into the cap's groove; the washer dropped over the post; the spring screwed onto the post's head; a soldering iron melting the post's tip; the big O-ring rolled onto the barrel; and a meter reading the cell's voltage with the cap on">
 
 The washer is the cap's half of the − contact. It floats on a small O-ring in the bottom of the cap, and a post through its middle keeps the spring, and so the washer, in the cap.
 
@@ -146,9 +163,13 @@ The washer is the cap's half of the − contact. It floats on a small O-ring in 
    - Take the cell out and put it in backwards: you should read nothing. The ring keeps the cell's − end off the + strip.
    - Take the cell out again.
 
+<img src="../images/section-swap.png" alt="Cut through the barrel: the + contact on the floor, the cell, the spring, the washer on its small O-ring, the - strip, the O-ring and the cap">
+
+*The barrel cut down the middle, with the cell in and the cap tight.*
+
 ## 9. Wire the electronics
 
-<img src="../images/wiring.png" alt="Wiring diagram: the barrel's contacts, the magnetic port, the L76K and the GNSS patch, all to the XIAO">
+The [wiring diagram](#wiring-diagram) at the end of this guide shows every connection.
 
 Use 30 AWG silicone wire. Leave the wires 6 to 8 cm long. Later, when you want the XIAO's USB-C port, you'll lift the XIAO out of the pod, and the wires need to let it come out without unsoldering anything. Much longer than that and they crowd the patch antenna. The Wio-SX1262 board already uses the XIAO's D1 to D5 and D8 to D10, so don't use those.
 
@@ -180,6 +201,8 @@ Use 30 AWG silicone wire. Leave the wires 6 to 8 cm long. Later, when you want t
 5. Before it sets, with the wire ends taped apart, put a cell in the barrel and the cap on, check between the red and black wires that you still read the cell's voltage, then take the cell out again.
 6. Let it cure fully before you go on. Then join the barrel's wires to the XIAO's: red to red through the PTC fuse, and black to black. Solder the capacitor's leads across the two joined wires close to the XIAO, − side to black. Cover every joint in heat shrink.
 
+<img src="../images/step-barrel-in.png" alt="The barrel's wires threaded through the slot as the barrel goes into its trough; a blob of epoxy round the wires where they come into the compartment; the pocket filled with epoxy; and the fuse and capacitor joining the barrel's wires to BAT+ and BAT−">
+
 ## 11. Test it on the bench
 
 Do this before anything goes in the pod, on both versions.
@@ -192,11 +215,13 @@ Do this before anything goes in the pod, on both versions.
 - If you flashed a GNSS build, take it outside and wait for a fix.
 - **Swap:** take the cell out again when you're done.
 
+<img src="../images/step-bench-test.png" alt="The node in the MeshCore app, the XIAO's charge LED lit with the magnetic cable on, 0 V between the connector's contacts with the cable off, and a meter on mA in series with the battery">
+
 ## 12. Put the electronics in
 
-<img src="../images/layout-swap.png" alt="Where each board goes inside the swap pod, seen from the back">
+<img src="../images/step-electronics.png" alt="Seen from the back: the GNSS patch into its well, the L76K behind it, the XIAO kit into its corner posts, the antenna on the side wall, and the sealed pod with the same boards">
 
-Everything sits against the inside of the outer face, located by little L-shaped corner posts. The picture above shows the swap pod from the back, with the lid off. [This one](../images/layout-sealed.png) shows the sealed pod.
+Everything sits against the inside of the outer face, located by little L-shaped corner posts. [This picture](../images/layout-swap.png) labels each place in the swap pod, and [this one](../images/layout-sealed.png) in the sealed pod.
 
 - **GNSS patch:** in the square well, ceramic side against the outer face, lead out the back.
 - **L76K:** stacked behind the patch.
@@ -210,13 +235,13 @@ Hold each board to the face with a small piece of thin double-sided tape, about 
 
 ## 13. Close the pod
 
-<img src="../images/inside-sealed.png" width="480" alt="The sealed pod from the back with the lid off: the pouch cell over the electronics">
-
 1. **Sealed only:** cover the backs of the boards with a layer of Kapton tape or a piece of thin insulating sheet (fish paper or PET), so no solder joint or connector can rub through the pouch. Then lay the LiPo in the back of the pod, over it, with a strip of thin double-sided tape on the side facing the lid. There's less than 1 mm to spare.
 2. Stretch the lid's O-ring (41 × 1.5 for swap, 48 × 1.5 for sealed) into the groove round the lid's skirt. Check it isn't twisted, then wipe on a thin film of silicone grease.
 3. **Let the air out as it goes in.** Lay a 15 cm piece of thin nylon fishing line diagonally across one corner of the opening, away from the four little stop tabs, with both ends hanging outside. It gets trapped between the lid's skirt and the pod at that corner.
 4. Push the lid in until it sits flush with the rim on its stops, notch to notch. Push it straight, not one corner first, and don't let it pinch a wire.
 5. Pull the fishing line out. The air the lid squeezed in escapes along it, so the lid doesn't creep back out, and the O-ring closes up behind it.
+
+<img src="../images/step-close.png" alt="Kapton over the boards and the LiPo going in on the sealed pod; the O-ring stretched onto the lid; fishing line laid across a corner; the lid pushed in notch to notch; and the line pulled out">
 
 ## 14. Test it, soak it, shake it
 
@@ -230,6 +255,8 @@ Hold each board to the face with a small piece of thin double-sided tape, about 
 4. Clip on the magnetic cable, and check in the app that the battery voltage starts to rise.
 5. **Shake it.** Hold the pod in your fist and shake it hard, like a dog shaking off water, for half a minute. Tap it hard on a table a few times, on each face and on the cap. Then check in the app that the node is still up and hasn't restarted.
 
+<img src="../images/step-soak.png" alt="The pod under a running tap, in a bowl of water, opened up to look for water, and being shaken">
+
 ## 15. Put it on the collar
 
 1. Take the collar off the dog. Thread it through the bridge at one end of the pod, under the pod, and out through the bridge at the other end. The outer face, the one with the battery sign (swap) or the arrow (sealed), faces away from the dog.
@@ -238,9 +265,11 @@ Hold each board to the face with a small piece of thin double-sided tape, about 
 
 The swap version weighs about 75 to 85 g with its cell, and the sealed one about 55 g. That's fine on a medium or large dog. On a small dog, try the weight on its collar first; the sealed version is the lighter choice.
 
+<img src="../images/step-collar.png" alt="The collar threaded through the bridges under the pod; the swap pod with its outer face out and the cap toward the shoulders; and the sealed pod with its arrow and magnetic connector">
+
 ## 16. Swapping and charging
 
-<img src="../images/swap-cap-off.png" width="560" alt="The swap pod with its cap off and the cell sliding out">
+<img src="../images/step-swap.png" alt="Unscrewing the cap anticlockwise; tipping the cell out; checking the wrap for a nick; dropping a cell in plus end first; screwing the cap back on; and the magnetic cable clipped onto the end wall">
 
 **Swapping a cell (swap version).**
 
@@ -271,6 +300,8 @@ The lid is held in by its O-ring, and by the collar when it's on. If a pod has b
 The swap version's barrel is glued in for good. If it breaks, print a new pod and barrel. Retire any pod that's been chewed or cracked.
 
 If a pod ever gets hot, smells, or its cap is hard to undo as if something is pushing on it from inside, take it off the dog, put it outside away from anything that burns, and leave it to cool before you open it. Never glue or tape the cap on.
+
+<img src="../images/step-open.png" alt="Levering the lid out at the notch, lifting the XIAO out on its wires to reach its USB-C port, and the lid with its O-ring ready to go back in">
 
 ## 18. Troubleshooting
 
@@ -307,6 +338,54 @@ Check the O-ring isn't twisted and has grease on it. If it's still tight, sand t
 
 **The battery doesn't last.**
 With a stock MeshCore build, a battery lasts a few days, and with GNSS on all the time, less than a day. That's the firmware, not the pod. [Firmware](firmware.md#battery-life) explains what to expect now and what to wait for.
+
+## Wiring diagram
+
+<img src="../images/wiring.png" alt="Wiring diagram: the barrel's contacts through the PTC fuse to BAT+ and BAT−, with the 220 µF capacitor across them; the magnetic port to 5V and GND; and the L76K's VCC, GND, TX, RX and WAKE to the XIAO's 3V3, GND, D7, D6 and D0, with the GNSS patch on its U.FL">
+
+| From | To | Notes |
+|---|---|---|
+| Barrel + strip (swap) or LiPo red (sealed) | XIAO **BAT+** | Swap: through the PTC fuse |
+| Barrel − strip (swap) or LiPo black (sealed) | XIAO **BAT−** | |
+| 220 µF capacitor (swap) | across BAT+ and BAT− | − stripe to BAT− |
+| Magnetic connector + | XIAO **5V** | |
+| Magnetic connector − | XIAO **GND** | |
+| L76K VCC | XIAO **3V3** | |
+| L76K GND | XIAO **GND** | |
+| L76K TX | XIAO **D7** (RX) | Leave unsoldered at the XIAO until you have a GNSS build |
+| L76K RX | XIAO **D6** (TX) | Same |
+| L76K WAKE (standby) | XIAO **D0** | Same |
+| GNSS patch | L76K's U.FL | |
+| FPC LoRa antenna | Wio-SX1262's U.FL | |
+
+The Wio-SX1262 board takes D1 to D5 and D8 to D10 for the radio, so leave those alone.
+
+## Keeping the battery safe
+
+A lithium cell on a dog that runs, swims and chews needs more care than one on a desk. These are the parts of the design that are there for that:
+
+- **The cell protects itself.** The XIAO's charger stops at 4.2 V, but nothing on the XIAO cuts off a flat battery or a short. That's why both versions need a cell with its own protection board.
+- **A reversed cell can't connect.** The swap version's + contact sits 0.4 mm below a ring on the barrel's floor, so only a button top reaches it. A cell put in backwards touches nothing.
+- **A PTC fuse** in the swap version's + lead trips on a short even if the cell's protection has been bypassed, for example by a torn wrap against the − strip.
+- **The charge port can't carry the battery.** The magnetic connector's contacts feed the XIAO's 5V input, not the battery, and the bench test (step 11) checks they read 0 V with the cable off.
+- **Nothing rubs the pouch.** On the sealed version, a layer of Kapton sits between the boards and the cell.
+- **Slow charging.** 50 or 100 mA is gentle on any of these cells. The charger doesn't check temperature, so charge between 0 and 45 °C, off the dog.
+
+And the things only you can do: never a CR123A or LiFePO4 cell in the barrel, check the wrap at every swap, retire a puffy pouch or a chewed pod, and never glue or tape the cap on.
+
+## Power budget
+
+| | |
+|---|---|
+| L76K, getting a fix | 41 mA |
+| L76K, on standby (D0 low) | 0.36 mA |
+| SX1262, listening | 4.6 to 5.3 mA |
+| SX1262, sending (a moment at a time) | about 118 mA |
+| Stock MeshCore companion, GNSS off (today) | 7 to 9 mA: 3 to 6 days, depending on the cell |
+| A sleeping tracker reporting every 15 minutes (the firmware to come) | 1.0 to 1.2 mA: 3½ to 4 weeks (603040), 4 to 5 weeks (16340), 5 to 6 weeks (18350) |
+| Charging in the pod | 50 or 100 mA: 11 to 22 hours for a flat 16340 |
+
+[Firmware](firmware.md#what-a-few-weeks-takes) shows where these come from.
 
 ## Glossary
 

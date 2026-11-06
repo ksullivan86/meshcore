@@ -32,13 +32,16 @@ A pocket case for Seeed's Wio Tracker L1 E-ink and a 3000 mAh cell. The board sn
 <b>Status:</b> fit-test stage. There's a fit test to print; the full case isn't released yet.
 </td>
 </tr>
+<tr>
+<td width="240"><a href="dog-tracker/"><img src="dog-tracker/images/hero-swap.png" width="220" alt="The dog tracker's swap version on a collar strap, with its screw cap at one corner"></a></td>
+<td valign="top">
+<h3><a href="dog-tracker/">Dog-collar tracker</a></h3>
+A small pod that rides on a dog's collar: a XIAO nRF52840 & Wio-SX1262 kit, an L76K GNSS module and a lithium battery, sealed with O-rings and charged through a magnetic port. The swap version takes a standard 16340 or 18350 cell behind a screw cap, so you can change it on the trail; the sealed version has a pouch cell inside.
+<br><br>
+<b>Status:</b> design revision 2, waiting on firmware. No MeshCore build for this board reports its location or sleeps between reports yet. Not printed yet; there's a fit test to print first.
+</td>
+</tr>
 </table>
-
-### Planned
-
-- **Dog-collar tracker.** A small MeshCore GPS tracker that attaches to a dog's collar.
-
-It doesn't have a folder yet. It'll get one when there's something to print.
 
 ## How the repo is laid out
 

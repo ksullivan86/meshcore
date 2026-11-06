@@ -1,10 +1,10 @@
-[← All projects](../README.md#projects)
+[← All projects](../README.md)
 
 # MeshCore dog tracker
 
 A small sealed pod that rides on a dog's collar and carries a [MeshCore](https://meshcore.co.uk) tracker. Inside are a Seeed XIAO nRF52840 with its Wio-SX1262 LoRa board, a Seeed L76K GNSS module and a lithium battery. You set the pod up as a MeshCore node, let your own node ask it where it is, and find the dog over the mesh.
 
-It comes in two versions, which differ only in the battery.
+I wanted something about the size of an AirTag holder that reports over the same mesh as my repeaters, with a battery I can swap on the trail or charge without taking anything apart. That drove most of the choices: a standard cell behind a screw cap, a magnetic charge port with no USB socket to fill with mud, and O-ring seals everywhere. It comes in two versions, which differ only in the battery.
 
 <table>
 <tr>
@@ -77,7 +77,15 @@ Each file holds every printed part for one build, laid out for the printer. Clic
 
 For any other combination, like a 1¼ in collar, an 18350 on a ¾ in collar, a strap between sizes, a 503040 cell or a cell of your own, export your own file in a couple of minutes: [Changing the design](docs/customizing.md) shows how.
 
-## Which one?
+Not sure? Start with **swap, 16340** on your collar's width, and print the fit test first.
+
+| Version | Why you'd pick it |
+|---|---|
+| Swap, 16340 | Trips away from power. Unscrew the cap, drop in a charged cell, and you're back in a minute. The NL169R cell charges from any USB-C cable. |
+| Swap, 18350 | The same, with about a quarter more battery, in a pod about 2 mm bigger each way. |
+| Sealed | The smallest and lightest, with nothing to open in the field. The one to build once the firmware gets to weeks between charges. |
+
+### Sizes, weights and battery life
 
 | | Swap, 16340 | Swap, 18350 | Sealed, 603040 |
 |---|---|---|---|
@@ -97,6 +105,86 @@ The sealed version is the one to build if the firmware gets to weeks between cha
 
 All the battery-life figures are estimates from the parts' specs, not measurements. [Firmware](docs/firmware.md#battery-life) has the details.
 
+## What every file has in common
+
+<img src="images/features-swap.png" alt="The swap pod from the front, with its battery sign, screw cap, magnetic charge port and collar bridges, and from the back with its push-in lid half out">
+
+**The pod**
+
+- A PETG pod with an outer face that points away from the dog, and a compartment for the electronics that opens from the back, the side against the collar.
+- The compartment closes with a push-in lid with its own O-ring. The lid lands on four stop tabs, flush with the rim. The collar lies across it, so it can't come out while the pod is on the dog, and a notch in the rim lets you lever it out when it's off.
+- Two collar bridges, one at each end. The strap runs under the pod through them, so the pod can't slide round the collar or twist.
+- Rounded corners and no hooks or sharp edges for the dog to catch on.
+
+**Inside**
+
+- The XIAO nRF52840 & Wio-SX1262 kit, the L76K GNSS module and its patch antenna, and a flexible (FPC) LoRa antenna. They all sit against the inside of the outer face, located by little L-shaped posts, so the GNSS patch looks at the sky through 1.6 mm of plastic.
+- A magnetic charge port. Its flat half is potted into the pod's wall, so there's no socket to fill with water or mud. It feeds the XIAO's charger, never the battery directly.
+
+**Printing**
+
+- PETG, no supports. The pod prints outer face down with the collar bridges on top.
+- A fit test that takes 40 minutes: a piece of the barrel and its cap, the barrel's floor, and a piece of wall with the charge port's opening. It's there so you find any fit problem before the long print.
+
+## What's different
+
+### Swap: a standard cell behind a screw cap
+
+<img src="images/swap-cap-off.png" alt="The swap pod with its cap off and the cell sliding out">
+
+The barrel is a separate part, printed standing up so its thread and O-ring groove come out clean. It's glued into a trough along one side of the pod, next to the sealed compartment that holds the electronics. The cell goes in **+ end first**. The battery sign on the outer face shows which way.
+
+<img src="images/section-swap.png" alt="Cut through the barrel: the + contact on the floor, the cell, the spring, the washer on its small O-ring, the - strip, the O-ring and the cap">
+
+- **The + contact** is a piece of nickel strip on the barrel's floor, sunk 0.4 mm inside a little ring. A cell's button top reaches down to it. A cell put in backwards rests its flat − end on the ring and never touches it, so nothing happens instead of reversed power reaching the XIAO.
+- **The − contact** is a conical spring on a washer inside the cap. The washer floats on a small O-ring, and a post through its middle keeps the spring and washer in the cap. When you screw the cap down, the washer lands on a second nickel strip, which folds over the barrel's end and runs back down a groove in the bore, and the small O-ring keeps it pressed there even if the cap backs off a little. The spring holds the cell against the + contact, and a capacitor by the XIAO carries it through any bounce when the dog jumps.
+- **The strips' tails** come out through the barrel's floor into a pocket, where they're soldered to two wires. The pocket is filled with epoxy, which seals it and holds the barrel in. The wires run on through a slot into the compartment, through a resettable fuse to the XIAO's battery pads.
+- **The thread** has two starts and closes in about 1¼ turns. It only holds the cap on: the seal is an O-ring on the barrel pressing sideways on a smooth bore in the cap.
+- **Charging.** The magnetic port is in the end wall, next to the cap. It charges the cell in the barrel, slowly. A spare charges faster outside the pod, from its own USB-C port or in a USB charger.
+- On a wide collar the cap has to sit beyond the strap's edge, so the swap pod gets wider: 54 mm across for ¾ in, 61 mm for 1½ in.
+
+<img src="images/barrel-parts.png" alt="The barrel and what goes in it, pulled apart: the barrel with its O-ring and nickel strips, the cell, the spring, the washer, the small O-ring and the cap">
+
+### Sealed: a pouch cell inside
+
+<img src="images/inside-sealed.png" width="560" alt="The sealed pod from the back with the lid off: the pouch cell over the electronics">
+
+- A 603040 LiPo pouch (about 800 mAh) lies over the boards in the back of the compartment, with a layer of Kapton between them, and the lid closes over it. There's an 803040 file too, 2 mm taller, for about 900 mAh.
+- The magnetic port is in the outer face, and the arrow on the outer face points to the long wall with the LoRa antenna.
+- It's 15 mm narrower than the swap pod and about 20 to 30 g lighter, with nothing to open in the field. To charge it you take it off the collar and clip the cable on, which takes most of a day from flat.
+
+## Inside
+
+<table>
+<tr>
+<td width="50%"><img src="images/layout-swap.png" alt="Inside the swap pod from the back: XIAO kit, L76K over the GNSS patch, LoRa antenna on the side wall, magnetic connector in the end wall, and the barrel"></td>
+<td width="50%"><img src="images/layout-sealed.png" alt="Inside the sealed pod from the back: XIAO kit, L76K over the GNSS patch, magnetic connector and LoRa antenna"></td>
+</tr>
+</table>
+
+The XIAO kit sits in four corner posts, the GNSS patch in a square well with the L76K stacked behind it, and the LoRa antenna flat on a side wall, away from the boards. Thin double-sided tape holds each one. When you want the XIAO's USB-C port, for flashing, it lifts out on its wires. The [wiring diagram](docs/build-guide.md#wiring-diagram) shows every connection.
+
+## Opening it up
+
+<table>
+<tr>
+<td width="33%"><img src="images/swap-cap-off.png" alt="The swap pod with its cap off and the cell coming out"></td>
+<td width="33%"><img src="images/open-swap.png" alt="The swap pod from the back with its lid out"></td>
+<td width="33%"><img src="images/open-sealed.png" alt="The sealed pod from the back with its lid and pouch cell out"></td>
+</tr>
+<tr>
+<td valign="top"><b>Swap, the cell:</b> unscrew the cap about 1¼ turns and tip the cell out. No tools, and the pod stays on the collar.</td>
+<td valign="top"><b>Swap, the electronics:</b> take the pod off the collar and lever the lid out at the notch in the rim. You only need to for flashing or repairs.</td>
+<td valign="top"><b>Sealed:</b> the same lid, with the pouch cell under it. You only open it to flash, repair or retire the cell.</td>
+</tr>
+</table>
+
+## How it seals
+
+<img src="images/seal.png" alt="Cut through the lid: its O-ring pressing sideways on the pod's bore, with the collar under it; and cut through the cap: its O-ring on the barrel pressing on the cap's bore">
+
+Both seals are O-rings pressed sideways between a groove and a smooth bore, so nothing has to be clamped tight to keep water out. The lid's is 41 × 1.5 mm (swap) or 48 × 1.5 (sealed), the cap's 20 × 1.5 (16340) or 22 × 1.5 (18350). The charge port and the barrel's floor are potted in epoxy. The [build guide](docs/build-guide.md#14-test-it-soak-it-shake-it) ends with a soak and a shake test before it goes on a dog.
+
 ## Printing
 
 PETG (or ASA), 0.4 mm nozzle, 0.2 mm layers, 4 walls, 30% gyroid infill, 5 top and 5 bottom layers. Nothing needs supports.
@@ -111,27 +199,12 @@ PETG (or ASA), 0.4 mm nozzle, 0.2 mm layers, 4 walls, 30% gyroid infill, 5 top a
 | Sealed pod | 1 h 9 m to 1 h 12 m | 18 g | Outer face down |
 | Sealed lid | 15 m | 4½ g | |
 
-The times are PrusaSlicer estimates. Bambu Studio on a P1S will give you its own, probably shorter.
-
-## How the swap version works
-
-<img src="images/swap-cap-off.png" alt="The swap pod with its cap off and the cell sliding out">
-
-The barrel is a separate part, printed standing up so its thread and O-ring groove come out clean. It's glued into a trough along one side of the pod, next to the sealed compartment that holds the electronics. The cell goes in **+ end first**. The battery sign on the outer face shows which way.
-
-<img src="images/section-swap.png" alt="Cut through the barrel: the + contact on the floor, the cell, the spring, the washer, the - strip, the O-ring and the cap">
-
-- **The + contact** is a piece of nickel strip on the barrel's floor, sunk 0.4 mm inside a little ring. A cell's button top reaches down to it. A cell put in backwards rests its flat − end on the ring and never touches it, so nothing happens instead of reversed power reaching the XIAO.
-- **The − contact** is a conical spring on a washer inside the cap. The washer floats on a small O-ring, and a post through its middle keeps the spring and washer in the cap. When you screw the cap down, the washer lands on a second nickel strip, which folds over the barrel's end and runs back down a groove in the bore, and the small O-ring keeps it pressed there even if the cap backs off a little. The spring holds the cell against the + contact, and a capacitor by the XIAO carries it through any bounce when the dog jumps.
-- **The strips' tails** come out through the barrel's floor into a pocket, where they're soldered to two wires. The pocket is filled with epoxy, which seals it and holds the barrel in. The wires run on into the compartment to the XIAO's battery pads.
-- **The seal.** An O-ring on the barrel presses sideways against a smooth bore in the cap, so the cap only has to hold it on. The thread has two starts, closes in about 1¼ turns, and stops when the washer, on the strip, reaches its seat in the cap.
-- **The compartment** is closed from the back by a push-in lid with its own O-ring. The collar lies across the lid, so it can't come out while the pod is on the dog.
-- **Charging.** The magnetic port in the end wall, next to the cap, feeds the XIAO's charger. It charges the cell in the barrel, slowly. A spare charges faster outside the pod.
+The times are PrusaSlicer estimates. Bambu Studio on a P1S will give you its own, probably shorter. The [build guide](docs/build-guide.md#3-print-the-parts) shows how each part lies on the bed.
 
 ## Docs
 
 - **[Parts list](docs/parts-list.md)**: everything to buy, with prices and links, as a checklist by what it's for and again by store, plus [`parts.csv`](docs/parts.csv) to sort and filter in a spreadsheet.
-- **[Build guide](docs/build-guide.md)**: printing, the fit test, the barrel's contacts, wiring, sealing, fitting it to the collar, swapping and charging, and troubleshooting.
+- **[Build guide](docs/build-guide.md)**: printing, the fit test, the barrel's contacts, wiring, sealing, fitting it to the collar, swapping and charging, and troubleshooting, with pictures for every step.
 - **[Firmware](docs/firmware.md)**: where MeshCore stands on this board, what a tracker that lasts weeks needs, battery life, and how to flash and set it up.
 - **[Changing the design](docs/customizing.md)**: the settings in the OpenSCAD source (cell, pouch, collar, fits) and how to export and check your own files.
 
@@ -148,6 +221,17 @@ The source is [`cad/dog-tracker.scad`](cad/dog-tracker.scad) (OpenSCAD 2021.01 o
   - Retire a pod that's been chewed or cracked. If a pod ever gets hot, smells, or its cap or lid is being pushed out from inside, take it off the dog and put it outside, away from anything that burns, until it's cool. Never glue or tape the cap on.
 - **The collar can catch.** Use a breakaway collar if your dog is ever left unattended in it. If your dog pulls hard, clip the lead to a harness: a hard pull on the collar goes through the pod's collar bridges.
 - **It's a hobby build**, not a certified pet tracker. Don't rely on it as the only way to find your dog.
+
+## What changed in revision 2
+
+Revision 1 was never published, so this is what's different from the design I first drew.
+
+- **A standard cell behind a screw cap,** instead of a printed battery cartridge with a USB-C plug in its nose. Any protected button-top 16340 fits, and spares cost a few dollars.
+- **An 18350 option** for about a quarter more battery.
+- **A − contact that can't bounce off:** the washer in the cap floats on a small O-ring, so it stays pressed on its strip even if the cap backs off a little, with a stiffer spring and a capacitor by the XIAO.
+- **A resettable fuse** in the swap version's battery lead.
+- **A fit test** that checks the thread, the + contact, your cell and the charge port's opening in 40 minutes.
+- **Pictures for every build step.**
 
 ## License
 

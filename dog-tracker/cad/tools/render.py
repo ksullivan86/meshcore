@@ -29,6 +29,10 @@ def hexrgb(h):
     return np.array([int(h[i:i + 2], 16) for i in (0, 2, 4)], float) / 255.0
 
 
+def load_tm(tm):
+    return M(m3.Mesh(vert_properties=np.asarray(tm.vertices, np.float32), tri_verts=np.asarray(tm.faces, np.uint32)))
+
+
 def load(path):
     tm = trimesh.load(path, force='mesh')
     return M(m3.Mesh(vert_properties=np.asarray(tm.vertices, np.float32), tri_verts=np.asarray(tm.faces, np.uint32)))

@@ -14,6 +14,7 @@ pip install manifold3d trimesh numpy scipy matplotlib
 | `check.py` | Loads `build/<variant>/` and reports, for each combination of version, cell or pouch and collar: overlaps between parts, parts against the stand-ins, the gaps that matter, and whether the cap screws off along its thread, the cell slides out, the washer goes into the cap, the barrel drops into its trough, the battery wires' slot opens into the compartment and misses the boards, the magnetic connector clears the lid and the XIAO anywhere in its opening, and the lid pushes in without hitting anything. It prints PASS or FAIL for each, and the details, with the console lines, as JSON. |
 | `render.py` | Draws the pictures in `images/` (`images`, `layout`) and a quick preview (`sheet swap`, `sheet sealed`) with a small built-in renderer. |
 | `wiring.py` | Draws `images/wiring.png`. |
+| `steps.py` | Draws the build guide's step pictures (`images/step-*.png`) and a few of the README's (`features-swap.png`, `open-swap.png`, `open-sealed.png`, `seal.png`), from the parts `export.py --parts` wrote for `swap` and `sealed`. `python3 cad/tools/steps.py close swap` draws just those two steps. |
 
 A full check after a change:
 
@@ -23,6 +24,7 @@ python3 cad/tools/check.py > build/check.json
 python3 cad/tools/export.py --release
 python3 cad/tools/render.py images && python3 cad/tools/render.py layout
 python3 cad/tools/wiring.py
+python3 cad/tools/steps.py
 ```
 
 The OpenSCAD file checks the things these scripts can't see, like the O-rings' stretch and squeeze and the spring's squeeze, and stops with an error if one is out of range.
