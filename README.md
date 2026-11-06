@@ -23,14 +23,22 @@ A weighted desk case for one, two or three Seeed XIAO ESP32S3 & Wio-SX1262 nodes
 <b>Status:</b> ready to build (design revision 3).
 </td>
 </tr>
+<tr>
+<td width="240"><a href="wio-tracker-l1/"><img src="wio-tracker-l1/images/hero.png" width="220" alt="The Wio Tracker L1 case, front plate with the e-ink screen window"></a></td>
+<td valign="top">
+<h3><a href="wio-tracker-l1/">Wio Tracker L1 case</a></h3>
+A pocket case for Seeed's Wio Tracker L1 E-ink and a 3000 mAh cell. The board snaps into a tray, the screen sits under a cover held by two turn buttons, and a strap ties the cell to the back of the case. An OLED version will share the shell.
+<br><br>
+<b>Status:</b> fit-test stage. There's a fit test to print; the full case isn't released yet.
+</td>
+</tr>
 </table>
 
 ### Planned
 
 - **Dog-collar tracker.** A small MeshCore GPS tracker that attaches to a dog's collar.
-- **[Wio Tracker L1 case](wio-tracker-l1/).** A tool-less case for Seeed's Wio Tracker L1 E-ink with a 3000 mAh cell, with an OLED version to follow. Fit-test stage.
 
-These don't have folders yet. They'll get one when there's something to print.
+It doesn't have a folder yet. It'll get one when there's something to print.
 
 ## How the repo is laid out
 

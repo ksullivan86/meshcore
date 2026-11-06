@@ -161,4 +161,6 @@ Install [meshcore-ha](https://github.com/meshcore-dev/meshcore-ha) through HACS,
 
 **A node drops off WiFi.** It needs a 2.4 GHz network with WPA2. WPA3-only networks and some fast-roaming settings don't work well with the ESP32. If you entered the WiFi details wrong, connect over Bluetooth and fix them in the app.
 
+**A node runs warm.** Keep the side vents and the lid's slots clear: don't stand the case against a wall or put anything on the lid. WiFi and Bluetooth together make the ESP32 work hardest.
+
 **Two nodes can't hear each other.** Check they're on exactly the same radio settings.

@@ -53,6 +53,7 @@ The bays are labelled **HA**, **OBS** and **RELAY** under their USB-C ports. To 
 
 - A USB-C opening for each kit in the front wall, with its label debossed underneath. The kit's socket sits right in the wall, and there's room around it for a normal cable's boot.
 - A bay for each kit, held without screws (see [The board bays](#the-board-bays)).
+- Vent slots low in both side walls, and more in the lid behind the boards, so warm air rises out through the top. The front wall and the back walls stay solid.
 - The XIAO's B (boot) and R (reset) buttons sit under the Wio board, so to press them you unclip the kit, which takes a few seconds.
 - PETG, no supports, rounded corners so they stay down on the bed.
 
@@ -102,7 +103,7 @@ To put a kit in, slide its front edge under the hooks with the back raised, then
 ## Printing
 
 - **PETG**, which is what I print it in. 0.4 mm nozzle and 0.2 mm layers; walls and infill aren't critical, so 3 walls and 15 to 20% infill is plenty. ASA works too.
-- **No supports.** The body prints floor down, the lid upside down, the base right way up. That's how they're laid out in the files.
+- **No supports.** The body prints floor down, the lid upside down, the base right way up. That's how they're laid out in the files. The side vents are round at both ends, so they bridge cleanly.
 - **Big flat parts can lift at a corner.** If yours do, use the textured PEI plate with a little glue stick, and a brim or Bambu Studio's "Mouse ear" brim.
 - On a Bambu P1S, keep the front door shut and prop the top glass open a little for PETG.
 
@@ -110,7 +111,7 @@ To put a kit in, slide its front edge under the hooks with the back raised, then
 
 - [Parts list](docs/parts-list.md): everything to buy, with links ([`parts.csv`](docs/parts.csv) as a spreadsheet)
 - [Build guide](docs/build-guide.md): printing, fitting the kits, the antennas, the lid and base, and setting the nodes up in MeshCore and Home Assistant
-- [Changing the design](docs/customizing.md): labels, the WiFi option, and exporting your own files
+- [Changing the design](docs/customizing.md): labels, the WiFi option, the vents, and exporting your own files
 
 **Status:** design revision 3. I use the 2-bay. The 1- and 3-bay files come from the same design and pass the same checks, but I haven't printed them.
 

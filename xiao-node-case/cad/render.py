@@ -314,12 +314,14 @@ def front():
     xc = lambda b: b + I['USB_U']
     zt = I['Z_TOP']
     W = I['P'] * I['BAYS']
-    L = [('USB-C, one per kit,\nlabelled underneath', (xc(x2) + 4, -2.4, I['ZX'] + 2.5), (230, -170)),
+    L = [('USB-C, one per kit,\nlabelled underneath', (xc(x2) + 4, -2.4, I['ZX'] + 2.5), (-90, 215)),
+         ('vents: air in low\nthrough both sides...', (W + 3.2, 22, 10), (190, -40)),
+         ('...and out through\nthe lid', (W * 0.62, 34, zt), (150, -215)),
          ('lift tab: lift here\nto open the lid', (W / 2, -3.9, zt - 0.8), (-60, -190)),
          ('sprung tab: clicks into\nthe front wall', (5.0, -3.6, I['Z_LU'] - 5.0), (-150, 120)),
          ('plunger over the Wio\nboard\'s user button', (bx + I['PLUNGERS'][0][0], I['BY'] + I['PLUNGERS'][0][1], zt), (-120, -180)),
          ('LoRa SMA, labelled', (I['LORA_X'][1], I['ANT_Y'], zt + 6), (110, -120)),
-         ('base plate, with the\nballast inside', (W * 0.75, -2.4, -I['FLOOR_T'] - 5), (190, 80))]
+         ('base plate, with the\nballast inside', (W * 0.75, -2.4, -I['FLOOR_T'] - 5), (190, 110))]
     return labelled(img, to_px, L, 'front-2bay.png')
 
 

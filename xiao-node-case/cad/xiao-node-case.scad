@@ -36,6 +36,8 @@
 //          into the front wall; lift the tab in the middle of the front
 //          edge to open it. It carries a flexure plunger over each Wio
 //          user button, a window over its user LED, and the antennas.
+//   VENTS  slots low in both side walls let air in; slots in the lid
+//          behind the boards let warm air rise out (VENTS = false: none).
 //   PLATE  the base plate, an open tray. M6 fender washers stack on pins in
 //          a chamber at each end (on a one-bay case, two chambers at the
 //          front), and the chamber between is open for any other weight;
@@ -57,6 +59,7 @@ PART = "assembly";   // [assembly, kit, fit_test, body, lid, plate, section, bay
 BAYS = 2;            // [1, 2, 3]
 LABELS = ["HA", "OBS", "RELAY"];   // debossed under each USB-C opening, left to right
 WIFI = "fpc";        // [fpc, rpsma]  stock FPC antenna on the bay's back wall, or an RP-SMA bulkhead on the lid per kit
+VENTS = true;        // slots low in the side walls and in the lid behind the boards, so warm air rises out
 
 /* [Measured on the kit] */
 STACK_H = 9.32;       // the two boards: the XIAO's underside to the top of the Wio's LoRa module
@@ -160,6 +163,15 @@ LED_WIN = 1.8;
 SPOOL = [3.5, 4.5];   // core and lip radius
 SPOOL_P = [KIT[0]/2, 37.8];   // its centre, in the board frame
 
+// vents: air comes in low through the side walls and rises out of the lid behind the boards. The front
+// wall (USB-C, labels) and the back walls (FPC antennas) stay solid.
+VENT = [2.0, 4.5];           // slot width, pitch
+VENT_SIDE_Y = [6, 38];       // side wall slots: first and last centre, y
+VENT_SIDE_Z = [4, 16];       // ... their round ends' centres, z: above the base plate's lips, below the lid's rim
+VENT_LID_Y = [23, 41];       // lid slots, front to back: behind the boards and the antenna labels, inside the rim
+VENT_ANT = 6.6;              // no lid slot this close to an antenna bulkhead (its nut and label)
+VENT_EDGE = 2.5;             // or to a side wall or divider
+
 FN = 64;
 
 // ------------------------------ derived ------------------------------
@@ -208,6 +220,9 @@ function pin_uv() = [for (s = [-1, 1]) for (k = [0 : PIN_N - 1])
   [KIT[0]/2 + s*PIN_SPAN/2, KIT[1]/2 - (PIN_N - 1)*PIN_PITCH/2 + k*PIN_PITCH]];
 function hdr_v() = [KIT[1]/2 - PIN_SPAN/2 - HDR[0]/2, KIT[1]/2 + PIN_SPAN/2 + HDR[0]/2];
 function plungers() = [[WIO_BTN, -1, "U", WIO_TOP + WIO_SW[2]]];   // (u, v), which way the tab's root goes, letter, button top (h)
+function side_vent_ys() = [for (y = [VENT_SIDE_Y[0] : VENT[1] : VENT_SIDE_Y[1] + 0.01]) y];
+function lid_vent_xs() = [for (i = [0 : BAYS - 1]) for (k = [-5 : 5]) let(x = xc(i) + k*VENT[1])
+  if (x > i*P + VENT_EDGE && x < (i + 1)*P - VENT_EDGE && min([for (a = ants()) abs(x - a[0])]) > VENT_ANT) x];
 function fpc_x(i) = (i*P + (i > 0 ? DIV_T/2 : 0) + (i + 1)*P - (i < BAYS - 1 ? DIV_T/2 : 0))/2;   // the FPC's centre on the bay's back wall, x
 // hinge: the axis runs along x behind the back face, its knuckles' tops flush with the lid's
 H_R = HINGE[0]/2 + HINGE[1] + HINGE[2];   // knuckle's outer radius
@@ -424,6 +439,9 @@ module body_cuts(fit) {
     // the base plate's catch: a slot through the floor for its tooth, and a channel under the floor it rides in from the back
     box(CATCH_X - CATCH[0]/2 - 0.5, CATCH_X + CATCH[0]/2 + 0.5, CT[0] - 2.0, CT[1] + 0.2, -FLOOR_T - 1, 1);
     box(CATCH_X - CATCH[0]/2 - 0.5, CATCH_X + CATCH[0]/2 + 0.5, CT[1] + 0.2, Y_BACK + 1, -FLOOR_T - 1, -FLOOR_T + CH_D);
+    // vents low in both side walls: upright slots, round at both ends so they print without support
+    if (VENTS) for (x = [-SIDE_W - 1, W_IN - 1]) for (y = side_vent_ys()) hull() for (z = VENT_SIDE_Z)
+      translate([x, y, z]) rotate([0, 90, 0]) cylinder(d = VENT[0], h = SIDE_W + 2, $fn = 24);
     // where the lid's tabs click in: a recess in the front wall's outside face, and a chamfer on its top edge to ride over
     for (d = DET_XS) {
       box(d[0] - 0.3, d[1] + 0.3, -WALL - 1, -WALL + DET[3] - DET[5] + 0.2, DET_Z - DET[3] - 0.25, DET_Z + DET[3] + 0.25);
@@ -480,6 +498,9 @@ module lid(fit = false) {
       }
       let(c = kxy(i, WIO_LED)) translate([c[0], c[1], Z_LU - 1]) cylinder(d = LED_WIN, h = LID_T + 2, $fn = 24);   // LED window
     }
+    // vents behind the boards, front to back, clear of the antennas and dividers
+    if (!fit && VENTS) for (x = lid_vent_xs()) hull() for (y = VENT_LID_Y)
+      translate([x, y, Z_LU - 1]) cylinder(d = VENT[0], h = LID_T + 2, $fn = 24);
     // antenna bulkheads, standing straight up, and their labels in front of them
     if (!fit) for (a = ants()) {
       translate([a[0], ANT_Y, Z_LU - 1]) cylinder(d = SMA_HOLE, h = LID_T + 2, $fn = 48);

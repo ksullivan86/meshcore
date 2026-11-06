@@ -32,6 +32,12 @@ Any setting can be overridden with `-D` the same way.
 
 `WIFI = "rpsma"` drops the pockets, spools and dividers and puts an RP-SMA bulkhead hole on the lid for each kit, labelled **WiFi**, between the LoRa ones. You'll need a U.FL to RP-SMA pigtail and a 2.4 GHz antenna per kit.
 
+## Vents
+
+`VENTS = true` cuts upright slots low in both side walls and front-to-back slots in the lid behind the boards. Air comes in at the sides and rises out of the top. The lid slots skip the antennas, their labels and the dividers. Set `VENTS = false` for a closed case, for example somewhere dusty.
+
+`VENT = [2.0, 4.5]` is the slot width and spacing. `VENT_SIDE_Y` and `VENT_SIDE_Z` set where the side slots run, and `VENT_LID_Y` where the lid's do.
+
 ## Ballast
 
 `BALLAST_N = 4` sets how many washers stack on each pin, and so how deep the base is. `WASHER = [6.4, 18, 1.6]` is the washer's hole, outside diameter and thickness; change it for a different washer.
@@ -57,14 +63,14 @@ Two scripts in `cad/` go with the design:
 
 | Script | What it does |
 |---|---|
-| `check_case.py` | Builds every part in its assembled place, with stand-ins for the kits, the cables and the antennas, into `cad/build/`. Then it checks that nothing overlaps; the kit goes into each bay under the hooks and clicks past the latch; a USB-C cable fits and its push lands on a rail; each plunger sits just over its button; the antenna cables reach, shut and open; the lid swings open without hitting anything and stops at about 100°; its tabs hold it shut; and the base slides on, catches and stops. It prints PASS or FAIL for each. `--bays 2`, `--fit` and `-D` work as they do for `export.py`. |
+| `check_case.py` | Builds every part in its assembled place, with stand-ins for the kits, the cables and the antennas, into `cad/build/`. Then it checks that nothing overlaps; the kit goes into each bay under the hooks and clicks past the latch; a USB-C cable fits and its push lands on a rail; each plunger sits just over its button; the antenna cables reach, shut and open; the lid swings open without hitting anything and stops at about 100°; its tabs hold it shut; and the base slides on, catches and stops. It prints PASS or FAIL for each. `--bays 2` and `-D` work as they do for `export.py`; `--bays 1 --fit` checks the fit test. |
 | `render.py` | Draws the pictures in `images/` from what `check_case.py` built. |
 
 After a change:
 
 ```sh
 python3 cad/check_case.py
-python3 cad/check_case.py --fit
+python3 cad/check_case.py --bays 1 --fit
 python3 cad/export.py && python3 cad/export.py --fit
 python3 cad/render.py
 ```

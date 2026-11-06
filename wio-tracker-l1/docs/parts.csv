@@ -1,0 +1,8 @@
+Item,Section,Store,Link,Price (USD),Qty,Qty for the fit test,Needed,Notes
+Seeed Wio Tracker L1 E-ink,Radio and power,RobotShop,https://robotshop.com/products/seeedstudio-wio-tracker-l1-e-ink,38.15,1,1,yes,"Comes with the 2.13 in e-ink screen, ribbon adapter and 50 mm ribbon, LoRa antenna and GPS patch. Ships with Meshtastic; flash MeshCore."
+"LiPo cell, 3.7 V 3000 mAh, protection board, JST 1.25",Radio and power,Meshnology,https://meshnology.com/products/3-7v-3000mah-rechargeable-battery-for-arduino-esp32,15.99,1,0,yes,Up to 10.5 x 37 x 68 mm. Check the plug's polarity.
+"M3 heat-set insert, 5 mm wide, 6 mm long",Case,Anywhere,,,4,1,yes,
+"M3 x 18 socket-head screw, stainless",Case,Anywhere,,,4,1,yes,M3 x 16 also works.
+"Hook-and-loop strap, 1/2 in (VELCRO One-Wrap 8 x 1/2 in, 5-pack)",Case,Home Depot,http://www.homedepot.com/p/VELCRO-brand-8-in-x-1-2-in-One-Wrap-Straps-Multicolor-5-Pack-90438ACS/202261928,3.97,1,1,yes,Cut to about 130 mm. 12.7 mm wide at most.
+"Foam pad, 0.2 mm",Case,Anywhere,,,1,0,optional,Behind the screen.
+PETG or ASA filament,Filament,Anywhere,,,25 g,25 g,yes,For the fit test.
